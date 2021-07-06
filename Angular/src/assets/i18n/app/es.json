@@ -1,0 +1,35 @@
+{
+  "app": {
+    "members": "Miembros",
+    "sites": "Sitios",
+    "users": "Usuarios"
+  },
+  "member": {
+    "add": "Añadir miembro",
+    "listOfSiteMembers": "Lista de miembros del sitio ",
+    "manage": "Gestionar miembro",
+    "roles": "Roles",
+    "rolesForSite": "Roles para el sitio",
+    "user": "Usuario"
+  },
+  "msg": {
+    "hideFilters": "Ocultar filtros",
+    "showFilters": "Mostrar filtros",
+    "welcome": "BIA es una biblioteca de componentes, construida con el marco Angular"
+  },
+  "site": {
+    "add": "Añadir sitios",
+    "admins": "Administradores",
+    "edit": "Editar sitios",
+    "listOf": "Lista de sitios",
+    "selectUser": "Selecciona un usuario",
+    "title": "Title"
+  },
+  "user": {
+    "add": "Añadir usuario",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "listOf": "Lista de usuarios",
+    "login": "Login"
+  }
+}
