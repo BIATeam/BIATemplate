@@ -28,6 +28,7 @@ git diff V3.2.0 V3.2.2 > ..\\BIADemo\\Docs\\Migration\\Patch\\3.2.0-3.2.2.patch
 * Copy the file [3.2.2-3.3.0.patch](./Patch/3.2.2-3.3.0.patch) in the project folder.
 * Remplace BIATemplate by the name of your project
 * Remplace biatemplate by the name of your project in lower case
+* Remplace TheBIADevCompany by the name of your company
 * Run the following command in Git Batch
 \```ps
 cd "...\\YourProject"
