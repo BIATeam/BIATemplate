@@ -31,6 +31,10 @@
 - Compile the solution BIATemplate, Test and verify the absence of warning.
 - DO NOT COMMIT BIATemplate here (this will block the build 24H because the packages are not published on nuget.org)
 
+## Prepare BIACompany Files:
+- Edit **...\BIADemo\Tools\CopySettingsFromBIATemplateCompanyFiles.ps1** to set correct version number
+- Launch **...\BIADemo\Tools\CopySettingsFromBIATemplateCompanyFiles.ps1**
+  
 ## Publish BIAPackage
 - If everything is ok Publish the packages on nuget.org
 - Wait the confirmation by mail of all packages
