@@ -16,17 +16,17 @@ function DeleteLine($start, $end, $file) {
   } | set-content $file -Encoding utf8
 }
 
-# Deletes lines between // Begin BIADemo and // End BIADemo 
+# Deletes lines between // Begin BIATemplate and // End BIATemplate 
 function RemoveCodeExample {
   Get-ChildItem -File -Recurse -exclude *.ps1, *.md | Where-Object { $_.FullName -NotLike "*/node_modules/*" -and $_.FullName -NotLike "*/dist/*" -and $_.FullName -NotLike "*/scss/*" -and $_.FullName -NotLike "*/docs/*" -and $_.FullName -NotLike "*/assets/*" } | ForEach-Object { 
     $lineBegin = @()
     $file = $_.FullName
   
-    $searchWord = '// Begin BIADemo'
+    $searchWord = '// Begin BIATemplate'
     $starts = GetLineNumber -pattern $searchWord -file $file
     $lineBegin += $starts
   
-    $searchWord = '// End BIADemo'
+    $searchWord = '// End BIATemplate'
     $ends = GetLineNumber -pattern $searchWord -file $file
     $lineBegin += $ends
   
@@ -67,11 +67,14 @@ function ReplaceProjectName {
   
 }
 
-$oldName = Read-Host "old project name ?"
-# $oldName = 'BIADemo'
+$oldCompany = "TheBIADevCompany"
+$oldName = "BIATemplate"
+$newCompany = Read-Host "new company name ?"
 $newName = Read-Host "new project name ?"
 # $newName = 'BIATemplate'
 
+Write-Host "old company: " $oldCompany
+Write-Host "new company: " $newCompany
 Write-Host "old name: " $oldName
 Write-Host "new name: " $newName
 
@@ -80,12 +83,16 @@ RemoveFolder -path 'dist'
 Write-Host "RemoveFolder node_modules"
 RemoveFolder -path 'node_modules'
 
+Write-Host "replace company name"
+ReplaceProjectName -oldName $oldCompany -newName $newCompany
+ReplaceProjectName -oldName $oldCompany.ToLower() -newName $newCompany.ToLower()
+
 Write-Host "replace project name"
 ReplaceProjectName -oldName $oldName -newName $newName
 ReplaceProjectName -oldName $oldName.ToLower() -newName $newName.ToLower()
 
-Write-Host "npm install"
-npm install
+# Write-Host "npm install"
+# npm install
 # Write-Host "ng build --aot"
 # ng build --aot
 Write-Host "Finish"

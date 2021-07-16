@@ -98,7 +98,7 @@ function ReplaceProjectName {
     [string]$oldName,
     [string]$newName
   )
-  Get-ChildItem -File -Recurse -exclude *.ps1 | Where-Object { $_.FullName -NotLike "*\node_modules\*" -and $_.FullName -NotLike "*\dist\*" -and $_.FullName -NotLike "*\scss\*" -and $_.FullName -NotLike "*\docs\*" -and $_.FullName -NotLike "*\assets\*" } | ForEach-Object { 
+  Get-ChildItem -File -Recurse | Where-Object { $_.FullName -NotLike "*\node_modules\*" -and $_.FullName -NotLike "*\dist\*" -and $_.FullName -NotLike "*\scss\*" -and $_.FullName -NotLike "*\docs\*" -and $_.FullName -NotLike "*\assets\*" } | ForEach-Object { 
     $oldContent = [System.IO.File]::ReadAllText($_.FullName);
     $newContent = $oldContent.Replace($oldName, $newName);
     if ($oldContent -ne $newContent) {

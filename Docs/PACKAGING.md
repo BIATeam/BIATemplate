@@ -27,6 +27,7 @@
 ## Prepare BIATemplate:
 - Launch **...\BIATemplate\DotNet-BIADemo-BIATemplate.ps1**
 - Launch **...\BIATemplate\Angular-BIADemo-BIATemplate.ps1** (if some files are to exclude modify the script)
+- Zip the folder DotNet and folder Angular and store the Zip in ..\\BIADemo\Docs\BIAExtension\VX.Y.Z
 - Compile the solution BIATemplate, Test and verify the absence of warning.
 - DO NOT COMMIT BIATemplate here (this will block the build 24H because the packages are not published on nuget.org)
 

@@ -12,13 +12,23 @@ https://azure.devops.safran/SafranElectricalAndPower/Digital%20Manufacturing/_gi
 4. Sync your local repository BIATemplate
 
 ## Create the git differential patch 
-1. use git batch (V2.30.1 or higher) and run command (ex for V3.2.0 to V3.2.2):
+1. Use git batch (V2.30.1 or higher) and run command (ex for V3.2.0 to V3.2.2):
 ```ps
 cd "...\\BIATemplate"
 git diff V3.2.0 V3.2.2 > ..\\BIADemo\\Docs\\Migration\\Patch\\3.2.0-3.2.2.patch
 ```
 
-2. Copy the .patch file in BIADemo\Docs\Migration
+2. FOR EACH COMPANY 
+* In your BIACompanyFiles repo copy the last version folder and rename it with the new version name.
+* Apply in this new folder the difference concerning your company files (generaly it is in the appsettings.(...).json or bianetconfig.(...).json)
+* Create the diff for company files in your BIACompanyFiles repo
+```ps
+cd "...\\BIACompanyFiles"
+git diff --no-index V3.3.3 V3.4.0 > .\\Migration\\CF_3.3.3-3.4.0.patch
+```
+* replace in this file a/V3.3.3/ by a/
+* and b/V3.4.0/ by b/
+* Commit your BIACompanyFiles repo
 
 ## Add notice to apply the migration 
 * in the migration document in folder BIADemo\Docs\Migration creation a migration file with folowing instruction (change the version number and remove the \ before ```):
