@@ -1,3 +1,5 @@
+
+
 # Returns all line numbers containing the value passed as a parameter.
 function GetLineNumber($pattern, $file) {
   $LineNumber = Select-String -Path $file -Pattern $pattern | Select-Object -ExpandProperty LineNumber
@@ -99,7 +101,7 @@ function RemoveItemFolder {
     Remove-Item $path -Recurse -Force -Confirm:$false
   }
   else {
-	Write-Error "Error " $path " not found"
+	Write-Host "Error $path not found"
   }
 }
 
@@ -197,5 +199,33 @@ $newScriptVar = '"' + $newName + '"'
 ReplaceInScript $oldScriptVar $newScriptVar
 
 Set-Location -Path ..
+
+Write-Host "Prepare the zip."
+$scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+$sourceDir = Resolve-Path -Path "$scriptPath\DotNet"
+$targetDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("$scriptPath\Tmp\DotNet")
+
+Write-Host "   Delete old path."
+RemoveItemFolder -path $targetDir
+Write-Host "   Copy files."
+
+$filter = "*"
+$filterExclude = '\\bin\\|\\obj\\|appsettings..*.json|bianetconfig..*.json'
+$filterInclude = 'appsettings.Example.*.json|bianetconfig.Example.*.json'
+
+Write-Host "Copy form $sourceDir to $targetDir"
+Get-ChildItem -File $sourceDir -filter $filter -recurse | ?{($_.fullname -match $filterInclude) -or ($_.fullname -notmatch $filterExclude)}|`
+    foreach{
+        $targetFile = $targetDir + $_.FullName.SubString($sourceDir.Path.Length);
+
+		#Write-Host "Copy file " $_.FullName " to $targetFile"
+		New-Item -ItemType File -Path $targetFile -Force | Out-Null
+        Copy-Item $_.FullName -destination $targetFile
+    }
+
+Write-Host "   Zip files."
+compress-archive -path $targetDir -destinationpath '..\BIADemo\Docs\BIAExtension\BIA.DotNetTemplate.X.Y.Z.zip' -compressionlevel optimal -Force
+RemoveItemFolder -path 'Tmp'
+
 write-host "finish"
 pause

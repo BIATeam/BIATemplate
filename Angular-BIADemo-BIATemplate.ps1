@@ -203,5 +203,11 @@ ReplaceProjectName -oldName $oldName.ToLower() -newName $newName.ToLower()
 
 
 Set-Location -Path ..
+
+
+Write-Host "Prepare the zip."
+compress-archive -path '.\Angular' -destinationpath '..\BIADemo\Docs\BIAExtension\BIA.AngularTemplate.X.Y.Z.zip' -compressionlevel optimal -Force
+
+
 Write-Host "Finish"
 pause
