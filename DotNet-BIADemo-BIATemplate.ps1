@@ -110,7 +110,7 @@ function ReplaceProjectName {
     [string]$oldName,
     [string]$newName
   )
-  Get-ChildItem -File -Recurse -include *.csproj, *.cs, *.sln, *.json, *.config | Where-Object { $_.FullName -NotLike "*/bin/*" -and $_.FullName -NotLike "*/obj/*" } | ForEach-Object { 
+  Get-ChildItem -File -Recurse -include *.csproj, *.cs, *.sln, *.json, *.config, *.md | Where-Object { $_.FullName -NotLike "*/bin/*" -and $_.FullName -NotLike "*/obj/*" } | ForEach-Object { 
     $file = $_.FullName
 	$oldContent = [System.IO.File]::ReadAllText($file);
     $newContent = $oldContent.Replace($oldName, $newName);
@@ -224,7 +224,7 @@ Get-ChildItem -File $sourceDir -filter $filter -recurse | ?{($_.fullname -match 
     }
 
 Write-Host "   Zip files."
-compress-archive -path $targetDir -destinationpath '..\BIADemo\Docs\BIAExtension\BIA.DotNetTemplate.X.Y.Z.zip' -compressionlevel optimal -Force
+compress-archive -path $targetDir -destinationpath '..\BIADemo\Docs\BIATemplate\BIA.DotNetTemplate.X.Y.Z.zip' -compressionlevel optimal -Force
 RemoveItemFolder -path 'Tmp'
 
 write-host "finish"

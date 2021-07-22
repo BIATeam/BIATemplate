@@ -27,7 +27,7 @@
 ## Prepare BIATemplate:
 - Launch **...\BIATemplate\DotNet-BIADemo-BIATemplate.ps1**
 - Launch **...\BIATemplate\Angular-BIADemo-BIATemplate.ps1** (if some files are to exclude modify the script)
-- Zip the folder DotNet and folder Angular and store the Zip in ..\\BIADemo\Docs\BIAExtension\VX.Y.Z
+- Zip the folder DotNet and folder Angular and store the Zip in ..\\BIADemo\Docs\BIATemplate\VX.Y.Z
 - Compile the solution BIATemplate, Test and verify the absence of warning.
 - DO NOT COMMIT BIATemplate here (this will block the build 24H because the packages are not published on nuget.org)
 
@@ -89,10 +89,10 @@
 - Rebuild solution in release.
 - COMMIT the BIAVSExtension solution.
 
-## Store the BIAExtensions in BIADemo repository
-- In folder ..\BIADemo\Docs\BIAExtension create a new folder VX.Y.Z with (X.Y.Z = version)
-- Move the generated file **...\BIADemo\Docs\BIAExtension\BIA.ProjectCreator.vsix** to  **...\BIADemo\Docs\BIAExtension\VX.Y.Z\BIA.ProjectCreator.X.Y.Z.vsix**
-- Zip the **...\BIATemplate\Angular** folder (after delete node_modules) to  **...\BIADemo\Docs\BIAExtension\VX.Y.Z\BIA.AngularTemplate.X.Y.Z.zip**
+## Store the BIATemplates in BIADemo repository
+- In folder ..\BIADemo\Docs\BIATemplate create a new folder VX.Y.Z with (X.Y.Z = version)
+- Move the generated file **...\BIADemo\Docs\BIATemplate\BIA.ProjectCreator.vsix** to  **...\BIADemo\Docs\BIATemplate\VX.Y.Z\BIA.ProjectCreator.X.Y.Z.vsix**
+- Zip the **...\BIATemplate\Angular** folder (after delete node_modules) to  **...\BIADemo\Docs\BIATemplate\VX.Y.Z\BIA.AngularTemplate.X.Y.Z.zip**
 - COMMIT the BIADemo repository.
 
 ## Deliver the version
