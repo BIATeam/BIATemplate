@@ -168,10 +168,6 @@ Write-Host "Remove *\bin"
 RemoveItemFolder -path '*\bin'
 Write-Host "Remove *\obj"
 RemoveItemFolder -path '*\obj'
-Write-Host "Remove CHANGELOG.md"
-RemoveItemFolder -path 'CHANGELOG.md'
-Write-Host "Remove README.md"
-RemoveItemFolder -path 'README.md'
 
 
 Write-Host "Remove Migrations and keep .editconfig"
@@ -219,6 +215,18 @@ $filterExclude = '\\bin\\|\\obj\\|appsettings..*.json|bianetconfig..*.json|cspro
 $filterInclude = 'appsettings.Example.*.json|bianetconfig.Example.*.json'
 
 Write-Host "Copy form $sourceDir to $targetDir"
+Get-ChildItem -File $sourceDir -filter $filter -recurse | ?{($_.fullname -match $filterInclude) -or ($_.fullname -notmatch $filterExclude)}|`
+    foreach{
+        $targetFile = $targetDir + $_.FullName.SubString($sourceDir.Path.Length);
+
+		#Write-Host "Copy file " $_.FullName " to $targetFile"
+		New-Item -ItemType File -Path $targetFile -Force | Out-Null
+        Copy-Item $_.FullName -destination $targetFile
+    }
+
+
+Write-Host "Copy from .\AdditionnalFiles\DotNet\"
+$sourceDir = Resolve-Path -Path "$scriptPath\AdditionnalFiles\DotNet"
 Get-ChildItem -File $sourceDir -filter $filter -recurse | ?{($_.fullname -match $filterInclude) -or ($_.fullname -notmatch $filterExclude)}|`
     foreach{
         $targetFile = $targetDir + $_.FullName.SubString($sourceDir.Path.Length);
