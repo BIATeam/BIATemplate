@@ -19,7 +19,11 @@
 - Publish all the packages (right click on each project, publish, "Copy to NuGetPackage folder", Publish)
 
 ## Switch the BIADemo project to nuget
-- Start the script **...\BIADemo\DotNet\Switch-To-Project.ps1**
+- In the file **...\BIADemo\DotNet\Switch-To-Nuget.ps1** adapt the package version number in the line :
+    ```
+    dotnet add $ProjectFile package BIA.Net.Core.$layerPackage -v 3.4.*
+    ```
+- Start the script **...\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - Check that the solution compiles (need to have configured a local source nuget to ...\BIADemo\BIAPackage\NuGetPackage)
 - test the BIADemo project.
 - DO NOT COMMIT BIADemo here (this will block the build 24H because the packages are not published on nuget.org)
@@ -89,10 +93,10 @@
 - Rebuild solution in release.
 - COMMIT the BIAVSExtension solution.
 
-## Store the BIATemplates in BIADemo repository
-- In folder ..\BIADemo\Docs\BIATemplate create a new folder VX.Y.Z with (X.Y.Z = version)
-- Move the generated file **...\BIADemo\Docs\BIATemplate\BIA.ProjectCreator.vsix** to  **...\BIADemo\Docs\BIATemplate\VX.Y.Z\BIA.ProjectCreator.X.Y.Z.vsix**
-- Zip the **...\BIATemplate\Angular** folder (after delete node_modules) to  **...\BIADemo\Docs\BIATemplate\VX.Y.Z\BIA.AngularTemplate.X.Y.Z.zip**
+## Store the Templates in BIADemo repository
+- In folder ..\BIADemo\Docs\Templates create a new folder VX.Y.Z with (X.Y.Z = version)
+- Move the generated file **...\BIADemo\Docs\Templates\BIA.ProjectCreator.vsix** to  **...\BIADemo\Docs\Templates\VX.Y.Z\BIA.ProjectCreator.X.Y.Z.vsix**
+- Zip the **...\Templates\Angular** folder (after delete node_modules) to  **...\BIADemo\Docs\Templates\VX.Y.Z\BIA.AngularTemplate.X.Y.Z.zip**
 - COMMIT the BIADemo repository.
 
 ## Deliver the version

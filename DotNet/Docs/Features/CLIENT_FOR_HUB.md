@@ -25,7 +25,7 @@ In the BIANet Section add:
 ```Json
     "WorkerFeatures": {
       "HubForClients": {
-        "SignalRUrl": "http://localhost/BIADemo/WebApi/HubForClients"
+        "SignalRUrl": "http://localhost/[YourProjectName]/WebApi/HubForClients"
       }
     },
 ```
@@ -34,11 +34,12 @@ In the BIANet Section add:
 ```Json
     "WorkerFeatures": {
       "HubForClients": {
-        "SignalRUrl": "https://dmeu-[ENV].electrical-power.thebiadevcompany/BIADemo/WebApi/HubForClients"
+        "SignalRUrl": "https://[FqdnYourAppServer]/[YourProjectName]/WebApi/HubForClients"
       }
     },
 ```
-replace [ENV] by the corresponding env of the file (int, uat, prd or pra)
+replace [FqdnYourAppServer] by the FQDN of your application server
+replace [YourProjectName] by the name of your project
 
 ## Usage
 ```csharp
