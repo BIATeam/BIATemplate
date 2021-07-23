@@ -110,7 +110,7 @@ function ReplaceProjectName {
     [string]$oldName,
     [string]$newName
   )
-  Get-ChildItem -File -Recurse -include *.csproj, *.cs, *.sln, *.json, *.config, *.ps1, *.ts, *.html, *.yml | Where-Object { $_.FullName -NotLike "*/bin/*" -and $_.FullName -NotLike "*/obj/*" } | ForEach-Object { 
+  Get-ChildItem -File -Recurse -include *.csproj, *.cs, *.sln, *.json, *.config | Where-Object { $_.FullName -NotLike "*/bin/*" -and $_.FullName -NotLike "*/obj/*" } | ForEach-Object { 
     $file = $_.FullName
 	$oldContent = [System.IO.File]::ReadAllText($file);
     $newContent = $oldContent.Replace($oldName, $newName);
@@ -168,6 +168,11 @@ Write-Host "Remove *\bin"
 RemoveItemFolder -path '*\bin'
 Write-Host "Remove *\obj"
 RemoveItemFolder -path '*\obj'
+Write-Host "Remove CHANGELOG.md"
+RemoveItemFolder -path 'CHANGELOG.md'
+Write-Host "Remove README.md"
+RemoveItemFolder -path 'README.md'
+
 
 Write-Host "Remove Migrations and keep .editconfig"
 Remove-Item '*.BIADemo.Infrastructure.Data\Migrations\*.cs' -Recurse -Force -Confirm:$false
@@ -224,7 +229,7 @@ Get-ChildItem -File $sourceDir -filter $filter -recurse | ?{($_.fullname -match 
     }
 
 Write-Host "   Zip files."
-compress-archive -path $targetDir -destinationpath '..\BIADemo\Docs\Templates\BIA.DotNetTemplate.X.Y.Z.zip' -compressionlevel optimal -Force
+compress-archive -path $targetDir -destinationpath '..\BIADemo\Docs\Templates\VX.Y.Z\BIA.DotNetTemplate.X.Y.Z.zip' -compressionlevel optimal -Force
 RemoveItemFolder -path 'Tmp'
 
 write-host "finish"

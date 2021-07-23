@@ -31,20 +31,26 @@
 ## Prepare BIATemplate:
 - Launch **...\BIATemplate\DotNet-BIADemo-BIATemplate.ps1**
 - Launch **...\BIATemplate\Angular-BIADemo-BIATemplate.ps1** (if some files are to exclude modify the script)
-- Zip the folder DotNet and folder Angular and store the Zip in ..\\BIADemo\Docs\BIATemplate\VX.Y.Z
 - Compile the solution BIATemplate, Test and verify the absence of warning.
 - DO NOT COMMIT BIATemplate here (this will block the build 24H because the packages are not published on nuget.org)
 
 ## Prepare BIACompany Files:
-- Edit **...\BIADemo\Tools\CopySettingsFromBIATemplateCompanyFiles.ps1** to set correct version number
-- Launch **...\BIADemo\Tools\CopySettingsFromBIATemplateCompanyFiles.ps1**
-  
+- Launch **...\BIACompanyFiles\Tools\CopySettingsFromBIATemplateCompanyFiles.ps1**
+
+## Test the project creation using the VX.Y.Z
+- With the BIAToolKit create a project of the VX.Y.Z.
+- Test it.
+- If is is ok rename **...\BIACompanyFiles\VX.Y.Z** and **...\BIADemo\Docs\Templates\VX.Y.Z** with the good version name 
+
 ## Publish BIAPackage
 - If everything is ok Publish the packages on nuget.org
 - Wait the confirmation by mail of all packages
-- COMMIT BIADemo and BIATemplate
+- COMMIT BIADemo, BIACompanyFiles and BIATemplate
 
-## Prepare the VSExtension
+
+
+
+## Prepare the VSExtension (No more use after V3.4.1)
 - In BIATemplate project extract the tempate for all projects:
   - Use Ctrl+E, Ctrl+X to dislay wizard
   - Select the project (should be done for all projects)

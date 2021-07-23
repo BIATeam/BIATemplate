@@ -206,7 +206,7 @@ Set-Location -Path ..
 
 
 Write-Host "Prepare the zip."
-compress-archive -path '.\Angular' -destinationpath '..\BIADemo\Docs\Templates\BIA.AngularTemplate.X.Y.Z.zip' -compressionlevel optimal -Force
+compress-archive -path '.\Angular' -destinationpath '..\BIADemo\Docs\Templates\VX.Y.Z\BIA.AngularTemplate.X.Y.Z.zip' -compressionlevel optimal -Force
 
 
 Write-Host "Finish"
