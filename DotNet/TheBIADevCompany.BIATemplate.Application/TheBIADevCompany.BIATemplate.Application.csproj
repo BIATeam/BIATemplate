@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Company>TheBIADevCompany</Company>
-    <Copyright>Copyright @ TheBIADevCompany 2020</Copyright>
+    <Copyright>Copyright © TheBIADevCompany 2020</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

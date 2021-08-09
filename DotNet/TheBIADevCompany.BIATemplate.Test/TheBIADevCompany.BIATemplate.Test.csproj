@@ -7,7 +7,7 @@
 
 		<Company>TheBIADevCompany</Company>
 
-		<Copyright>Copyright @ TheBIADevCompany 2020</Copyright>
+		<Copyright>Copyright © TheBIADevCompany 2020</Copyright>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
