@@ -7,6 +7,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using BIA.Net.Core.Infrastructure.Data;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
@@ -52,6 +53,16 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         /// </summary>
         public DbSet<View> Views { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Role DBSet.
+        /// </summary>
+        public DbSet<Notification> Notifications { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Role DBSet.
+        /// </summary>
+        public DbSet<NotificationType> NotificationTypes { get; set; }
+
         /// <inheritdoc cref="DbContext.OnModelCreating"/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +71,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
             SiteModelBuilder.CreateSiteModel(modelBuilder);
             UserModelBuilder.CreateModel(modelBuilder);
             ViewModelBuilder.CreateModel(modelBuilder);
+            NotificationModelBuilder.CreateModel(modelBuilder);
             this.OnEndModelCreating(modelBuilder);
         }
     }

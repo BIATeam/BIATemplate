@@ -5,7 +5,10 @@
 namespace TheBIADevCompany.BIATemplate.WorkerService
 {
     using System;
+    using System.Collections.Generic;
+    using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.WorkerService.Features;
+    using BIA.Net.Core.WorkerService.Features.DataBaseHandler;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -73,6 +76,17 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
                     services.AddBiaWorkerFeatures(config =>
                     {
                         config.Configuration = hostContext.Configuration;
+
+                        var biaNetSection = new BiaNetSection();
+                        config.Configuration.GetSection("BiaNet").Bind(biaNetSection);
+
+                        if (biaNetSection.WorkerFeatures.DatabaseHandler.IsActive)
+                        {
+                            config.DatabaseHandler.Activate(new List<DatabaseHandlerRepository>()
+                            {
+                                // Add here all the Handler repository.
+                            });
+                        }
                     });
 
                     services.AddHostedService<Worker>();

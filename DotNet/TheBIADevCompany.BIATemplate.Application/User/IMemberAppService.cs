@@ -6,7 +6,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using BIA.Net.Core.Application;
+    using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
 

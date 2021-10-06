@@ -2,7 +2,8 @@
   "app": {
     "members": "Membres",
     "sites": "Sites",
-    "users": "Utilisateurs"
+    "users": "Utilisateurs",
+    "notifications": "Notifications"
   },
   "member": {
     "add": "Ajouter membre",
@@ -17,6 +18,14 @@
     "showFilters": "Afficher les filtres",
     "welcome": "BIA est une librarie de composants, construite avec le framework Angular"
   },
+  "permission": {
+    "Site_Admin" : "Administrateur du site",
+    "title": "Autorisation"
+  },
+  "role": {
+    "Site_Admin" : "Administrateur du site",
+    "title": "Role"
+  },
   "site": {
     "add": "Ajouter site",
     "admins": "Administrateurs",
@@ -30,6 +39,34 @@
     "firstName": "Prénom",
     "lastName": "Nom",
     "listOf": "Liste des utilisateurs",
-    "login": "Login"
+    "login": "Login",
+    "cannotAddMember": "Impossible d'ajouter le membre ${login} dans le groupe AD."
+  },
+  "notification": {
+    "action": "Action",
+    "add": "Ajouter notification",
+    "listOf": "Notifications",
+    "title": "Titre",
+    "detail": "Détail de la notification",
+    "description": "Description",
+    "createdDate": "Date",
+    "type": {
+      "title": "Type",
+      "task": "Tâche",
+      "info": "Information",
+      "success": "Succès",
+      "warn": "Avertissement",
+      "error": "Erreur"
+    },
+    "read": "Lue",
+    "createdBy": "Créé par",
+    "notifiedPermissions": "Autorisations notifiés",
+    "notifiedUsers": "Utilisateurs notifiés",
+    "jData" : "Données en JSON",
+    "success": {
+      "deprecated:": "transaltion will be done in database in next version",
+      "title": "Succés envoie de notification",
+      "description": "Description à customiser dans les traductions i18n pour chaque feature"
+    }
   }
 }

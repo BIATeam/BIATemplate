@@ -11,6 +11,9 @@
       },
       "HubForClients": {
         "IsActive": true
+      },
+      "ClientForHub": {
+        "IsActive": true
       }
     },
     "EmailConfiguration": {
@@ -25,8 +28,7 @@
     "Jwt": {
       "Issuer": "BIATemplateApi",
       "Audience": "http://localhost:4200",
-      //Regenerate the SecretKey at each installation => It force reauthent => Checks the client version during authentication to force the client to refresh
-      //"SecretKey": "0BA9AE2BDC6FBA1056D86EB2ACB45D53072F786FBD94C658240FAE6198F5DC64DE018FE517E68410B9D41B9BE106532345D21090549B0BC396437DCEF3AADAAC",
+      //Regenerate the SecretKey at each installation => It force reauthent => Checks the client version during authentication => and force the client to refresh
       "SecretKey": "7C14439A64673E9AF75EE7AF5B71A7C8D901C90B078EB7F2315C153D31B6275B22663F51A898EEEC7027A2911D7D643038AAFE768AF2E47F8488B6129F66AFA3"
     },
     "Roles": [
@@ -72,6 +74,14 @@
       }
     ],
     "Permissions": [
+      {
+        "Names": [ "Admin" ],
+        "Roles": [ "Admin" ]
+      },
+      {
+        "Names": [ "Site_Admin" ],
+        "Roles": [ "Site_Admin" ]
+      },
       // Home
       {
         "Name": "Home_Access",
@@ -95,9 +105,14 @@
         "Name": "Member_Set_Default_Role",
         "Roles": [ "User", "Admin", "Site_Admin", "Site_Member" ]
       },
+      // Permission
+      {
+        "Names": [ "Permissions_Options" ],
+        "Roles": [ "Admin", "Site_Admin" ]
+      },
       // Role
       {
-        "Name": "Roles_List",
+        "Names": [ "Roles_Options", "Roles_List" ],
         "Roles": [ "Admin", "Site_Admin" ]
       },
       {
@@ -120,7 +135,7 @@
       },
       // User
       {
-        "Names": [ "User_List_Access", "User_List", "User_ListAD", "User_Add", "User_Delete", "User_Sync" ],
+        "Names": [ "User_Options", "User_List_Access", "User_List", "User_ListAD", "User_Add", "User_Delete", "User_Sync" ],
         "Roles": [ "Admin" ]
       },
       // View
@@ -138,6 +153,15 @@
       },
       {
         "Name": "View_Delete_SiteView",
+        "Roles": [ "Admin" ]
+      },
+      // Notifications
+      {
+        "Names": [ "Notification_List_Access", "Notification_Delete", "Notification_Read" ],
+        "Roles": [ "Admin", "Site_Admin", "Site_Member" ]
+      },
+      {
+        "Names": [ "Notification_Update", "Notification_Create", "NotifiactionType_Options" ],
         "Roles": [ "Admin" ]
       }
     ]

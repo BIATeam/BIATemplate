@@ -6,8 +6,10 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
 {
     using System;
     using System.Collections.Generic;
-
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
     using BIA.Net.Core.Domain;
+    using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
 
     /// <summary>
@@ -134,5 +136,10 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
         /// Gets or sets the collection of view user.
         /// </summary>
         public ICollection<ViewUser> ViewUsers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of notifications.
+        /// </summary>
+        public ICollection<NotificationUser> NotificationUsers { get; set; }
     }
 }

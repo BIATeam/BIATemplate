@@ -2,7 +2,8 @@
   "app": {
     "members": "Members",
     "sites": "Sites",
-    "users": "Users"
+    "users": "Users",
+    "notifications": "Notifications"
   },
   "member": {
     "add": "Add member",
@@ -17,6 +18,14 @@
     "showFilters": "Show filters",
     "welcome": "BIA is a component library, built with the Angular framework"
   },
+  "permission": {
+    "Site_Admin" : "Site administrator",
+    "title": "Permission"
+  },
+  "role": {
+    "Site_Admin" : "Site administrator",
+    "title": "Role"
+  },
   "site": {
     "add": "Add site",
     "admins": "Administrators",
@@ -30,6 +39,35 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "listOf": "List of users",
-    "login": "Login"
+    "login": "Login",
+    "cannotAddMember": "Cannot add member ${login} on ldap repository."
+  },
+  "notification": {
+    "action": "Action",
+    "add": "Add notification",
+     "add": "Add notification",
+   "listOf": "Notifications",
+    "title": "Title",
+    "detail": "Notification detail",
+    "description": "Description",
+    "createdDate": "Date",
+    "type": {
+      "title": "Type",
+      "task": "Task",
+      "info": "Information",
+      "success": "Success",
+      "warn": "Warning",
+      "error": "Error"
+    },
+    "read": "Read",
+    "createdBy": "Created by",
+    "notifiedPermissions": "Notified permissions",
+    "notifiedUsers": "Notified users",
+    "jData" : "Data in JSON",
+    "success": {
+      "deprecated:": "transaltion will be done in database in next version",
+      "title": "Notification sent successfully",
+      "description": "Description to be customised in i18n traductions for each feature"
+    }
   }
 }
