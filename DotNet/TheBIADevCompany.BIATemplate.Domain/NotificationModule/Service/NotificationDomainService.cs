@@ -69,13 +69,18 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
             if (this.userId != 0)
             {
                 this.permissions = (principal as BIAClaimsPrincipal).GetUserPermissions().ToList();
-                this.filtersContext.Add(
+            }
+            else
+            {
+                this.permissions = new List<string>();
+            }
+
+            this.filtersContext.Add(
                     AccessMode.Read,
                     new DirectSpecification<Notification>(n =>
                         n.SiteId == this.currentSiteId
                         && (n.NotifiedPermissions.Count == 0 || n.NotifiedPermissions.Any(r => this.permissions.Contains(r.Permission.Code)))
                         && (n.NotifiedUsers.Count == 0 || n.NotifiedUsers.Any(u => u.UserId == this.userId))));
-            }
         }
 
         /// <inheritdoc/>
