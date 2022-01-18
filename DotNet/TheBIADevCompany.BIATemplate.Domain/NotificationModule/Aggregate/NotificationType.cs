@@ -4,7 +4,9 @@
 
 namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
 {
+    using System.Collections.Generic;
     using BIA.Net.Core.Domain;
+    using TheBIADevCompany.BIATemplate.Domain.TranslationModule.Aggregate;
 
     /// <summary>
     /// The NotificationType entity.
@@ -17,9 +19,20 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the notification code;s
+        /// Gets or sets the notification codes
         /// e.g: Task, Info, Success, Warning, Error.
         /// </summary>
         public string Code { get; set; }
+
+        /// <summary>
+        /// Gets or sets the notification codes
+        /// e.g: Task, Info, Success, Warning, Error.
+        /// </summary>
+        public string Label { get; set; }
+
+        /// <summary>
+        /// Gets or sets the notification type translations.
+        /// </summary>
+        public virtual ICollection<NotificationTypeTranslation> NotificationTypeTranslations { get; set; }
     }
 }

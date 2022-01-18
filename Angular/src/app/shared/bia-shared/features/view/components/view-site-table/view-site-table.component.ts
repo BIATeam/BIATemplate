@@ -6,7 +6,7 @@ import { Site } from 'src/app/domains/site/model/site';
 import { Table } from 'primeng/table';
 
 @Component({
-  selector: 'app-view-site-table',
+  selector: 'bia-view-site-table',
   templateUrl: './view-site-table.component.html',
   styleUrls: ['./view-site-table.component.scss']
 })
@@ -19,7 +19,7 @@ export class ViewSiteTableComponent implements OnChanges {
   @Input() canAssign = false;
 
   get viewSelected(): View {
-    if (this.table) {
+    if (this.table && this.table.selection) {
       return this.table.selection as View;
     }
     return {} as View;

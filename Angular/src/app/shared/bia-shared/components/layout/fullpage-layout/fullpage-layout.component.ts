@@ -3,12 +3,12 @@ import { OnDestroy } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { Component } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { BiaInjectorService } from 'src/app/core/bia-core/services/bia-injector.service';
 
 @Component({
-  selector: 'full-page-layout',
+  selector: 'bia-full-page-layout',
   templateUrl: './fullpage-layout.component.html',
 })
 export class FullPageLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -26,7 +26,7 @@ export class FullPageLayoutComponent implements OnInit, OnDestroy, AfterViewInit
   public $displayPageComponent: BehaviorSubject<boolean>;
   public displayPageComponent: boolean;
   protected dynamicComponent: ComponentRef<any>;
-  @HostBinding('class.bia-flex') flex = true;
+  @HostBinding('class.bia-flex') flex = false;
 
   ngOnInit() {
     this.$displayPageComponent = new BehaviorSubject<boolean>(true);

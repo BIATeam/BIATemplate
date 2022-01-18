@@ -11,6 +11,7 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
     using Hangfire;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using TheBIADevCompany.BIATemplate.WorkerService.Job;
 
     /// <summary>
@@ -19,17 +20,33 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
     public class Worker : BackgroundService
     {
         /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger<Worker> logger;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Worker"/> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
-        public Worker(IConfiguration configuration)
+        /// <param name="logger">The logger.</param>
+        public Worker(
+            IConfiguration configuration,
+            ILogger<Worker> logger)
         {
             this.Configuration = configuration;
+            this.logger = logger;
             string projectName = configuration["Project:Name"];
 
-            // RecuringJobsHelper.CleanHangfireServerQueue()
-            RecurringJob.AddOrUpdate<WakeUpTask>($"{projectName}.{typeof(WakeUpTask).Name}", t => t.Run(), configuration["Tasks:WakeUp:CRON"]);
-            RecurringJob.AddOrUpdate<SynchronizeUserTask>($"{projectName}.{typeof(SynchronizeUserTask).Name}", t => t.Run(), configuration["Tasks:SynchronizeUser:CRON"]);
+            try
+            {
+                // RecuringJobsHelper.CleanHangfireServerQueue()
+                RecurringJob.AddOrUpdate<WakeUpTask>($"{projectName}.{typeof(WakeUpTask).Name}", t => t.Run(), configuration["Tasks:WakeUp:CRON"]);
+                RecurringJob.AddOrUpdate<SynchronizeUserTask>($"{projectName}.{typeof(SynchronizeUserTask).Name}", t => t.Run(), configuration["Tasks:SynchronizeUser:CRON"]);
+            }
+            catch (Exception)
+            {
+                this.logger.LogWarning("Cannot create reccuring job... Probably database is read only...");
+            }
         }
 
         /// <summary>

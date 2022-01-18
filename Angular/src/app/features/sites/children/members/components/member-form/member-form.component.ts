@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges
 } from '@angular/core';
@@ -22,7 +21,7 @@ import { Member } from '../../model/member';
   changeDetection: ChangeDetectionStrategy.Default
 })
 
-export class MemberFormComponent implements OnInit, OnChanges {
+export class MemberFormComponent implements OnChanges {
   @Input() member: Member = <Member>{};
   @Input() roleOptions: OptionDto[];
   @Input() userOptions: OptionDto[];
@@ -33,13 +32,10 @@ export class MemberFormComponent implements OnInit, OnChanges {
   form: FormGroup;
 
   constructor(
-    public formBuilder: FormBuilder, 
-    public translateService : TranslateService,
-    public siteService: SiteService,) {
+    public formBuilder: FormBuilder,
+    public translateService: TranslateService,
+    public siteService: SiteService) {
     this.initForm();
-  }
-
-  ngOnInit() {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -69,7 +65,7 @@ export class MemberFormComponent implements OnInit, OnChanges {
       const member: Member = <Member>this.form.value;
       member.id = member.id > 0 ? member.id : 0;
       member.roles = BiaOptionService.Differential(member.roles, this.member?.roles);
-      member.user = {...member.user}
+      member.user = {...member.user};
 
       // force the parent key => siteId from authService or other Id from 'parent'Service
       member.siteId = this.siteService.currentSiteId;

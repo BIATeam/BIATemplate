@@ -10,7 +10,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
     using BIA.Net.Core.Domain.Dto.Option;
 
     /// <summary>
-    /// The mapper used for plane.
+    /// The mapper used for user option.
     /// </summary>
     public class UserOptionMapper : BaseMapper<OptionDto, User>
     {

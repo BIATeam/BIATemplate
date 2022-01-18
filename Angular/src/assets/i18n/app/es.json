@@ -18,14 +18,6 @@
     "showFilters": "Mostrar filtros",
     "welcome": "BIA es una biblioteca de componentes, construida con el marco Angular"
   },
-  "permission": {
-    "Site_Admin" : "Administrador del sitio",
-    "title": "Permiso"
-  },
-  "role": {
-    "Site_Admin" : "Administrador del sitio",
-    "title": "Role"
-  },
   "site": {
     "add": "Añadir sitios",
     "admins": "Administradores",
@@ -33,6 +25,10 @@
     "listOf": "Lista de sitios",
     "selectUser": "Selecciona un usuario",
     "title": "Title"
+  },
+  "translation": 
+  {  
+    "defaultLanguage" :"Defecto (Inglesa)"
   },
   "user": {
     "add": "Añadir usuario",

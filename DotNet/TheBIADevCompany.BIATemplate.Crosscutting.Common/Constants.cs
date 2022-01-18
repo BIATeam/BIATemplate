@@ -17,17 +17,17 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The back end version.
             /// </summary>
-            public const string BackEndVersion = "1.4.2";
+            public const string BackEndVersion = "1.5.0";
 
             /// <summary>
             /// The front end version.
             /// </summary>
-            public const string FrontEndVersion = "1.4.2";
+            public const string FrontEndVersion = "1.5.0";
 
             /// <summary>
             /// The framework version.
             /// </summary>
-            public const string FrameworkVersion = "3.4.2";
+            public const string FrameworkVersion = "3.5.0";
         }
 
         /// <summary>
@@ -52,9 +52,40 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
         public static class Role
         {
             /// <summary>
-            /// The name of the user role.
+            /// The user role code.
             /// </summary>
             public const string User = "User";
+
+            /// <summary>
+            /// The site member role code.
+            /// </summary>
+            public const string SiteMember = "Site_Member";
+        }
+
+        /// <summary>
+        /// Language Id.
+        /// </summary>
+        public static class LanguageId
+        {
+            /// <summary>
+            /// The english language Id.
+            /// </summary>
+            public const int English = 1;
+
+            /// <summary>
+            /// The french language Id.
+            /// </summary>
+            public const int French = 2;
+
+            /// <summary>
+            /// The spanish language Id.
+            /// </summary>
+            public const int Spanish = 3;
+
+            /// <summary>
+            /// The german language Id.
+            /// </summary>
+            public const int German = 4;
         }
     }
 }

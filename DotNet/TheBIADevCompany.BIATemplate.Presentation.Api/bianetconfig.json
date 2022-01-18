@@ -27,7 +27,7 @@
     },
     "Jwt": {
       "Issuer": "BIATemplateApi",
-      "Audience": "http://localhost:4200",
+      "Audience": "http://localhost:4200,http://localhost:4201",
       //Regenerate the SecretKey at each installation => It force reauthent => Checks the client version during authentication => and force the client to refresh
       "SecretKey": "7C14439A64673E9AF75EE7AF5B71A7C8D901C90B078EB7F2315C153D31B6275B22663F51A898EEEC7027A2911D7D643038AAFE768AF2E47F8488B6129F66AFA3"
     },
@@ -36,41 +36,66 @@
     "UserProfile": {
       "url": "http://localhost/DMIndex/UserProfile/GetUserProfile"
     },
-    "Languages": [
+    "Cultures": [
       {
-        "Country": "DE",
-        "Name": "Deutsh",
-        "Code": "de-DE"
+        "Label": "English",
+        "Code": "en-GB",
+        "AcceptedCodes": [ "en-GB", "default", "en" ],
+        "IsDefaultForCountryCodes": [ "GB" ],
+        "DateFormat": "dd/MM/yyyy",
+        "TimeFormat": "HH:mm",
+        "LanguageCode": "en",
+        "LanguageId": "1"
       },
       {
-        "Country": "ES",
-        "Name": "Español ES",
-        "Code": "es-ES"
+        "Label": "English US",
+        "Code": "en-US",
+        "AcceptedCodes": [ "en-US" ],
+        "IsDefaultForCountryCodes": [ "US" ],
+        "DateFormat": "MM/dd/yyyy",
+        "TimeFormat": "h:mm a",
+        "LanguageCode": "en",
+        "LanguageId": "1"
       },
       {
-        "Country": "FR",
-        "Name": "Français",
-        "Code": "fr-FR"
+        "Label": "Deutsh",
+        "Code": "de-DE",
+        "AcceptedCodes": [ "de-DE", "de" ],
+        "IsDefaultForCountryCodes": [ "US" ],
+        "DateFormat": "dd.MM.yyyy",
+        "TimeFormat": "HH:mm",
+        "LanguageCode": "de",
+        "LanguageId": "4"
       },
       {
-        "Country": "GB",
-        "Name": "English GB",
-        "Code": "en-GB"
+        "Label": "Española",
+        "Code": "es-ES",
+        "AcceptedCodes": [ "es-ES", "es" ],
+        "IsDefaultForCountryCodes": [ "ES" ],
+        "DateFormat": "dd/MM/yyyy",
+        "TimeFormat": "H:mm",
+        "LanguageCode": "es",
+        "LanguageId": "3"
       },
       {
-        "Country": "MX",
-        "Name": "Español MX",
-        "Code": "es-MX"
+        "Label": "Española MX",
+        "Code": "es-MX",
+        "AcceptedCodes": [ "es-MX" ],
+        "IsDefaultForCountryCodes": [ "MX" ],
+        "DateFormat": "dd/MM/yyyy",
+        "TimeFormat": "hh:mm a",
+        "LanguageCode": "es",
+        "LanguageId": "3"
       },
       {
-        "Country": "US",
-        "Name": "English US",
-        "Code": "en-US"
-      },
-      {
-        "Country": "MA",
-        "Name": "Maroc",
-        "Code": "fr-FR"
+        "Label": "Français",
+        "Code": "fr-FR" ,
+        "AcceptedCodes": [ "fr-FR", "fr" ],
+        "IsDefaultForCountryCodes": [ "FR" , "MA" ],
+        "DateFormat": "dd/MM/yyyy",
+        "TimeFormat": "HH:mm",
+        "LanguageCode": "fr",
+        "LanguageId": "2"
       }
     ],
     "Permissions": [
@@ -108,16 +133,25 @@
       // Permission
       {
         "Names": [ "Permissions_Options" ],
-        "Roles": [ "Admin", "Site_Admin" ]
+        "Roles": [ "User" ]
       },
       // Role
       {
-        "Names": [ "Roles_Options", "Roles_List" ],
+        "Names": [ "Roles_Options" ],
+        "Roles": [ "User" ]
+      },
+      {
+        "Names": [ "Roles_List" ],
         "Roles": [ "Admin", "Site_Admin" ]
       },
       {
         "Name": "Roles_List_For_Current_User",
         "Roles": [ "User", "Admin", "Site_Admin" ]
+      },
+      // Language
+      {
+        "Name": "Languages_Options",
+        "Roles": [ "User", "Admin" ]
       },
       // Ldap Domain
       {
@@ -135,17 +169,21 @@
       },
       // User
       {
-        "Names": [ "User_Options", "User_List_Access", "User_List", "User_ListAD", "User_Add", "User_Delete", "User_Sync" ],
+        "Names": [ "User_Options" ],
+        "Roles": [ "User" ]
+      },
+      {
+        "Names": [ "User_List_Access", "User_List", "User_ListAD", "User_Add", "User_Delete", "User_Sync" ],
         "Roles": [ "Admin" ]
       },
       // View
       {
         "Name": "View_List",
-        "Roles": [ "Admin", "Site_Admin", "Site_Member" ]
+        "Roles": [ "User" ]
       },
       {
         "Names": [ "View_Add_UserView", "View_Update_UserView", "View_Delete_UserView", "View_Set_Default_UserView" ],
-        "Roles": [ "Admin", "Site_Admin", "Site_Member" ]
+        "Roles": [ "User" ]
       },
       {
         "Names": [ "View_Add_SiteView", "View_Update_SiteView", "View_Set_Default_SiteView", "View_Assign_To_Site" ],
@@ -158,7 +196,7 @@
       // Notifications
       {
         "Names": [ "Notification_List_Access", "Notification_Delete", "Notification_Read" ],
-        "Roles": [ "Admin", "Site_Admin", "Site_Member" ]
+        "Roles": [ "User" ]
       },
       {
         "Names": [ "Notification_Update", "Notification_Create", "NotifiactionType_Options" ],

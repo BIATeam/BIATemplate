@@ -18,14 +18,6 @@
     "showFilters": "Show filters",
     "welcome": "BIA is a component library, built with the Angular framework"
   },
-  "permission": {
-    "Site_Admin" : "Site administrator",
-    "title": "Permission"
-  },
-  "role": {
-    "Site_Admin" : "Site administrator",
-    "title": "Role"
-  },
   "site": {
     "add": "Add site",
     "admins": "Administrators",
@@ -33,6 +25,10 @@
     "listOf": "List of sites",
     "selectUser": "Select a user",
     "title": "Title"
+  },
+  "translation": 
+  {  
+    "defaultLanguage" :"Default (English)"
   },
   "user": {
     "add": "Add user",

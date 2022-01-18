@@ -18,14 +18,6 @@
     "showFilters": "Afficher les filtres",
     "welcome": "BIA est une librarie de composants, construite avec le framework Angular"
   },
-  "permission": {
-    "Site_Admin" : "Administrateur du site",
-    "title": "Autorisation"
-  },
-  "role": {
-    "Site_Admin" : "Administrateur du site",
-    "title": "Role"
-  },
   "site": {
     "add": "Ajouter site",
     "admins": "Administrateurs",
@@ -33,6 +25,10 @@
     "listOf": "Liste de sites",
     "selectUser": "Sélectionner un utilisateur",
     "title": "Titre"
+  },
+  "translation": 
+  {  
+    "defaultLanguage" :"Defaut (Anglais)"
   },
   "user": {
     "add": "Ajouter utilisateur",
@@ -60,12 +56,12 @@
     },
     "read": "Lue",
     "createdBy": "Créé par",
-    "notifiedPermissions": "Autorisations notifiés",
+    "notifiedPermissions": "Autorisations notifiées",
     "notifiedUsers": "Utilisateurs notifiés",
     "jData" : "Données en JSON",
     "success": {
-      "deprecated:": "transaltion will be done in database in next version",
-      "title": "Succés envoie de notification",
+      "deprecated:": "translation will be done in database in next version",
+      "title": "Succès envoi de notification",
       "description": "Description à customiser dans les traductions i18n pour chaque feature"
     }
   }

@@ -22,7 +22,8 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories.QueryCus
             {
                 return objectSet
                     .Include(n => n.NotifiedPermissions).ThenInclude(n => n.Permission)
-                    .Include(n => n.NotifiedUsers);
+                    .Include(n => n.NotifiedUsers)
+                    .Include(n => n.NotificationTranslations);
             }
 
             return objectSet;

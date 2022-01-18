@@ -18,6 +18,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
     using BIA.Net.Core.Domain.Dto.Notification;
 #if UseHubForClientInNotification
     using BIA.Net.Core.Domain.RepoContract;
+    using BIA.Net.Core.Domain.Service;
 #endif
     using BIA.Net.Presentation.Api.Controllers.Base;
     using Microsoft.AspNetCore.Authorization;
@@ -73,11 +74,35 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = Rights.Notifications.ListAccess)]
-        public async Task<IActionResult> GetAll([FromBody] LazyLoadDto filters)
+        public async Task<IActionResult> GetAll([FromBody] PagingFilterFormatDto filters)
         {
             try
             {
                 var (results, total) = await this.notificationService.GetRangeAsync(filters);
+                this.HttpContext.Response.Headers.Add(BIAConstants.HttpHeaders.TotalCount, total.ToString());
+                return this.Ok(results);
+            }
+            catch (Exception e)
+            {
+                return this.StatusCode(500, "Internal server error " + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get all notifications with filters.
+        /// </summary>
+        /// <param name="filters">The filters.</param>
+        /// <returns>The list of notifications.</returns>
+        [HttpPost("allCrossSite")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = Rights.Notifications.ListAccess)]
+        public async Task<IActionResult> GetAllCrossSite([FromBody] PagingFilterFormatDto filters)
+        {
+            try
+            {
+                var (results, total) = await this.notificationService.GetRangeAsync(filters,accessMode: AccessMode.All);
                 this.HttpContext.Response.Headers.Add(BIAConstants.HttpHeaders.TotalCount, total.ToString());
                 return this.Ok(results);
             }
@@ -291,10 +316,10 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         /// <summary>
         /// Generates a csv file according to the filters.
         /// </summary>
-        /// <param name="filters">filters ( <see cref="FileFiltersDto"/>).</param>
+        /// <param name="filters">filters ( <see cref="PagingFilterFormatDto"/>).</param>
         /// <returns>a csv file.</returns>
         [HttpPost("csv")]
-        public virtual async Task<IActionResult> GetFile([FromBody] FileFiltersDto filters)
+        public virtual async Task<IActionResult> GetFile([FromBody] PagingFilterFormatDto filters)
         {
             byte[] buffer = await this.notificationService.GetCsvAsync(filters);
             return this.File(buffer, BIAConstants.Csv.ContentType + ";charset=utf-8", $"Notifications{BIAConstants.Csv.Extension}");

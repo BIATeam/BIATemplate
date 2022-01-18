@@ -6,6 +6,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
@@ -13,14 +14,14 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     /// <summary>
     /// The interface defining the application service for member.
     /// </summary>
-    public interface IMemberAppService : ICrudAppServiceBase<MemberDto, Member, MemberFilterDto>
+    public interface IMemberAppService : ICrudAppServiceBase<MemberDto, Member, PagingFilterFormatDto>
     {
         /// <summary>
         /// Get the list of MemberDto with paging and sorting.
         /// </summary>
         /// <param name="filters">The filters.</param>
         /// <returns>The list of MemberDto.</returns>
-        Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeBySiteAsync(MemberFilterDto filters);
+        Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeBySiteAsync(PagingFilterFormatDto filters);
 
         /// <summary>
         /// Sets the default site.
@@ -35,5 +36,12 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <param name="roleId">The role identifier.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task SetDefaultRoleAsync(int roleId);
+
+        /// <summary>
+        /// Generates CSV content.
+        /// </summary>
+        /// <param name="filters">Represents the columns and their traductions.</param>
+        /// <returns>A <see cref="Task"/> holding the buffered data to return in a file.</returns>
+        Task<byte[]> ExportCSV(PagingFilterFormatDto filters);
     }
 }

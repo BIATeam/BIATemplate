@@ -21,6 +21,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
             CreateMemberModel(modelBuilder);
             CreateUserModel(modelBuilder);
             CreateRoleModel(modelBuilder);
+            CreatePermissionRoleModel(modelBuilder);
             CreatePermissionModel(modelBuilder);
             CreateMemberRoleModel(modelBuilder);
         }
@@ -80,7 +81,21 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
         {
             modelBuilder.Entity<Role>().HasKey(r => r.Id);
             modelBuilder.Entity<Role>().Property(r => r.Code).IsRequired().HasMaxLength(20);
-            modelBuilder.Entity<Role>().HasData(new Role { Id = 1, Code = "Site_Admin" });
+            modelBuilder.Entity<Role>().Property(r => r.Label).IsRequired().HasMaxLength(50);
+            modelBuilder.Entity<Role>().HasData(new Role { Id = 1, Code = "Site_Admin", Label = "Site administrator" });
+        }
+
+        /// <summary>
+        /// Create the model for member roles.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder.</param>
+        private static void CreatePermissionRoleModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PermissionRole>().HasKey(mr => new { mr.PermissionId, mr.RoleId });
+            modelBuilder.Entity<PermissionRole>().HasOne(mr => mr.Permission).WithMany(m => m.PermissionRoles).HasForeignKey(mr => mr.PermissionId);
+            modelBuilder.Entity<PermissionRole>().HasOne(mr => mr.Role).WithMany(m => m.PermissionRoles).HasForeignKey(mr => mr.RoleId);
+
+            modelBuilder.Entity<PermissionRole>().HasData(new PermissionRole { PermissionId = 1, RoleId = 1 });
         }
 
         /// <summary>
@@ -91,7 +106,8 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
         {
             modelBuilder.Entity<Permission>().HasKey(r => r.Id);
             modelBuilder.Entity<Permission>().Property(r => r.Code).IsRequired().HasMaxLength(50);
-            modelBuilder.Entity<Permission>().HasData(new Permission { Id = 1, Code = "Site_Admin" });
+            modelBuilder.Entity<Permission>().Property(r => r.Label).IsRequired().HasMaxLength(50);
+            modelBuilder.Entity<Permission>().HasData(new Permission { Id = 1, Code = "Site_Admin", Label = "Site administrator" });
         }
 
         /// <summary>

@@ -9,8 +9,12 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System.Linq;
     using System.Linq.Expressions;
     using System.Security.Principal;
+    using System.Text;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Common;
     using BIA.Net.Core.Domain.Authentication;
+    using BIA.Net.Core.Domain.Dto;
+    using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
@@ -19,7 +23,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     /// <summary>
     /// The application service used for member.
     /// </summary>
-    public class MemberAppService : CrudAppServiceBase<MemberDto, Member, MemberFilterDto, MemberMapper>, IMemberAppService
+    public class MemberAppService : CrudAppServiceBase<MemberDto, Member, PagingFilterFormatDto, MemberMapper>, IMemberAppService
     {
         /// <summary>
         /// The claims principal.
@@ -31,18 +35,19 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// </summary>
         /// <param name="repository">The repository.</param>
         /// <param name="principal">The claims principal.</param>
-        /// <param name="queryCustomizer">The query customizer.</param>
-        public MemberAppService(ITGenericRepository<Member> repository, IPrincipal principal/*, IMemberQueryCustomizer queryCustomizer*/)
+        /// <param name="userContext">The user context.</param>
+        public MemberAppService(ITGenericRepository<Member> repository, IPrincipal principal, UserContext userContext)
             : base(repository)
         {
             this.principal = principal as BIAClaimsPrincipal;
+            this.userContext = userContext;
 
             // Include already add with the mapper MemberMapper
             // this.Repository.QueryCustomizer = queryCustomizer
         }
 
         /// <inheritdoc cref="IMemberAppService.GetRangeBySiteAsync"/>
-        public async Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeBySiteAsync(MemberFilterDto filters)
+        public async Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeBySiteAsync(PagingFilterFormatDto filters)
         {
             return await this.GetRangeAsync(filters: filters, specification: MemberSpecification.SearchGetAll(filters));
         }
@@ -91,6 +96,38 @@ namespace TheBIADevCompany.BIATemplate.Application.User
                     await this.Repository.UnitOfWork.CommitAsync();
                 }
             }
+        }
+
+        /// <inheritdoc cref="IMemberAppService.ExportCSV(PagingFilterFormatDto)"/>
+        public async Task<byte[]> ExportCSV(PagingFilterFormatDto filters)
+        {
+            // We ignore paging to return all records
+            filters.First = 0;
+            filters.Rows = 0;
+
+            var query = await this.GetRangeAsync(filters: filters, specification: MemberSpecification.SearchGetAll(filters));
+
+            List<object[]> records = query.Results.Select(member => new object[]
+            {
+                member.User.Display,
+                string.Join("; ", member.Roles.Select(r => r.Display)),
+            }).ToList();
+
+            List<string> columnHeaders = null;
+            if (filters.Columns != null && filters.Columns.Count > 0)
+            {
+                columnHeaders = filters.Columns.Select(x => x.Value).ToList();
+            }
+
+            StringBuilder csv = new StringBuilder();
+            records.ForEach(line =>
+                    {
+                        csv.AppendLine(string.Join(BIAConstants.Csv.Separator, line));
+                    });
+
+            string csvSep = $"sep={BIAConstants.Csv.Separator}\n";
+            var buffer = Encoding.GetEncoding("iso-8859-1").GetBytes($"{csvSep}{string.Join(BIAConstants.Csv.Separator, columnHeaders ?? new List<string>())}\r\n{csv}");
+            return buffer;
         }
     }
 }

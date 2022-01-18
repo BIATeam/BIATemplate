@@ -9,6 +9,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using Microsoft.Extensions.Logging;
     using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.TranslationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
@@ -44,6 +45,11 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         public DbSet<Role> Roles { get; set; }
 
         /// <summary>
+        /// Gets or sets the Role DBSet.
+        /// </summary>
+        public DbSet<RoleTranslation> RoleTranslations { get; set; }
+
+        /// <summary>
         /// Gets or sets the Member DBSet.
         /// </summary>
         public DbSet<Member> Members { get; set; }
@@ -54,20 +60,26 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         public DbSet<View> Views { get; set; }
 
         /// <summary>
-        /// Gets or sets the Role DBSet.
+        /// Gets or sets the notification DBSet.
         /// </summary>
         public DbSet<Notification> Notifications { get; set; }
 
         /// <summary>
-        /// Gets or sets the Role DBSet.
+        /// Gets or sets the notification type DBSet.
         /// </summary>
         public DbSet<NotificationType> NotificationTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the notification type DBSet.
+        /// </summary>
+        public DbSet<NotificationTypeTranslation> NotificationTypeTranslations { get; set; }
 
         /// <inheritdoc cref="DbContext.OnModelCreating"/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            TranslationModelBuilder.CreateModel(modelBuilder);
             SiteModelBuilder.CreateSiteModel(modelBuilder);
             UserModelBuilder.CreateModel(modelBuilder);
             ViewModelBuilder.CreateModel(modelBuilder);

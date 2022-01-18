@@ -8,6 +8,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Domain.Dto;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.Option;
     using BIA.Net.Core.Domain.Dto.User;
@@ -41,25 +42,13 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <param name="mapperMode">A string to adapt the mapper function DtoToEntity.</param>
         /// <returns>The list of DTO.</returns>
         Task<(IEnumerable<UserDto> Results, int Total)> GetRangeAsync(
-            LazyLoadDto filters = null,
+            PagingFilterFormatDto filters = null,
             int id = 0,
             Specification<User> specification = null,
             Expression<Func<User, bool>> filter = null,
             string accessMode = AccessMode.Read,
             string queryMode = QueryMode.ReadList,
             string mapperMode = null);
-
-        /// <summary>
-        /// Get all rights for a user with its sid.
-        /// </summary>
-        /// <param name="userDirectoryRoles">The user roles in user directory.</param>
-        /// <param name="sid">The user sid.</param>
-        /// <param name="siteId">The site identifier.</param>
-        /// <param name="roleId">The role identifier.</param>
-        /// <returns>
-        /// The list of right.
-        /// </returns>
-        Task<List<string>> GetPermissionsForUserAsync(List<string> userDirectoryRoles, string sid, int siteId = 0, int roleId = 0);
 
         /// <summary>
         /// Translate the roles in rights.
@@ -137,5 +126,12 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <param name="users">The users.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task AddInDBAsync(IEnumerable<UserFromDirectoryDto> users);
+
+        /// <summary>
+        /// Generates CSV content.
+        /// </summary>
+        /// <param name="filters">Represents the columns and their traductions.</param>
+        /// <returns>A <see cref="Task"/> holding the buffered data to return in a file.</returns>
+        Task<byte[]> ExportCSV(PagingFilterFormatDto filters);
     }
 }

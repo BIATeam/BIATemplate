@@ -52,13 +52,16 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
         /// <param name="principal">The claims principal.</param>
         /// <param name="clientForHubService">Client for hub.</param>
         /// <param name="queryCustomizer">Query customizer to include permission at update.</param>
+        /// <param name="userContext">The user context.</param>
         public NotificationDomainService(
             ITGenericRepository<Notification> repository,
             IPrincipal principal,
             IClientForHubRepository clientForHubService,
-            INotificationQueryCustomizer queryCustomizer)
+            INotificationQueryCustomizer queryCustomizer,
+            UserContext userContext)
             : base(repository)
         {
+            this.userContext = userContext;
             this.Repository.QueryCustomizer = queryCustomizer;
             var userDataDto = (principal as BIAClaimsPrincipal).GetUserData<UserDataDto>();
             this.clientForHubService = clientForHubService;
@@ -74,6 +77,15 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
             {
                 this.permissions = new List<string>();
             }
+
+            this.filtersContext.Add(
+                AccessMode.All,
+                new DirectSpecification<Notification>(n =>
+                    n.Site.Members.Any(m => m.UserId == this.userId)
+                    && (n.NotifiedPermissions.Count == 0
+                        ||
+                        n.NotifiedPermissions.Any(r => n.Site.Members.Any(m => m.UserId == this.userId && m.MemberRoles.Any(mr => mr.Role.PermissionRoles.Any(pr => pr.PermissionId == r.PermissionId)))))
+                    && (n.NotifiedUsers.Count == 0 || n.NotifiedUsers.Any(u => u.UserId == this.userId))));
 
             this.filtersContext.Add(
                     AccessMode.Read,
@@ -99,7 +111,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
         {
             if (dto != null)
             {
-                var mapper = new NotificationMapper();
+                NotificationMapper mapper = this.InitMapper<NotificationDto, NotificationMapper>();
 
                 var entity = await this.Repository.GetEntityAsync(id: dto.Id, specification: this.GetFilterSpecification(accessMode, this.filtersContext), includes: mapper.IncludesForUpdate(mapperMode), queryMode: queryMode);
                 if (entity == null)
