@@ -14,7 +14,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate
     /// <summary>
     /// The mapper used for site.
     /// </summary>
-    public class SiteInfoMapper : BaseMapper<SiteInfoDto, Site>
+    public class SiteInfoMapper : BaseMapper<SiteInfoDto, Site, int>
     {
         /// <summary>
         /// Gets or sets the collection used for expressions to access fields.

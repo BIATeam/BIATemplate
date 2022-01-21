@@ -20,7 +20,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
     /// <summary>
     /// The mapper used for user.
     /// </summary>
-    public class NotificationMapper : BaseMapper<NotificationDto, Notification>
+    public class NotificationMapper : BaseMapper<NotificationDto, Notification, int>
     {
         /// <inheritdoc cref="BaseMapper{TDto,TEntity}.ExpressionCollection"/>
         public override ExpressionCollection<Notification> ExpressionCollection

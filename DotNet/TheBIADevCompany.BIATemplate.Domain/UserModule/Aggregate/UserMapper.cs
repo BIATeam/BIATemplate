@@ -12,7 +12,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
     /// <summary>
     /// The mapper used for user.
     /// </summary>
-    public class UserMapper : BaseMapper<UserDto, User>
+    public class UserMapper : BaseMapper<UserDto, User, int>
     {
         /// <summary>
         /// Gets or sets the collection used for expressions to access fields.

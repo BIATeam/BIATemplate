@@ -15,7 +15,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
     /// <summary>
     /// The user entity.
     /// </summary>
-    public class User : VersionedTable, IEntity
+    public class User : VersionedTable, IEntity<int>
     {
         /// <summary>
         /// Gets or sets the id.

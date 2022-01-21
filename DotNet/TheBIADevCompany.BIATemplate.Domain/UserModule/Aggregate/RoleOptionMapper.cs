@@ -14,7 +14,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
     /// <summary>
     /// The mapper used for role option.
     /// </summary>
-    public class RoleOptionMapper : BaseMapper<OptionDto, Role>
+    public class RoleOptionMapper : BaseMapper<OptionDto, Role, int>
     {
         /// <inheritdoc cref="BaseMapper{TDto,TEntity}.EntityToDto"/>
         public override Expression<Func<Role, OptionDto>> EntityToDto()
