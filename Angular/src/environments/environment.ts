@@ -16,7 +16,7 @@ export const environment = {
   production: false,
   appTitle: 'BIATemplate',
   companyName: 'TheBIADevCompany',
-  version: '1.5.0',
+  version: '0.0.0',
   logging: {
     conf: {
       serverLoggingUrl: 'http://localhost/BIATemplate/WebApi/api/logs',
