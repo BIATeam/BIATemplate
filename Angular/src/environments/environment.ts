@@ -2,7 +2,7 @@ import {NgxLoggerLevel} from 'ngx-logger';
 
 export const environment = {
   helpUrl: '',
-  reportUrl: 'toto',
+  reportUrl: '',
   enableNotifications: true,
   apiUrl: 'http://localhost/BIATemplate/WebApi/api',
   hubUrl: 'http://localhost/BIATemplate/WebApi/HubForClients',

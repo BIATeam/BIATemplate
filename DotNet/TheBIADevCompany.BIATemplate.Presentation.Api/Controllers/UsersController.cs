@@ -10,7 +10,6 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
     using System.Text;
     using System.Threading.Tasks;
     using BIA.Net.Core.Common;
-    using BIA.Net.Core.Domain.Dto;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Presentation.Api.Controllers.Base;
     using Microsoft.AspNetCore.Authorization;
@@ -80,11 +79,18 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         [HttpGet("fromAD")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = Rights.Users.ListAD)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllFromAD(string filter, string ldapName = null)
         {
-            var results = await this.userService.GetAllADUserAsync(filter, ldapName);
+            if (!filter.Contains('\n') || ldapName.Contains('\n'))
+            {
+                return this.BadRequest();
+            }
 
-            this.HttpContext.Response.Headers.Add(BIAConstants.HttpHeaders.TotalCount, results.Count().ToString());
+            var results = await this.userService.GetAllADUserAsync(filter, ldapName);
+            int resultCount = results.Count();
+
+            this.HttpContext.Response.Headers.Add(BIAConstants.HttpHeaders.TotalCount, resultCount.ToString());
 
             return this.Ok(results);
         }
