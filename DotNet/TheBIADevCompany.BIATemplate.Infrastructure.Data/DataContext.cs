@@ -34,6 +34,11 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         }
 
         /// <summary>
+        /// Gets or sets the Plane DBSet.
+        /// </summary>
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
+        /// <summary>
         /// Gets or sets the Site DBSet.
         /// </summary>
         public DbSet<Site> Sites { get; set; }
@@ -109,6 +114,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
             UserModelBuilder.CreateModel(modelBuilder);
             ViewModelBuilder.CreateModel(modelBuilder);
             NotificationModelBuilder.CreateModel(modelBuilder);
+            AuditModelBuilder.CreateModel(modelBuilder);
             this.OnEndModelCreating(modelBuilder);
         }
     }
