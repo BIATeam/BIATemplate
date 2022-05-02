@@ -74,11 +74,11 @@ import { PageLayoutComponent } from './components/layout/page-layout.component';
 import { PrimengCalendarLocaleDirective } from './directives/primeng-calendar-locale.directive';
 import { ViewListComponent } from './features/view/views/view-list/view-list.component';
 import { ViewDialogComponent } from './features/view/views/view-dialog/view-dialog.component';
-import { ViewSiteTableComponent } from './features/view/components/view-site-table/view-site-table.component';
+import { ViewTeamTableComponent } from './features/view/components/view-team-table/view-team-table.component';
 import { ViewUserTableComponent } from './features/view/components/view-user-table/view-user-table.component';
 import { StoreModule } from '@ngrx/store';
 import { reducers } from './features/view/store/view.state';
-import { reducers as notificationReducers } from '../../domains/notification/store/notification.state';
+import { reducers as notificationReducers } from '../../domains/bia-domains/notification/store/notification.state';
 import { EffectsModule } from '@ngrx/effects';
 import { ViewsEffects } from './features/view/store/views-effects';
 import { ViewFormComponent } from './features/view/components/view-form/view-form.component';
@@ -87,9 +87,17 @@ import { PopupLayoutComponent } from './components/layout/popup-layout/popup-lay
 import { FullPageLayoutComponent } from './components/layout/fullpage-layout/fullpage-layout.component';
 import { PluckPipe } from './pipes/pluck.pipe';
 import { JoinPipe } from './pipes/join.pipe';
-import { NotificationsEffects } from 'src/app/domains/notification/store/notifications-effects';
+import { NotificationsEffects } from 'src/app/domains/bia-domains/notification/store/notifications-effects';
 import { TranslateFieldPipe } from './pipes/translate-field.pipe';
 import { FormatValuePipe } from './pipes/format-value.pipe';
+import { ClassicTeamSelectorComponent } from './components/layout/classic-team-selector/classic-team-selector.component';
+import { TeamModule } from 'src/app/domains/bia-domains/team/team.module';
+import { BiaOnlineOfflineIconComponent } from './components/bia-online-offline-icon/bia-online-offline-icon.component';
+import { IsNotCurrentTeamPipe } from './components/notification-team-warning/is-not-current-team/is-not-current-team.pipe';
+import { TeamListPipe } from './components/notification-team-warning/team-list/team-list.pipe';
+import { NotificationTeamWarningComponent } from './components/notification-team-warning/notification-team-warning.component';
+import { HangfireContainerComponent } from './components/hangfire-container/hangfire-container.component';
+import { SafeUrlPipe } from './pipes/safe-url.pipe';
 
 const PRIMENG_MODULES = [
   AccordionModule,
@@ -148,12 +156,15 @@ const MODULES = [
   FormsModule,
   ReactiveFormsModule,
   FlexLayoutModule,
-  HttpClientModule
+  HttpClientModule,
+  TeamModule,
 ];
+
 
 const COMPONENTS = [
   ClassicFooterComponent,
   ClassicHeaderComponent,
+  ClassicTeamSelectorComponent,
   ClassicLayoutComponent,
   ClassicPageLayoutComponent,
   SpinnerComponent,
@@ -166,13 +177,17 @@ const COMPONENTS = [
   PageLayoutComponent,
   PopupLayoutComponent,
   FullPageLayoutComponent,
-  PrimengCalendarLocaleDirective
+  PrimengCalendarLocaleDirective,
+  BiaOnlineOfflineIconComponent,
+  NotificationTeamWarningComponent,
+  HangfireContainerComponent,
 ];
+
 
 const VIEW_COMPONENTS = [
   ViewListComponent,
   ViewDialogComponent,
-  ViewSiteTableComponent,
+  ViewTeamTableComponent,
   ViewUserTableComponent,
   ViewFormComponent
 ];
@@ -182,9 +197,13 @@ const PIPES = [
   JoinPipe,
   TranslateFieldPipe,
   FormatValuePipe,
+  SafeUrlPipe,
+  IsNotCurrentTeamPipe,
+  TeamListPipe
 ];
 
 const VIEW_IMPORTS = [StoreModule.forFeature('views', reducers), EffectsModule.forFeature([ViewsEffects])];
+
 const NOTIFICATION_IMPORTS = [
   StoreModule.forFeature('domain-notifications', notificationReducers),
   EffectsModule.forFeature([NotificationsEffects])

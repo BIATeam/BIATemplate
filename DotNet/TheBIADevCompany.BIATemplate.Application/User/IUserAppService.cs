@@ -21,7 +21,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     /// <summary>
     /// The interface defining the application service for user.
     /// </summary>
-    public interface IUserAppService
+    public interface IUserAppService : IFilteredServiceBase<User, int>
     {
         /// <summary>
         /// Gets all option that I can see.
@@ -31,33 +31,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         Task<IEnumerable<OptionDto>> GetAllOptionsAsync(string filter = null);
 
         /// <summary>
-        /// Get the DTO list with paging and sorting.
-        /// </summary>
-        /// <param name="filters">The filters.</param>
-        /// <param name="id">The id.</param>
-        /// <param name="specification">Specification Used to filter query.</param>
-        /// <param name="filter">Filter Query.</param>
-        /// <param name="accessMode">The acces Mode (Read, Write delete, all ...). It take the corresponding filter.</param>
-        /// <param name="queryMode">The queryMode use to customize query (repository functions CustomizeQueryBefore and CustomizeQueryAfter).</param>
-        /// <param name="mapperMode">A string to adapt the mapper function DtoToEntity.</param>
-        /// <returns>The list of DTO.</returns>
-        Task<(IEnumerable<UserDto> Results, int Total)> GetRangeAsync(
-            PagingFilterFormatDto filters = null,
-            int id = 0,
-            Specification<User> specification = null,
-            Expression<Func<User, bool>> filter = null,
-            string accessMode = AccessMode.Read,
-            string queryMode = QueryMode.ReadList,
-            string mapperMode = null);
-
-        /// <summary>
-        /// Translate the roles in rights.
-        /// </summary>
-        /// <param name="roles">List of roles.</param>
-        /// <returns>Liste of rights.</returns>
-        List<string> TranslateRolesInPermissions(List<string> roles);
-
-        /// <summary>
         /// Get all roles for a user with its sid.
         /// </summary>
         /// <param name="sid">The user sid.</param>
@@ -65,11 +38,18 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         Task<List<string>> GetUserDirectoryRolesAsync(string sid);
 
         /// <summary>
-        /// Gets user info with its login.
+        /// Gets user info with its sid and create if not exist.
         /// </summary>
         /// <param name="sid">The sid to search with.</param>
         /// <returns>The user.</returns>
         Task<UserInfoDto> GetCreateUserInfoAsync(string sid);
+
+        /// <summary>
+        /// Gets user info with its sid.
+        /// </summary>
+        /// <param name="sid">The sid to search with.</param>
+        /// <returns>The user.</returns>
+        Task<UserInfoDto> GetUserInfoAsync(string sid);
 
         /// <summary>
         /// Gets the profile of the given user.
@@ -83,15 +63,16 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// </summary>
         /// <param name="filter">The filter.</param>
         /// <param name="ldapName">The name of the LDAP domain to search in.</param>
+        /// <param name="max">The max number of items to return.</param>
         /// <returns>The top 10 users found.</returns>
-        Task<IEnumerable<UserFromDirectoryDto>> GetAllADUserAsync(string filter, string ldapName = null);
+        Task<IEnumerable<UserFromDirectoryDto>> GetAllADUserAsync(string filter, string ldapName = null, int max = 10);
 
         /// <summary>
         /// Add a list of users in a group in AD.
         /// </summary>
         /// <param name="users">The list of users to add.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task<List<string>> AddInGroupAsync(IEnumerable<UserFromDirectoryDto> users);
+        Task<ResultAddUsersFromDirectoryDto> AddFromDirectory(IEnumerable<UserFromDirectoryDto> users);
 
         /// <summary>
         /// Remove a user in a group in AD.

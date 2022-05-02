@@ -19,9 +19,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
         /// <summary>
         /// Set the notification as read.
         /// </summary>
-        /// <param name="notification">The notification data transfer object.</param>
-        /// <returns>A task returning the updated data transfer object.</returns>
-        Task<NotificationDto> SetAsRead(NotificationDto notification);
+        /// <param name="id">The notification identifier.</param>
+        /// <returns>A task.</returns>
+        Task SetAsRead(int id);
 
         /// <summary>
         /// Return the list of unreadIds.

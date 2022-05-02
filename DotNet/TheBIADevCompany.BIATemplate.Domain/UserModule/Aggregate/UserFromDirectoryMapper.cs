@@ -5,7 +5,7 @@
 namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
 {
     using System;
-    using TheBIADevCompany.BIATemplate.Domain.Dto.User;
+    using BIA.Net.Core.Domain.Dto.User;
 
     /// <summary>
     /// The mapper used from directory for user from directory dto.

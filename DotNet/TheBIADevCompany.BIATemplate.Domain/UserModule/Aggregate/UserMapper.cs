@@ -5,8 +5,13 @@
 namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Linq.Expressions;
+    using BIA.Net.Core.Common;
     using BIA.Net.Core.Domain;
+    using BIA.Net.Core.Domain.Dto.Base;
+    using BIA.Net.Core.Domain.Dto.Option;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
 
     /// <summary>
@@ -35,8 +40,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
         /// <summary>
         /// Create a user DTO from an entity.
         /// </summary>
+        /// <param name="mapperMode">the mode for mapping.</param>
         /// <returns>The user DTO.</returns>
-        public override Expression<Func<User, UserDto>> EntityToDto()
+        public override Expression<Func<User, UserDto>> EntityToDto(string mapperMode)
         {
             return entity => new UserDto
             {
@@ -45,7 +51,42 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
                 FirstName = entity.FirstName,
                 Login = entity.Login,
                 Guid = entity.Guid,
+                Roles = entity.Roles.Select(ca => new OptionDto
+                {
+                    Id = ca.Id,
+                    Display = ca.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? ca.Label,
+                }).ToList(),
             };
+        }
+
+        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.DtoToEntity"/>
+        public override void DtoToEntity(UserDto dto, User entity, string mapperMode, IUnitOfWork context)
+        {
+            if (mapperMode == "Roles" && dto.Roles?.Any() == true)
+            {
+                foreach (var userRoleDto in dto.Roles.Where(x => x.DtoState == DtoState.Deleted))
+                {
+                    var userRole = entity.Roles.FirstOrDefault(x => x.Id == userRoleDto.Id);
+                    if (userRole != null)
+                    {
+                        entity.Roles.Remove(userRole);
+                    }
+                }
+
+                entity.Roles = entity.Roles ?? new List<Role>();
+                foreach (var userRoleDto in dto.Roles.Where(w => w.DtoState == DtoState.Added))
+                {
+                    Role role = new Role { Id = userRoleDto.Id };
+                    context.Attach(role); // requiered to map on Id (without get element before)
+                    entity.Roles.Add(role);
+                }
+            }
+        }
+
+        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.IncludesForUpdate"/>
+        public override Expression<Func<User, object>>[] IncludesForUpdate()
+        {
+            return new Expression<Func<User, object>>[] { x => x.Roles };
         }
     }
 }

@@ -22,13 +22,13 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories.QueryCus
             {
                 return objectSet.Include(view => view.ViewUsers);
             }
-            else if (queryMode == QueryCustomMode.ModeUpdateViewSites)
+            else if (queryMode == QueryCustomMode.ModeUpdateViewTeams)
             {
-                return objectSet.Include(view => view.ViewSites);
+                return objectSet.Include(view => view.ViewTeams);
             }
-            else if (queryMode == QueryCustomMode.ModeUpdateViewSitesAndUsers)
+            else if (queryMode == QueryCustomMode.ModeUpdateViewTeamsAndUsers)
             {
-                return objectSet.Include(view => view.ViewUsers).Include(view => view.ViewSites);
+                return objectSet.Include(view => view.ViewUsers).Include(view => view.ViewTeams);
             }
 
             return objectSet;

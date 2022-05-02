@@ -15,9 +15,9 @@ import { Permission } from 'src/app/shared/permission';
 import { KeyValuePair } from 'src/app/shared/bia-shared/model/key-value-pair';
 import { SiteAdvancedFilter } from '../../model/site/site-advanced-filter';
 import { ActivatedRoute, Router } from '@angular/router';
-import { loadAllByFilter } from 'src/app/domains/user-option/store/user-options-actions';
-import { getAllUserOptions } from 'src/app/domains/user-option/store/user-option.state';
+import { getAllUserOptions } from 'src/app/domains/bia-domains/user-option/store/user-option.state';
 import { OptionDto } from 'src/app/shared/bia-shared/model/option-dto';
+import { DomainUserOptionsActions } from 'src/app/domains/bia-domains/user-option/store/user-options-actions';
 
 interface SiteListVM {
   id: number;
@@ -89,7 +89,7 @@ export class SitesIndexComponent implements OnInit {
 
   onManageMember(siteId: number) {
     if (siteId && siteId > 0) {
-      this.router.navigate(['/sites', siteId, 'members']);
+      this.router.navigate(['sites', siteId, 'members']);
     }
   }
 
@@ -107,7 +107,7 @@ export class SitesIndexComponent implements OnInit {
   }
 
   onSearchUsers(value: string) {
-    this.store.dispatch(loadAllByFilter({ filter: value }));
+    this.store.dispatch(DomainUserOptionsActions.loadAllByFilter({ filter: value }));
   }
 
   onFilter(advancedFilter: SiteAdvancedFilter) {
@@ -173,7 +173,7 @@ export class SitesIndexComponent implements OnInit {
     this.canEdit = this.authService.hasPermission(Permission.Site_Update);
     this.canDelete = this.authService.hasPermission(Permission.Site_Delete);
     this.canAdd = this.authService.hasPermission(Permission.Site_Create);
-    this.canManageMembers = this.authService.hasPermission(Permission.Member_List_Access);
+    this.canManageMembers = this.authService.hasPermission(Permission.Site_Member_List_Access);
   }
 
   private initTableConfiguration() {

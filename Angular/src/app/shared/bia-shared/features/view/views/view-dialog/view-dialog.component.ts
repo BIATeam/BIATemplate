@@ -6,30 +6,28 @@ import { AppState } from 'src/app/store/state';
 import {
   removeUserView,
   addUserView,
-  addSiteView,
-  removeSiteView,
+  addTeamView,
+  removeTeamView,
   setDefaultUserView,
-  setDefaultSiteView,
+  setDefaultTeamView,
   closeViewDialog,
   updateUserView,
-  assignViewToSite,
-  updateSiteView
+  assignViewToTeam,
+  updateTeamView
 } from '../../store/views-actions';
 import { getAllViews, getDisplayViewDialog } from '../../store/view.state';
 import { map, tap } from 'rxjs/operators';
-import { ViewType } from 'src/app/shared/constants';
-import { SiteView } from '../../model/site-view';
+import { TeamTypeId, TeamTypeRightPrefixe, ViewType } from 'src/app/shared/constants';
+import { TeamView } from '../../model/team-view';
 import { DefaultView } from '../../model/default-view';
-import { SiteDefaultView } from '../../model/site-default-view';
+import { TeamDefaultView } from '../../model/team-default-view';
 import { Dialog } from 'primeng/dialog';
-import { Site } from 'src/app/domains/site/model/site';
-import { getAllSites } from 'src/app/domains/site/store/site.state';
-import { AssignViewToSite } from '../../model/assign-view-to-site';
+import { AssignViewToTeam } from '../../model/assign-view-to-team';
 import { AuthService } from 'src/app/core/bia-core/services/auth.service';
 import { Permission } from 'src/app/shared/permission';
-import { Confirmation, ConfirmationService } from 'primeng/api';
-import { BiaDialogService } from 'src/app/core/bia-core/services/bia-dialog.service';
-import { loadAllSites } from 'src/app/domains/site/store/sites-actions';
+import { ConfirmationService } from 'primeng/api';
+import { getAllTeams } from 'src/app/domains/bia-domains/team/store/team.state';
+import { Team } from 'src/app/domains/bia-domains/team/model/team';
 
 @Component({
   selector: 'bia-view-dialog',
@@ -40,39 +38,38 @@ import { loadAllSites } from 'src/app/domains/site/store/sites-actions';
 export class ViewDialogComponent implements OnInit, OnDestroy {
   display = false;
   @Input() tableStateKey: string;
+  @Input() useViewTeamWithTypeId: TeamTypeId | null;
   private sub = new Subscription();
 
-  sites$: Observable<Site[]>;
+  teams$: Observable<Team[]>;
   views$: Observable<View[]>;
-  viewSites$: Observable<View[]>;
+  viewTeams$: Observable<View[]>;
   viewUsers$: Observable<View[]>;
   userViewSelected: View;
-  siteViewSelected: View;
-  siteSelected: Site;
+  teamViewSelected: View;
+  teamSelected: Team;
 
-  canAddSiteView = false;
+  canAddTeamView = false;
   canAddUserView = false;
   canUpdateUserView = false;
-  canUpdateSiteView = false;
+  canUpdateTeamView = false;
+  canDeleteTeamView = false;
   canDeleteUserView = false;
-  canDeleteSiteView = false;
   canSetDefaultUserView = false;
-  canSetDefaultSiteView = false;
-  canAssignSiteView = false;
+  canSetDefaultTeamView = false;
+  canAssignTeamView = false;
 
   constructor(
     private store: Store<AppState>,
     private authService: AuthService,
-    private biaDialogService: BiaDialogService,
-    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit() {
     this.setPermissions();
     this.initDisplay();
-    this.initSites();
+    this.initTeams();
     this.initViews();
-    this.initViewSites();
+    this.initViewTeams();
     this.initViewUsers();
   }
 
@@ -90,12 +87,14 @@ export class ViewDialogComponent implements OnInit, OnDestroy {
       .pipe(map((views) => views.filter((view) => view.tableId === this.tableStateKey)));
   }
 
-  private initViewSites() {
-    this.viewSites$ = this.views$.pipe(map((views) => views.filter((view) => view.viewType === ViewType.Site)));
+  private initViewTeams() {
+    this.viewTeams$ = this.views$.pipe(map((views) => views.filter((view) => view.viewType === ViewType.Team)));
   }
 
   private initViewUsers() {
-    this.viewUsers$ = this.views$.pipe(map((views) => views.filter((view) => view.viewType === ViewType.User)));
+    let currentTeamId = (this.useViewTeamWithTypeId == null) ? -1 : this.authService.getCurrentTeamId(this.useViewTeamWithTypeId);
+    this.viewUsers$ = this.views$.pipe(map((views) => views.filter((view) => view.viewType === ViewType.User 
+    || (view.viewType === ViewType.Team && view.viewTeams.some(t => t.teamId == currentTeamId)))));
   }
 
   ngOnDestroy() {
@@ -104,25 +103,25 @@ export class ViewDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  initSites() {
-    this.sites$ = this.store.select(getAllSites).pipe(
-      map((sites) =>
-        sites.filter(
-          (site) => this.authService.getCurrentSiteId() < 1 || site.id === this.authService.getCurrentSiteId()
+  initTeams() {
+    let currentTeamId = (this.useViewTeamWithTypeId == null) ? -1 : this.authService.getCurrentTeamId(this.useViewTeamWithTypeId);
+    this.teams$ = this.store.select(getAllTeams).pipe(
+      map((teams) =>
+        teams.filter(
+          (team) => currentTeamId == team.id
         )
       ),
-      tap((sites) => {
-        if (sites.length === 1) {
-          this.siteSelected = sites[0];
+      tap((teams) => {
+        if (teams.length === 1) {
+          this.teamSelected = teams[0];
         }
       })
     );
-    this.store.dispatch(loadAllSites());
   }
 
   onClose() {
     this.userViewSelected = <View>{};
-    this.siteViewSelected = <View>{};
+    this.teamViewSelected = <View>{};
     this.store.dispatch(closeViewDialog());
   }
 
@@ -130,30 +129,18 @@ export class ViewDialogComponent implements OnInit, OnDestroy {
     dialog.maximize();
   }
 
-  onAssignViewToSite(dto: AssignViewToSite) {
-    this.store.dispatch(assignViewToSite(dto));
+  onAssignViewToTeam(dto: AssignViewToTeam) {
+    this.store.dispatch(assignViewToTeam(dto));
   }
 
   onDeleteUserView(viewId: number) {
-    const confirmation: Confirmation = {
-      ...this.biaDialogService.getDeleteConfirmation(),
-      accept: () => {
-        this.userViewSelected = <View>{};
-        this.store.dispatch(removeUserView({ id: viewId }));
-      }
-    };
-    this.confirmationService.confirm(confirmation);
+      this.userViewSelected = <View>{};
+      this.store.dispatch(removeUserView({ id: viewId }));
   }
 
-  onDeleteSiteView(viewId: number) {
-    const confirmation: Confirmation = {
-      ...this.biaDialogService.getDeleteConfirmation(),
-      accept: () => {
-        this.siteViewSelected = <View>{};
-        this.store.dispatch(removeSiteView({ id: viewId }));
-      }
-    };
-    this.confirmationService.confirm(confirmation);
+  onDeleteTeamView(viewId: number) {
+      this.teamViewSelected = <View>{};
+      this.store.dispatch(removeTeamView({ id: viewId }));
   }
 
   onSetDefaultUserView(event: { viewId: number; isDefault: boolean }) {
@@ -161,15 +148,15 @@ export class ViewDialogComponent implements OnInit, OnDestroy {
     this.store.dispatch(setDefaultUserView(defaultView));
   }
 
-  onSetDefaultSiteView(event: { viewId: number; isDefault: boolean }) {
-    if (this.siteSelected) {
-      const defaultView: SiteDefaultView = {
+  onSetDefaultTeamView(event: { viewId: number; isDefault: boolean }) {
+    if (this.teamSelected) {
+      const defaultView: TeamDefaultView = {
         id: event.viewId,
         isDefault: event.isDefault,
         tableId: this.tableStateKey,
-        siteId: this.siteSelected.id
+        teamId: this.teamSelected.id
       };
-      this.store.dispatch(setDefaultSiteView(defaultView));
+      this.store.dispatch(setDefaultTeamView(defaultView));
     }
   }
 
@@ -188,17 +175,17 @@ export class ViewDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSaveSiteView(view: SiteView) {
-    if (view && this.siteSelected) {
+  onSaveTeamView(view: TeamView) {
+    if (view && this.teamSelected) {
       const json = this.GetViewPreference();
       if (json) {
         view.preference = json;
         view.tableId = this.tableStateKey;
-        view.siteId = this.siteSelected.id;
+        view.teamId = this.teamSelected.id;
         if (view.id > 0) {
-          this.store.dispatch(updateSiteView(view));
+          this.store.dispatch(updateTeamView(view));
         } else {
-          this.store.dispatch(addSiteView(view));
+          this.store.dispatch(addTeamView(view));
         }
       }
     }
@@ -208,8 +195,8 @@ export class ViewDialogComponent implements OnInit, OnDestroy {
     this.userViewSelected = view;
   }
 
-  onSiteViewSelected(view: View) {
-    this.siteViewSelected = view;
+  onTeamViewSelected(view: View) {
+    this.teamViewSelected = view;
   }
 
   private GetViewPreference(): string | null {
@@ -229,25 +216,28 @@ export class ViewDialogComponent implements OnInit, OnDestroy {
     return this.canAddUserView || this.canDeleteUserView || this.canSetDefaultUserView || this.canUpdateUserView;
   }
 
-  canSetSiteView() {
+  canSetTeamView() {
     return (
-      this.canAddSiteView ||
-      this.canDeleteSiteView ||
-      this.canSetDefaultSiteView ||
-      this.canUpdateSiteView ||
-      this.canAssignSiteView
+      this.canAddTeamView ||
+      this.canSetDefaultTeamView ||
+      this.canUpdateTeamView ||
+      this.canAssignTeamView
     );
   }
 
   private setPermissions() {
-    this.canAddSiteView = this.authService.hasPermission(Permission.View_AddSiteView);
+    if (this.useViewTeamWithTypeId != null)
+    {
+      var teamTypeRightPrefixe = TeamTypeRightPrefixe.find(t => t.key == this.useViewTeamWithTypeId)?.value;
+      this.canAddTeamView = this.authService.hasPermission(teamTypeRightPrefixe + Permission.View_AddTeamViewSuffix);
+      this.canUpdateTeamView = this.authService.hasPermission(teamTypeRightPrefixe + Permission.View_UpdateTeamViewSuffix);
+      this.canSetDefaultTeamView = this.authService.hasPermission(teamTypeRightPrefixe + Permission.View_SetDefaultTeamViewSuffix);
+      this.canAssignTeamView = this.authService.hasPermission(teamTypeRightPrefixe + Permission.View_AssignToTeamSuffix);
+      this.canDeleteTeamView = this.authService.hasPermission(Permission.View_DeleteTeamView);
+    }
     this.canAddUserView = this.authService.hasPermission(Permission.View_AddUserView);
     this.canUpdateUserView = this.authService.hasPermission(Permission.View_UpdateUserView);
-    this.canUpdateSiteView = this.authService.hasPermission(Permission.View_UpdateSiteView);
     this.canDeleteUserView = this.authService.hasPermission(Permission.View_DeleteUserView);
-    this.canDeleteSiteView = this.authService.hasPermission(Permission.View_DeleteSiteView);
     this.canSetDefaultUserView = this.authService.hasPermission(Permission.View_SetDefaultUserView);
-    this.canSetDefaultSiteView = this.authService.hasPermission(Permission.View_SetDefaultSiteView);
-    this.canAssignSiteView = this.authService.hasPermission(Permission.View_AssignToSite);
   }
 }

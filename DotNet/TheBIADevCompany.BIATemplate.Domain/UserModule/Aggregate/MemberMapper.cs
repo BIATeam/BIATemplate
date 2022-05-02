@@ -12,6 +12,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
     using BIA.Net.Core.Domain.Authentication;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.Option;
+    using BIA.Net.Core.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
 
     /// <summary>
@@ -42,7 +43,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
             return entity => new MemberDto
             {
                 Id = entity.Id,
-                SiteId = entity.SiteId,
+                TeamId = entity.TeamId,
                 User = new OptionDto
                 {
                     Id = entity.User.Id,
@@ -56,7 +57,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
         public override void MapEntityKeysInDto(Member entity, MemberDto dto)
         {
             dto.Id = entity.Id;
-            dto.SiteId = entity.SiteId;
+            dto.TeamId = entity.TeamId;
         }
 
         /// <inheritdoc/>
@@ -68,7 +69,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
             }
 
             entity.Id = dto.Id;
-            entity.SiteId = dto.SiteId;
+            entity.TeamId = dto.TeamId;
             entity.UserId = dto.User.Id;
             foreach (var roleDto in dto.Roles.Where(w => w.DtoState == DtoState.Deleted))
             {

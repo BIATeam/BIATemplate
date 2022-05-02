@@ -16,7 +16,33 @@ export const TABLE_FILTER_GLOBAL = 'global|';
 
 export enum ViewType {
   System = 0,
-  Site = 1,
+  Team = 1,
   User = 2
 }
 
+export enum RoleMode {
+  /// <summary>
+  ///  All possible roles are selected
+  /// </summary>
+  AllRoles = 1,
+
+  /// <summary>
+  /// Only one role is selectable
+  /// </summary>
+  SingleRole = 2,
+
+  /// <summary>
+  /// Multi select Role
+  /// </summary>
+  MultiRoles = 3,
+}
+
+export enum TeamTypeId {
+  Root = 1,
+  Site = 2,
+}
+
+let TeamTypeRightPrefixe :{ key: TeamTypeId; value: string; }[] = [ 
+  {key: TeamTypeId.Site, value: "Site"},
+];
+export {TeamTypeRightPrefixe};

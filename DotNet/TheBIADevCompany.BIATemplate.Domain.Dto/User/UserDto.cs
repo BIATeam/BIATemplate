@@ -7,6 +7,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.Dto.User
     using System;
     using System.Collections.Generic;
     using BIA.Net.Core.Domain.Dto.Base;
+    using BIA.Net.Core.Domain.Dto.Option;
 
     /// <summary>
     /// The DTO used for user.
@@ -34,8 +35,8 @@ namespace TheBIADevCompany.BIATemplate.Domain.Dto.User
         public Guid Guid { get; set; }
 
         /// <summary>
-        /// Gets or sets the site ids associated to this user.
+        /// Gets or sets the roles.
         /// </summary>
-        public IEnumerable<int> SiteIds { get; set; }
+        public ICollection<OptionDto> Roles { get; set; }
     }
 }

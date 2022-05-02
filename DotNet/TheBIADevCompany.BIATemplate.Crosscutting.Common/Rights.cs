@@ -4,6 +4,9 @@
 
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
 {
+    using System.Collections.Generic;
+    using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
+
     /// <summary>
     /// The list of all rights.
     /// </summary>
@@ -39,42 +42,32 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The right to access to the list of members.
             /// </summary>
-            public const string ListAccess = "Member_List_Access";
+            public const string ListAccessSuffix = "_Member_List_Access";
 
             /// <summary>
             /// The right to create members.
             /// </summary>
-            public const string Create = "Member_Create";
+            public const string CreateSuffix = "_Member_Create";
 
             /// <summary>
             /// The right to read members.
             /// </summary>
-            public const string Read = "Member_Read";
+            public const string ReadSuffix = "_Member_Read";
 
             /// <summary>
             /// The right to update members.
             /// </summary>
-            public const string Update = "Member_Update";
+            public const string UpdateSuffix = "_Member_Update";
 
             /// <summary>
             /// The right to delete members.
             /// </summary>
-            public const string Delete = "Member_Delete";
+            public const string DeleteSuffix = "_Member_Delete";
 
             /// <summary>
             /// The right to save members.
             /// </summary>
-            public const string Save = "Member_Save";
-
-            /// <summary>
-            /// The right to set default site.
-            /// </summary>
-            public const string SetDefaultSite = "Member_Set_Default_Site";
-
-            /// <summary>
-            /// The right to set default role.
-            /// </summary>
-            public const string SetDefaultRole = "Member_Set_Default_Role";
+            public const string SaveSuffix = "_Member_Save";
         }
 
         /// <summary>
@@ -121,11 +114,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
         public static class Sites
         {
             /// <summary>
-            /// The right to access to all sites.
-            /// </summary>
-            public const string AccessAll = "Site_Access_All";
-
-            /// <summary>
             /// The right to access to the list of sites.
             /// </summary>
             public const string ListAccess = "Site_List_Access";
@@ -157,6 +145,32 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
         }
 
         /// <summary>
+        /// The sites rights.
+        /// </summary>
+        public static class Teams
+        {
+            /// <summary>
+            /// The right to access to all sites.
+            /// </summary>
+            public const string AccessAll = "Team_Access_All";
+
+            /// <summary>
+            /// The right to access to the list of sites.
+            /// </summary>
+            public const string ListAccess = "Team_List_Access";
+
+            /// <summary>
+            /// The right to set default site.
+            /// </summary>
+            public const string SetDefaultTeam = "Team_Set_Default_Team";
+
+            /// <summary>
+            /// The right to set default role.
+            /// </summary>
+            public const string SetDefaultRoles = "Team_Set_Default_Roles";
+        }
+
+        /// <summary>
         /// The users rights.
         /// </summary>
         public static class Users
@@ -182,6 +196,11 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             public const string ListAD = "User_ListAD";
 
             /// <summary>
+            /// The right to get the list of AD users.
+            /// </summary>
+            public const string Read = "User_Read";
+
+            /// <summary>
             /// The right to add users.
             /// </summary>
             public const string Add = "User_Add";
@@ -195,6 +214,11 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// The right to synchronize users.
             /// </summary>
             public const string Sync = "User_Sync";
+
+            /// <summary>
+            /// The right to add users.
+            /// </summary>
+            public const string UpdateRoles = "User_UpdateRoles";
         }
 
         /// <summary>
@@ -215,7 +239,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The right to add an site view.
             /// </summary>
-            public const string AddSiteView = "View_Add_SiteView";
+            public const string AddTeamViewSuffix = "_View_Add_TeamView";
 
             /// <summary>
             /// The right to update an user view.
@@ -225,7 +249,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The right to update an site view.
             /// </summary>
-            public const string UpdateSiteView = "View_Update_SiteView";
+            public const string UpdateTeamViewSuffix = "_View_Update_TeamView";
 
             /// <summary>
             /// The right to delete an user view.
@@ -235,7 +259,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The right to delete an site view.
             /// </summary>
-            public const string DeleteSiteView = "View_Delete_SiteView";
+            public const string DeleteTeamView = "View_Delete_TeamView";
 
             /// <summary>
             /// The right to set default user view.
@@ -245,12 +269,12 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The right to set default site view.
             /// </summary>
-            public const string SetDefaultSiteView = "View_Set_Default_SiteView";
+            public const string SetDefaultTeamViewSuffix = "_View_Set_Default_TeamView";
 
             /// <summary>
             /// The right to assign view to a site.
             /// </summary>
-            public const string AssignToSite = "View_Assign_To_Site";
+            public const string AssignToTeamSuffix = "_View_Assign_To_Team";
         }
 
         /// <summary>
@@ -292,7 +316,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The right to access to the list of notifications types (options only).
             /// </summary>
-            public const string Options = "NotifiactionType_Options";
+            public const string Options = "NotificationType_Options";
         }
     }
 }

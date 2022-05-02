@@ -68,13 +68,15 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <param name="configuration">The configuration of the BiaNet section.</param>
         /// <param name="userDirectoryHelper">The user directory helper.</param>
         /// <param name="logger">The logger.</param>
+        /// <param name="userContext">The user context.</param>
         public UserAppService(
             ITGenericRepository<User, int> repository,
             IUserPermissionDomainService userPermissionDomainService,
             IUserSynchronizeDomainService userSynchronizeDomainService,
             IOptions<BiaNetSection> configuration,
             IUserDirectoryRepository<UserFromDirectory> userDirectoryHelper,
-            ILogger<UserAppService> logger)
+            ILogger<UserAppService> logger,
+            UserContext userContext)
             : base(repository)
         {
             this.userPermissionDomainService = userPermissionDomainService;
@@ -82,6 +84,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             this.configuration = configuration.Value;
             this.userDirectoryHelper = userDirectoryHelper;
             this.logger = logger;
+            this.userContext = userContext;
 
             this.filtersContext.Add(AccessMode.Read, new DirectSpecification<User>(u => u.IsActive));
         }
@@ -98,36 +101,16 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             return this.GetAllAsync<OptionDto, UserOptionMapper>(specification: specification, queryOrder: new QueryOrder<User>().OrderBy(o => o.LastName).ThenBy(o => o.FirstName));
         }
 
-        /// <inheritdoc cref="ICrudAppServiceBase{TDto,TFilterDto}.GetRangeAsync"/>
-        public async Task<(IEnumerable<UserDto> Results, int Total)> GetRangeAsync(
-            PagingFilterFormatDto filters = null,
-            int id = 0,
-            Specification<User> specification = null,
-            Expression<Func<User, bool>> filter = null,
-            string accessMode = AccessMode.Read,
-            string queryMode = QueryMode.ReadList,
-            string mapperMode = null)
-        {
-            return await this.GetRangeAsync<UserDto, UserMapper, PagingFilterFormatDto>(filters: filters, id: id, specification: specification, filter: filter, accessMode: accessMode, queryMode: queryMode, mapperMode: mapperMode);
-        }
-
         /// <inheritdoc cref="IUserPermissionDomainService.GetPermissionsForUserAsync"/>
         public async Task<List<string>> GetUserDirectoryRolesAsync(string sid)
         {
             return await this.userDirectoryHelper.GetUserRolesBySid(sid);
         }
 
-        /// <inheritdoc cref="IUserAppService.TranslateRolesInPermissions"/>
-        public List<string> TranslateRolesInPermissions(List<string> roles)
-        {
-            return this.userPermissionDomainService.TranslateRolesInPermissions(roles);
-        }
-
         /// <inheritdoc cref="IUserAppService.GetCreateUserInfoAsync"/>
         public async Task<UserInfoDto> GetCreateUserInfoAsync(string sid)
         {
-            var userInfo =
-                await this.Repository.GetResultAsync(UserSelectBuilder.SelectUserInfo(), filter: user => user.Sid == sid);
+            UserInfoDto userInfo = await this.GetUserInfoAsync(sid);
 
             if (userInfo != null)
             {
@@ -158,6 +141,12 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             }
 
             return userInfo;
+        }
+
+        /// <inheritdoc cref="IUserAppService.GetUserInfoAsync"/>
+        public async Task<UserInfoDto> GetUserInfoAsync(string sid)
+        {
+            return await this.Repository.GetResultAsync(UserSelectBuilder.SelectUserInfo(), filter: user => user.Sid == sid);
         }
 
         /// <inheritdoc cref="IUserAppService.GetUserProfileAsync"/>
@@ -199,50 +188,71 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         }
 
         /// <inheritdoc cref="IUserAppService.GetAllADUserAsync"/>
-        public async Task<IEnumerable<UserFromDirectoryDto>> GetAllADUserAsync(string filter, string ldapName = null)
+        public async Task<IEnumerable<UserFromDirectoryDto>> GetAllADUserAsync(string filter, string ldapName = null, int max = 10)
         {
-            return await Task.FromResult(this.userDirectoryHelper.SearchUsers(filter, ldapName).OrderBy(o => o.LastName).ThenBy(o => o.FirstName)
+            return await Task.FromResult(this.userDirectoryHelper.SearchUsers(filter, ldapName, max).OrderBy(o => o.LastName).ThenBy(o => o.FirstName)
                 .Select(UserFromDirectoryMapper.EntityToDto())
                 .ToList());
         }
 
-        /// <inheritdoc cref="IUserAppService.AddInGroupAsync"/>
-        public async Task<List<string>> AddInGroupAsync(IEnumerable<UserFromDirectoryDto> users)
+        /// <inheritdoc cref="IUserAppService.AddFromDirectory"/>
+        public async Task<ResultAddUsersFromDirectoryDto> AddFromDirectory(IEnumerable<UserFromDirectoryDto> users)
         {
+            ResultAddUsersFromDirectoryDto result = new ResultAddUsersFromDirectoryDto();
+            result.UsersAddedDtos = new List<OptionDto>();
+            result.Errors = new List<string>();
             var ldapGroups = this.userDirectoryHelper.GetLdapGroupsForRole("User");
-            List<string> errors = new List<string>();
+            result.Errors = new List<string>();
             if (ldapGroups != null && ldapGroups.Count > 0)
             {
-                errors = await this.userDirectoryHelper.AddUsersInGroup(users.Select(UserFromDirectoryMapper.DtoToEntity()).ToList(), "User");
+                result.Errors = await this.userDirectoryHelper.AddUsersInGroup(users.Select(UserFromDirectoryMapper.DtoToEntity()).ToList(), "User");
                 try
                 {
                     await this.SynchronizeWithADAsync();
+                    List<string> usersSid = users.Select(u => u.Sid).ToList();
+                    result.UsersAddedDtos = (await this.Repository.GetAllEntityAsync(filter: x => usersSid.Contains(x.Sid))).Select(entity => new OptionDto
+                    {
+                        Id = entity.Id,
+                        Display = entity.FirstName + " " + entity.LastName + " (" + entity.Login + ")",
+                    }).ToList();
                 }
                 catch (Exception)
                 {
-                    errors.Add("Error during synchronize. Retry Synchronize.");
+                    result.Errors.Add("Error during synchronize. Retry Synchronize.");
                 }
             }
             else
             {
+                List<User> usersAdded = new List<User>();
                 foreach (var userFormDirectoryDto in users)
                 {
                     try
                     {
                         var foundUser = (await this.Repository.GetAllEntityAsync(filter: x => x.Sid == userFormDirectoryDto.Sid)).FirstOrDefault();
 
-                        await this.userSynchronizeDomainService.AddOrActiveUserFromAD(userFormDirectoryDto.Sid, foundUser);
+                        var addedUser = await this.userSynchronizeDomainService.AddOrActiveUserFromDirectory(userFormDirectoryDto.Sid, foundUser);
+
+                        if (addedUser != null)
+                        {
+                            usersAdded.Add(addedUser);
+                        }
 
                         await this.Repository.UnitOfWork.CommitAsync();
                     }
                     catch (Exception)
                     {
-                        errors.Add(userFormDirectoryDto.Domain + "\\" + userFormDirectoryDto.Login);
+                        result.Errors.Add(userFormDirectoryDto.Domain + "\\" + userFormDirectoryDto.Login);
                     }
                 }
+
+                result.UsersAddedDtos = usersAdded.Select(entity => new OptionDto
+                {
+                    Id = entity.Id,
+                    Display = entity.FirstName + " " + entity.LastName + " (" + entity.Login + ")",
+                }).ToList();
             }
 
-            return errors;
+            return result;
         }
 
         /// <inheritdoc cref="IUserAppService.RemoveInGroupAsync"/>
@@ -259,7 +269,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
 
                 List<IUserFromDirectory> notRemovedUser = await this.userDirectoryHelper.RemoveUsersInGroup(new List<IUserFromDirectory>() { new UserFromDirectory() { Guid = user.Guid, Login = user.Login } }, "User");
 
-                await this.SynchronizeWithADAsync();
                 try
                 {
                     await this.SynchronizeWithADAsync();
@@ -297,7 +306,8 @@ namespace TheBIADevCompany.BIATemplate.Application.User
                 User entity = await this.Repository.GetEntityAsync(id: userId, queryMode: "NoInclude");
                 entity.LastLoginDate = DateTime.Now;
                 entity.IsActive = true;
-                this.Repository.Update(entity);
+
+                // this.Repository.Update(entity)
                 await this.Repository.UnitOfWork.CommitAsync();
             }
         }
@@ -326,13 +336,14 @@ namespace TheBIADevCompany.BIATemplate.Application.User
                 SortOrder = filters.SortOrder,
             };
 
-            var query = await this.GetRangeAsync(filters: queryFilter);
+            var query = await this.GetRangeAsync<UserDto, UserMapper, PagingFilterFormatDto>(filters: queryFilter);
 
-            List<object[]> records = query.Results.Select(user => new object[]
+            List<object[]> records = query.results.Select(user => new object[]
             {
                 user.LastName,
                 user.FirstName,
                 user.Login,
+                string.Join("|", user.Roles.Select(r => r.Display)),
             }).ToList();
 
             List<string> columnHeaders = null;

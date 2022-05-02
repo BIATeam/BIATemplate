@@ -4,10 +4,11 @@ import { Subscription, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { isDevMode } from '@angular/core';
-import { NotificationSignalRService } from 'src/app/domains/notification/services/notification-signalr.service';
-import { loadDomainAppSettings } from 'src/app/domains/bia-domains/app-settings/store/app-settings-actions';
+import { NotificationSignalRService } from 'src/app/domains/bia-domains/notification/services/notification-signalr.service';
+import { DomainAppSettingsActions } from 'src/app/domains/bia-domains/app-settings/store/app-settings-actions';
 import { AppState } from 'src/app/store/state';
 import { Store } from '@ngrx/store';
+import { allEnvironments } from 'src/environments/all-environments';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +38,9 @@ export class BiaAppInitService implements OnDestroy {
         )
         .subscribe(() => {
           // Load app settings:
-          this.store.dispatch(loadDomainAppSettings());
+          this.store.dispatch(DomainAppSettingsActions.loadAll());
 
-          if (environment.enableNotifications === true) {
+          if (allEnvironments.enableNotifications === true) {
             this.notificationSignalRService.initialize();
           }
 
@@ -53,7 +54,7 @@ export class BiaAppInitService implements OnDestroy {
       this.sub.unsubscribe();
     }
 
-    if (environment.enableNotifications === true) {
+    if (allEnvironments.enableNotifications === true) {
       this.notificationSignalRService.destroy();
     }
   }

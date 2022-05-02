@@ -41,7 +41,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
         public async Task SynchronizeFromADGroupAsync(bool fullSynchro = false)
         {
             List<User> users = (await this.repository.GetAllEntityAsync()).ToList();
-            List<string> usersSidInDirectory = (await this.userDirectoryHelper.GetAllUsersSidInRoleToSync("User")).ToList();
+            List<string> usersSidInDirectory = (await this.userDirectoryHelper.GetAllUsersSidInRoleToSync("User"))?.ToList();
 
             if (usersSidInDirectory != null)
             {
@@ -55,7 +55,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
                         if (domain != null)
                         {
                             user.Domain = domain;
-                            this.repository.Update(user);
                         }
                     }
 
@@ -66,7 +65,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
                         if (sid != null)
                         {
                             user.Sid = sid;
-                            this.repository.Update(user);
                         }
                     }
 
@@ -87,7 +85,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
                 {
                     var foundUser = users.FirstOrDefault(a => a.Sid == sid);
 
-                    await this.AddOrActiveUserFromAD(sid, foundUser);
+                    await this.AddOrActiveUserFromDirectory(sid, foundUser);
                 }
 
                 await this.repository.UnitOfWork.CommitAsync();
@@ -101,7 +99,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
         public void DeactivateUser(User user)
         {
             user.IsActive = false;
-            this.repository.Update(user);
         }
 
         /// <summary>
@@ -110,7 +107,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
         /// <param name="sid">the sid in Directory.</param>
         /// <param name="foundUser">the User if exist in repository.</param>
         /// <returns>The async task.</returns>
-        public async Task AddOrActiveUserFromAD(string sid, User foundUser)
+        public async Task<User> AddOrActiveUserFromDirectory(string sid, User foundUser)
         {
             if (foundUser == null)
             {
@@ -121,13 +118,15 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
                     User user = new User();
                     UserFromDirectory.UpdateUserFieldFromDirectory(user, userFormDirectory);
                     this.repository.Add(user);
+                    return user;
                 }
             }
             else if (!foundUser.IsActive)
             {
                 foundUser.IsActive = true;
-                this.repository.Update(foundUser);
             }
+
+            return foundUser;
         }
 
         private async Task ResynchronizeUser(User user)
@@ -138,7 +137,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
                 if (userFormDirectory != null)
                 {
                     UserFromDirectory.UpdateUserFieldFromDirectory(user, userFormDirectory);
-                    this.repository.Update(user);
                 }
             }
         }

@@ -1,18 +1,16 @@
 import { Component, HostBinding, Inject, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { APP_SUPPORTED_TRANSLATIONS } from '../../../constants';
-import { AuthInfo, UserData } from '../../model/auth-info';
+import { AuthInfo } from '../../model/auth-info';
 import { AuthService } from 'src/app/core/bia-core/services/auth.service';
 import { BiaThemeService } from 'src/app/core/bia-core/services/bia-theme.service';
 import { NavigationService } from 'src/app/core/bia-core/services/navigation.service';
 import { BiaTranslationService } from 'src/app/core/bia-core/services/bia-translation.service';
 import { BiaNavigation } from '../../model/bia-navigation';
 import { NAVIGATION } from 'src/app/shared/navigation';
-import { Store } from '@ngrx/store';
-import { AppState } from '../../../../store/state';
-import { setDefaultRole, setDefaultSite } from 'src/app/domains/site/store/sites-actions';
 import { getLocaleId } from 'src/app/app.module';
 import { APP_BASE_HREF } from '@angular/common';
+import { allEnvironments } from 'src/environments/all-environments';
 
 @Component({
   selector: 'bia-layout',
@@ -29,12 +27,7 @@ import { APP_BASE_HREF } from '@angular/common';
       [helpUrl]="helpUrl"
       [reportUrl]="reportUrl"
       [enableNotifications]="enableNotifications"
-      [userData]="userData"
       [companyName]="companyName"
-      (siteChange)="onSiteChange($event)"
-      (roleChange)="onRoleChange($event)"
-      (setDefaultSite)="onSetDefaultSite($event)"
-      (setDefaultRole)="onSetDefaultRole($event)"
       class="p-input-filled"
     >
       <router-outlet></router-outlet>
@@ -46,24 +39,22 @@ export class LayoutComponent implements OnInit {
   isLoadingUserInfo = false;
 
   menus = new Array<BiaNavigation>();
-  version = environment.version;
-  appTitle = environment.appTitle;
-  companyName = environment.companyName;
+  version = allEnvironments.version;
+  appTitle = allEnvironments.appTitle;
+  companyName = allEnvironments.companyName;
   helpUrl = environment.helpUrl;
   reportUrl = environment.reportUrl;
-  enableNotifications = environment.enableNotifications;
+  enableNotifications = allEnvironments.enableNotifications;
   username = '';
   headerLogos: string[];
   footerLogo = 'assets/bia/Footer.png';
   supportedLangs = APP_SUPPORTED_TRANSLATIONS;
-  userData: UserData | null;
 
   constructor(
     public biaTranslationService: BiaTranslationService,
     private navigationService: NavigationService,
     private authService: AuthService,
     private biaThemeService: BiaThemeService,
-    private store: Store<AppState>,
     // private notificationSignalRService: NotificationSignalRService,
     @Inject(APP_BASE_HREF) public baseHref: string
   ) { }
@@ -75,24 +66,6 @@ export class LayoutComponent implements OnInit {
     }
     this.setAllParamByUserInfo();
     this.initHeaderLogos();
-  }
-
-  onSiteChange(siteId: number) {
-    this.authService.setCurrentSiteId(siteId);
-    location.assign(this.baseHref);
-  }
-
-  onRoleChange(roleId: number) {
-    this.authService.setCurrentRoleId(roleId);
-    location.assign(this.baseHref);
-  }
-
-  onSetDefaultSite(siteId: number) {
-    this.store.dispatch(setDefaultSite({ id: siteId }));
-  }
-
-  onSetDefaultRole(roleId: number) {
-    this.store.dispatch(setDefaultRole({ id: roleId, siteId: this.authService.getCurrentSiteId() }));
   }
 
   private initHeaderLogos() {
@@ -114,21 +87,12 @@ export class LayoutComponent implements OnInit {
     this.authService.authInfo$.subscribe((authInfo: AuthInfo | null) => {
       if (authInfo) {
         this.setLanguage(authInfo);
-        this.setUserData(authInfo);
         this.setUserName(authInfo);
         this.filterNavByRole(authInfo);
         this.setTheme(authInfo);
       }
       this.isLoadingUserInfo = false;
     });
-  }
-
-  private setUserData(authInfo: AuthInfo) {
-    if (authInfo && authInfo.additionalInfos && authInfo.additionalInfos.userData) {
-      this.userData = authInfo.additionalInfos.userData;
-    } else {
-      this.userData = null;
-    }
   }
 
   private setUserName(authInfo: AuthInfo) {

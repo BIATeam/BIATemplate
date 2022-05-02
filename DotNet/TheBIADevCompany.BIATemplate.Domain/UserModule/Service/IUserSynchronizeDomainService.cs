@@ -15,17 +15,17 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
         /// <summary>
         /// Synchronize the users in DB from the AD User group.
         /// </summary>
-        /// <param name="fullSynchro">If true resynchronize existing user</param>
+        /// <param name="fullSynchro">If true resynchronize existing user.</param>
         /// <returns>The result of the task.</returns>
         Task SynchronizeFromADGroupAsync(bool fullSynchro = false);
 
         /// <summary>
-        /// Add or active User from AD
+        /// Add or active User from AD.
         /// </summary>
         /// <param name="sid">the sid in Directory.</param>
         /// <param name="foundUser">the User if exist in repository.</param>
         /// <returns>The async task.</returns>
-        Task AddOrActiveUserFromAD(string sid, User foundUser);
+        Task<User> AddOrActiveUserFromDirectory(string sid, User foundUser);
 
         /// <summary>
         /// Deactivaye a user.

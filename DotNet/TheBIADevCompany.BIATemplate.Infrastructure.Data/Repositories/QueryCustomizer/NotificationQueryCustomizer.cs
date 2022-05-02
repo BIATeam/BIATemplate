@@ -1,5 +1,5 @@
-// <copyright file="NotificationQueryCustomizer.cs" company="Safran">
-//     Copyright (c) Safran. All rights reserved.
+// <copyright file="NotificationQueryCustomizer.cs" company="TheBIADevCompany">
+//     Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories.QueryCustomizer
@@ -21,7 +21,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories.QueryCus
             if (queryMode == QueryMode.Update)
             {
                 return objectSet
-                    .Include(n => n.NotifiedPermissions).ThenInclude(n => n.Permission)
+                    .Include(n => n.NotifiedTeams).ThenInclude(nt => nt.Roles)
                     .Include(n => n.NotifiedUsers)
                     .Include(n => n.NotificationTranslations);
             }

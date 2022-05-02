@@ -12,4 +12,24 @@ export const NAVIGATION: BiaNavigation[] = [
     permissions: [Permission.Site_List_Access],
     path: ['/sites']
   },
+  {
+    labelKey: 'bia.administration',
+    permissions: [
+      Permission.Background_Task_Admin,
+      Permission.Background_Task_Read_Only,
+    ],
+    children: [
+      {
+        labelKey: 'bia.backgroundTaskAdmin',
+        permissions: [Permission.Background_Task_Admin],
+        path: ['/backgroundtask/admin']
+      },
+      {
+        labelKey: 'bia.backgroundTaskReadOnly',
+        permissions: [Permission.Background_Task_Read_Only],
+        path: ['/backgroundtask/readonly']
+      },
+    ]
+  },
+
 ];

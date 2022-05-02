@@ -5,8 +5,8 @@
 namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
 {
     using System;
-    using System.Linq;
     using System.Linq.Expressions;
+    using BIA.Net.Core.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
 
     /// <summary>
@@ -27,7 +27,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
                 Login = user.Login,
                 LastName = user.LastName,
                 Guid = user.Guid,
-                SiteIds = user.Members.Select(s => s.SiteId),
             };
         }
 

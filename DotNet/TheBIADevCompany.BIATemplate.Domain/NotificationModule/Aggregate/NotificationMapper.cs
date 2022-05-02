@@ -37,10 +37,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
                     { "Type", notification => notification.Type.NotificationTypeTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? notification.Type.Label },
                     { "Read", notification => notification.Read },
                     { "CreatedBy", notification => notification.CreatedBy.FirstName + notification.CreatedBy.LastName + " (" + notification.CreatedBy.Login + ")" },
-                    {
-                        "NotifiedPermissions", notification => notification.NotifiedPermissions.Select(x =>
-                        x.Permission.PermissionTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? x.Permission.Label).OrderBy(x => x)
-                    },
+                    { "NotifiedTeams", notification => notification.NotifiedTeams.Select(x => x.Team.Title) },
                     { "NotifiedUsers", notification => notification.NotifiedUsers.Select(x => x.User.FirstName + " " + x.User.LastName + " (" + x.User.Login + ")").OrderBy(x => x) },
                 };
             }
@@ -63,11 +60,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
             entity.TypeId = dto.Type.Id;
             entity.JData = dto.JData;
 
-            if (dto.SiteId != 0)
-            {
-                entity.SiteId = dto.SiteId;
-            }
-
             // Mapping relationship *-* : ICollection<OptionDto> NotifiedUsers
             if (dto.NotifiedUsers?.Any() == true)
             {
@@ -88,23 +80,31 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
                 }
             }
 
-            // Mapping relationship *-* : ICollection<OptionDto> NotifiedPermissions
-            if (dto.NotifiedPermissions?.Any() == true)
+            // Mapping relationship *-* : ICollection<OptionDto> NotifiedTeams
+            if (dto.NotifiedTeams?.Any() == true)
             {
-                foreach (var roleDto in dto.NotifiedPermissions.Where(x => x.DtoState == DtoState.Deleted))
+                foreach (var teamDto in dto.NotifiedTeams.Where(x => x.DtoState == DtoState.Deleted))
                 {
-                    var connectingAirport = entity.NotifiedPermissions.FirstOrDefault(x => x.PermissionId == roleDto.Id && x.NotificationId == dto.Id);
-                    if (connectingAirport != null)
+                    var notifiedTeams = entity.NotifiedTeams.FirstOrDefault(x => x.TeamId == teamDto.Id && x.NotificationId == dto.Id);
+                    if (notifiedTeams != null)
                     {
-                        entity.NotifiedPermissions.Remove(connectingAirport);
+                        entity.NotifiedTeams.Remove(notifiedTeams);
                     }
                 }
 
-                entity.NotifiedPermissions = entity.NotifiedPermissions ?? new List<NotificationPermission>();
-                foreach (var roleDto in dto.NotifiedPermissions.Where(w => w.DtoState == DtoState.Added))
+                entity.NotifiedTeams = entity.NotifiedTeams ?? new List<NotificationTeam>();
+                foreach (var teamDto in dto.NotifiedTeams.Where(w => w.DtoState == DtoState.Added))
                 {
-                    entity.NotifiedPermissions.Add(new NotificationPermission
-                    { PermissionId = roleDto.Id, NotificationId = dto.Id });
+                    entity.NotifiedTeams.Add(new NotificationTeam
+                    {
+                        TeamId = teamDto.Id,
+                        NotificationId = dto.Id,
+                        Roles = teamDto.Roles != null ? teamDto.Roles.Select(role => new NotificationTeamRole
+                        {
+                            NotificationTeamId = teamDto.Id,
+                            RoleId = role.Id,
+                        }).ToList() : null,
+                    });
                 }
             }
 
@@ -170,12 +170,16 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
 
                     JData = entity.JData,
 
-                    SiteId = entity.SiteId,
-
-                    NotifiedPermissions = entity.NotifiedPermissions.Select(np => new OptionDto
+                    NotifiedTeams = entity.NotifiedTeams.Select(nt => new NotificationTeamDto
                     {
-                        Id = np.Permission.Id,
-                        Display = np.Permission.PermissionTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? np.Permission.Label,
+                        Id = nt.TeamId,
+                        TypeId = nt.Team.TeamTypeId,
+                        Display = nt.Team.Title,
+                        Roles = nt.Roles != null ? nt.Roles.Select(ntr => new OptionDto
+                        {
+                            Id = ntr.RoleId,
+                            Display = ntr.Role.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Type.Label,
+                        }).ToList() : null,
                     }).ToList(),
 
                     NotifiedUsers = entity.NotifiedUsers.Select(nu => new OptionDto
@@ -222,12 +226,16 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
 
                     JData = entity.JData,
 
-                    SiteId = entity.SiteId,
-
-                    NotifiedPermissions = entity.NotifiedPermissions.Select(np => new OptionDto
+                    NotifiedTeams = entity.NotifiedTeams.Select(nt => new NotificationTeamDto
                     {
-                        Id = np.Permission.Id,
-                        Display = np.Permission.PermissionTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? np.Permission.Label,
+                        Id = nt.TeamId,
+                        TypeId = nt.Team.TeamTypeId,
+                        Display = nt.Team.Title,
+                        Roles = nt.Roles != null ? nt.Roles.Select(ntr => new OptionDto
+                        {
+                            Id = ntr.RoleId,
+                            Display = ntr.Role.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Type.Label,
+                        }).ToList() : null,
                     }).ToList(),
 
                     NotifiedUsers = entity.NotifiedUsers.Select(nu => new OptionDto
@@ -243,11 +251,14 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
         public override void MapEntityKeysInDto(Notification entity, NotificationDto dto)
         {
             dto.Id = entity.Id;
-            dto.SiteId = entity.SiteId;
-            dto.NotifiedPermissions = entity.NotifiedPermissions?.Select(nr => new OptionDto
+
+            dto.NotifiedTeams = entity.NotifiedTeams?.Select(nt => new NotificationTeamDto
             {
-                Id = nr.PermissionId,
-                Display = nr.Permission?.Code,
+                Id = nt.TeamId,
+                Roles = nt.Roles != null ? nt.Roles.Select(ntr => new OptionDto
+                {
+                    Id = ntr.RoleId,
+                }).ToList() : null,
             }).ToList();
 
             dto.NotifiedUsers = entity.NotifiedUsers?.Select(nu => new OptionDto
@@ -259,11 +270,8 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
         /// <inheritdoc/>
         public override Expression<Func<Notification, object>>[] IncludesBeforeDelete()
         {
-            return new Expression<Func<Notification, object>>[] { x => x.NotifiedPermissions, x => x.NotifiedUsers };
+            return new Expression<Func<Notification, object>>[] { x => x.NotifiedTeams, x => x.NotifiedUsers };
         }
-
-        // IncludesForUpdate done with the Query customizer because ...Select(..) not managed in .Net Core => it could be rechalenge with EF 6:
-        // x => x.NotifiedPermissions, x => x.NotifiedPermissions.Select(y => y.Permission), x => x.NotifiedUsers
 
         /// <inheritdoc cref="BaseMapper{TDto,TEntity}.DtoToRecord"/>
         public override Func<NotificationDto, object[]> DtoToRecord()
@@ -276,7 +284,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
                 x.Read ? "X" : string.Empty,
                 x.CreatedDate.ToString("yyyy-MM-dd"),
                 CSVString(x.CreatedBy?.Display),
-                CSVString(string.Join(" - ", x.NotifiedPermissions?.Select(ca => ca.Display).ToList())),
+                CSVString(string.Join(" - ", x.NotifiedTeams?.Select(ca => ca.Display).ToList())),
                 CSVString(string.Join(" - ", x.NotifiedUsers?.Select(ca => ca.Display).ToList())),
                 CSVString(x.JData),
             });

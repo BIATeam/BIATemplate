@@ -5,11 +5,18 @@
 namespace TheBIADevCompany.BIATemplate.WorkerService
 {
     using System;
+    using System.Collections.Generic;
     using System.Security.Principal;
+    using BIA.Net.Core.Common.Configuration;
+    using BIA.Net.Core.Common.Configuration.CommonFeature;
+    using BIA.Net.Core.Common.Configuration.WorkerFeature;
     using BIA.Net.Core.Domain.Authentication;
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Domain.Service;
+    using BIA.Net.Core.Presentation.Common.Authentication;
     using BIA.Net.Core.WorkerService.Features;
+    using BIA.Net.Core.WorkerService.Features.DataBaseHandler;
+    using BIA.Net.Core.WorkerService.Features.HangfireServer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.CookiePolicy;
     using Microsoft.AspNetCore.Hosting;
@@ -17,8 +24,10 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Ioc;
+    using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features;
     using TheBIADevCompany.BIATemplate.WorkerService.Features;
 
     /// <summary>
@@ -30,6 +39,11 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
         /// The configuration.
         /// </summary>
         private readonly IConfiguration configuration;
+
+        /// <summary>
+        /// The configuration.
+        /// </summary>
+        private readonly BiaNetSection biaNetSection;
 
         /// <summary>
         /// The current environment.
@@ -45,6 +59,8 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
         {
             this.currentEnvironment = env;
             this.configuration = configuration;
+            this.biaNetSection = new BiaNetSection();
+            this.configuration.GetSection("BiaNet").Bind(this.biaNetSection);
         }
 
         /// <summary>
@@ -75,6 +91,19 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
             services.AddTransient<IPrincipal>(provider => new BIAClaimsPrincipal() { });
             services.AddTransient<UserContext>(provider => new UserContext("en-GB"));
 
+            services.Configure<ClientForHubConfiguration>(
+                this.configuration.GetSection("BiaNet:WorkerFeatures:ClientForHub"));
+
+            services.AddBiaWorkerFeatures(
+                this.biaNetSection.WorkerFeatures,
+                this.configuration,
+                new List<DatabaseHandlerRepository>()
+                    {
+                        // Add here all the Handler repository.
+                    });
+
+            services.AddHostedService<Worker>();
+
             // Configure IoC for classes not in the API project.
             IocContainer.ConfigureContainer(services, this.configuration);
         }
@@ -84,8 +113,8 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The environment.</param>
-        /// <param name="userAppService">The user app service.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IUserAppService userAppService)
+        /// <param name="jwtFactory">The jwt Factory.</param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IJwtFactory jwtFactory)
         {
             if (!env.IsDevelopment())
             {
@@ -98,12 +127,11 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseBiaWorkerFeatures(config =>
-            {
-                config.Configuration = this.configuration;
-                config.HangfireServer.Authorization = new[] { new HangfireAuthorizationFilter(userAppService, false, "Hangfire_Dashboard_Admin") };
-                config.HangfireServer.AuthorizationReadOnly = new[] { new HangfireAuthorizationFilter(userAppService, true, "Hangfire_Dashboard_ReadOnly") };
-            });
+            HangfireServerAuthorizations hangfireServerAuthorizations = new ();
+            hangfireServerAuthorizations.Authorization = new[] { new HangfireAuthorizationFilter(false, "Background_Task_Admin", this.biaNetSection.Jwt.SecretKey, jwtFactory) };
+            hangfireServerAuthorizations.AuthorizationReadOnly = new[] { new HangfireAuthorizationFilter(true, "Background_Task_Read_Only", this.biaNetSection.Jwt.SecretKey, jwtFactory) };
+
+            app.UseBiaWorkerFeatures<AuditFeature>(this.biaNetSection.WorkerFeatures, hangfireServerAuthorizations);
         }
     }
 }

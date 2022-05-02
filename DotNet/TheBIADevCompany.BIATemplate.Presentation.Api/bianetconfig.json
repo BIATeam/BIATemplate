@@ -14,6 +14,10 @@
       },
       "ClientForHub": {
         "IsActive": true
+      },
+      "AuditConfiguration": {
+        "IsActive": true,
+        "ConnectionStringName": "BIATemplateDatabase"
       }
     },
     "EmailConfiguration": {
@@ -25,9 +29,11 @@
       "LdapCacheGroupDuration": 200, //in minutes
       "LdapCacheUserDuration": 1800 //in minutes
     },
+    "Security": {
+      "Audience": "https://studio-jetlab.analytics.safran,https://app-jetlab.analytics.safran"
+    },
     "Jwt": {
       "Issuer": "BIATemplateApi",
-      "Audience": "http://localhost:4200,http://localhost:4201",
       //Regenerate the SecretKey at each installation => It force reauthent => Checks the client version during authentication => and force the client to refresh
       "SecretKey": "7C14439A64673E9AF75EE7AF5B71A7C8D901C90B078EB7F2315C153D31B6275B22663F51A898EEEC7027A2911D7D643038AAFE768AF2E47F8488B6129F66AFA3"
     },
@@ -63,11 +69,11 @@
         "Label": "Deutsh",
         "Code": "de-DE",
         "AcceptedCodes": [ "de-DE", "de" ],
-        "IsDefaultForCountryCodes": [ "US" ],
+        "IsDefaultForCountryCodes": [ "DE" ],
         "DateFormat": "dd.MM.yyyy",
         "TimeFormat": "HH:mm",
         "TimeFormatSec": "HH:mm:ss a",
-        "LanguageCode": "de",
+        "LanguageCode": "en",
         "LanguageId": "4"
       },
       {
@@ -125,16 +131,8 @@
       },
       // Member
       {
-        "Names": [ "Member_List_Access", "Member_Create", "Member_Read", "Member_Update", "Member_Delete", "Member_Save" ],
+        "Names": [ "App_Member_List_Access", "App_Member_Create", "App_Member_Read", "App_Member_Update", "App_Member_Delete", "App_Member_Save" ],
         "Roles": [ "Admin", "Site_Admin" ]
-      },
-      {
-        "Name": "Member_Set_Default_Site",
-        "Roles": [ "Admin", "Site_Admin", "Site_Member" ]
-      },
-      {
-        "Name": "Member_Set_Default_Role",
-        "Roles": [ "User", "Admin", "Site_Admin", "Site_Member" ]
       },
       // Permission
       {
@@ -166,12 +164,41 @@
       },
       // Site
       {
-        "Names": [ "Site_List_Access", "Site_Read" ],
+        "Names": [ "Site_Access_All", "Site_Create", "Site_Update", "Site_Delete", "Site_Save" ],
+        "Roles": [ "Admin" ]
+      },
+      {
+        "Names": [ "Site_List_Access", "Site_Read", "Site_Member_List_Access" ],
+        "Roles": [ "Admin", "Site_Admin" /*, "Site_Member" */ ]
+      },
+      {
+        "Names": [ "Site_Member_Create", "Site_Member_Read", "Site_Member_Update", "Site_Member_Delete", "Site_Member_Save" ],
         "Roles": [ "Admin", "Site_Admin" ]
       },
       {
-        "Names": [ "Site_Access_All", "Site_Create", "Site_Update", "Site_Delete", "Site_Save" ],
+        "Names": [ "User_ListAD", "User_Add" ],
+        "Roles": [ "Site_Admin" ]
+      },
+      {
+        "Names": [ "Site_View_Add_TeamView", "Site_View_Update_TeamView", "Site_View_Set_Default_TeamView", "Site_View_Assign_To_Team" ],
+        "Roles": [ "Admin", "Site_Admin" ]
+      },
+      // Team
+      {
+        "Names": [ "Team_Access_All" ],
         "Roles": [ "Admin" ]
+      },
+      {
+        "Names": [ "Team_List_Access" ],
+        "Roles": [ "User" ]
+      },
+      {
+        "Name": "Team_Set_Default_Team",
+        "Roles": [ "Admin", "Site_Admin", "Site_Member" ]
+      },
+      {
+        "Name": "Team_Set_Default_Roles",
+        "Roles": [ "User", "Admin", "Site_Admin", "Site_Member" ]
       },
       // User
       {
@@ -179,7 +206,11 @@
         "Roles": [ "User" ]
       },
       {
-        "Names": [ "User_List_Access", "User_List", "User_ListAD", "User_Add", "User_Delete", "User_Sync" ],
+        "Names": [ "User_List_Access", "User_List", "User_Read", "User_Delete", "User_Sync", "User_UpdateRoles" ],
+        "Roles": [ "Admin" ]
+      },
+      {
+        "Names": [ "User_ListAD", "User_Add" ],
         "Roles": [ "Admin" ]
       },
       // View
@@ -191,22 +222,29 @@
         "Names": [ "View_Add_UserView", "View_Update_UserView", "View_Delete_UserView", "View_Set_Default_UserView" ],
         "Roles": [ "User" ]
       },
-      {
-        "Names": [ "View_Add_SiteView", "View_Update_SiteView", "View_Set_Default_SiteView", "View_Assign_To_Site" ],
-        "Roles": [ "Admin", "Site_Admin" ]
-      },
-      {
-        "Name": "View_Delete_SiteView",
-        "Roles": [ "Admin" ]
-      },
+      // this functionnality is deprecated (the unassign do the job)
+      //{
+      //  "Name": "View_Delete_TeamView",
+      //  "Roles": [ "Admin" ]
+      //},
       // Notifications
       {
         "Names": [ "Notification_List_Access", "Notification_Delete", "Notification_Read" ],
         "Roles": [ "User" ]
       },
       {
-        "Names": [ "Notification_Update", "Notification_Create", "NotifiactionType_Options" ],
+        "Names": [ "Notification_Update", "Notification_Create", "NotificationType_Options" ],
         "Roles": [ "Admin" ]
+      },
+      {
+        "Name": "Background_Task_Admin",
+        "LightToken": true,
+        "Roles": [ "Back_Admin" ]
+      },
+      {
+        "Name": "Background_Task_Read_Only",
+        "LightToken": true,
+        "Roles": [ "Back_Read_Only" ]
       }
     ]
   }

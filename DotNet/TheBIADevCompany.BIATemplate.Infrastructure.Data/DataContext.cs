@@ -4,9 +4,12 @@
 
 namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
 {
+    using Audit.EntityFramework;
     using BIA.Net.Core.Infrastructure.Data;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+
+    using TheBIADevCompany.BIATemplate.Domain.Audit.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.TranslationModule.Aggregate;
@@ -17,6 +20,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     /// <summary>
     /// The database context.
     /// </summary>
+    [AuditDbContext(Mode = AuditOptionMode.OptIn, IncludeEntityObjects = false, AuditEventType = "{database}_{context}")]
     public class DataContext : BIADataContext
     {
         /// <summary>
@@ -38,6 +42,21 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         /// Gets or sets the User DBSet.
         /// </summary>
         public DbSet<User> Users { get; set; }
+
+        /// <summary>
+        /// Gets or sets the User DBSet.
+        /// </summary>
+        public DbSet<UserAudit> UsersAudit { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of team DBSet.
+        /// </summary>
+        public DbSet<Team> Teams { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of team DBSet.
+        /// </summary>
+        public DbSet<TeamType> TeamTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the Role DBSet.
@@ -65,6 +84,11 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         public DbSet<Notification> Notifications { get; set; }
 
         /// <summary>
+        /// Gets or sets the notification translation DBSet.
+        /// </summary>
+        public DbSet<NotificationTranslation> NotificationTranslations { get; set; }
+
+        /// <summary>
         /// Gets or sets the notification type DBSet.
         /// </summary>
         public DbSet<NotificationType> NotificationTypes { get; set; }
@@ -77,6 +101,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         /// <inheritdoc cref="DbContext.OnModelCreating"/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // modelBuilder.HasDefaultSchema("dbo")
             base.OnModelCreating(modelBuilder);
 
             TranslationModelBuilder.CreateModel(modelBuilder);

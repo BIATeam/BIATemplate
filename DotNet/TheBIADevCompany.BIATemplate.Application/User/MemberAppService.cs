@@ -15,8 +15,10 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using BIA.Net.Core.Domain.Authentication;
     using BIA.Net.Core.Domain.Dto;
     using BIA.Net.Core.Domain.Dto.Base;
+    using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Domain.Service;
+    using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
 
@@ -46,26 +48,25 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             // this.Repository.QueryCustomizer = queryCustomizer
         }
 
-        /// <inheritdoc cref="IMemberAppService.GetRangeBySiteAsync"/>
-        public async Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeBySiteAsync(PagingFilterFormatDto filters)
+        /// <inheritdoc cref="IMemberAppService.GetRangeByTeamAsync"/>
+        public async Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeByTeamAsync(PagingFilterFormatDto filters)
         {
             return await this.GetRangeAsync(filters: filters, specification: MemberSpecification.SearchGetAll(filters));
         }
 
         /// <inheritdoc cref="IMemberAppService.SetDefaultSite"/>
-        public async Task SetDefaultSiteAsync(int siteId)
+        public async Task SetDefaultTeamAsync(int teamId, int teamTypeId)
         {
             int userId = this.principal.GetUserId();
-            if (userId > 0 && siteId > 0)
+            if (userId > 0 && teamId > 0)
             {
-                IList<Member> members = (await this.Repository.GetAllEntityAsync(filter: x => x.UserId == userId)).ToList();
+                IList<Member> members = (await this.Repository.GetAllEntityAsync(filter: x => x.UserId == userId && x.Team.TeamTypeId == teamTypeId)).ToList();
 
                 if (members?.Any() == true)
                 {
                     foreach (Member member in members)
                     {
-                        member.IsDefault = member.SiteId == siteId;
-                        this.Repository.Update(member);
+                        member.IsDefault = member.TeamId == teamId;
                     }
 
                     await this.Repository.UnitOfWork.CommitAsync();
@@ -74,12 +75,12 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         }
 
         /// <inheritdoc cref="IMemberAppService.SetDefaultRoleAsync(int)"/>
-        public async Task SetDefaultRoleAsync(int roleId)
+        public async Task SetDefaultRoleAsync(int teamId, List<int> roleIds)
         {
             int userId = this.principal.GetUserId();
-            if (userId > 0 && roleId > 0)
+            if (userId > 0)
             {
-                IList<Member> members = (await this.Repository.GetAllEntityAsync(filter: x => x.UserId == userId, includes: new Expression<Func<Member, object>>[] { member => member.MemberRoles })).ToList();
+                IList<Member> members = (await this.Repository.GetAllEntityAsync(filter: x => x.UserId == userId && x.Team.Id == teamId, includes: new Expression<Func<Member, object>>[] { member => member.MemberRoles })).ToList();
 
                 if (members?.Any() == true)
                 {
@@ -87,10 +88,10 @@ namespace TheBIADevCompany.BIATemplate.Application.User
                     {
                         foreach (MemberRole memberRole in member.MemberRoles)
                         {
-                            memberRole.IsDefault = memberRole.RoleId == roleId;
+                            memberRole.IsDefault = roleIds.Contains(memberRole.RoleId);
                         }
 
-                        this.Repository.Update(member);
+                        // this.Repository.Update(member)
                     }
 
                     await this.Repository.UnitOfWork.CommitAsync();

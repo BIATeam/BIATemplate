@@ -12,7 +12,7 @@ import { BiaCoreModule } from './bia-core/bia-core.module';
 import { BiaTranslationService } from './bia-core/services/bia-translation.service';
 
 @NgModule({
-  imports: [RouterModule, BiaCoreModule]
+  imports: [RouterModule, BiaCoreModule],
 })
 
 // https://medium.com/@benmohamehdi/angular-best-practices-coremodule-vs-sharedmodule-25f6721aa2ef

@@ -1,5 +1,17 @@
-import { OptionDto } from './option-dto';
-import { RoleDto } from './role';
+import { Team } from 'src/app/domains/bia-domains/team/model/team';
+import { RoleMode } from '../../constants';
+
+export class LoginParamDto {
+  currentTeamLogins: CurrentTeamDto[];
+  teamsConfig: TeamConfigDto[];
+  lightToken: boolean;
+}
+
+export class TeamConfigDto {
+  teamTypeId: number;
+  roleMode: RoleMode;
+  inHeader: boolean;
+}
 
 export interface UserInfo {
   id: number;
@@ -15,23 +27,32 @@ export interface UserProfile {
 }
 
 export interface UserData {
-  currentSiteId: number;
-  currentSiteTitle: string;
-  defaultSiteId: number;
-  sites: OptionDto[];
+  currentTeams: CurrentTeamDto[];
+}
+
+export class CurrentTeamDto {
+  teamTypeId: number;
+  teamId: number;
+  teamTitle: string;
   currentRoleIds: number[];
-  defaultRoleId: number;
-  roles: RoleDto[];
+  useDefaultRoles: boolean;
 }
 
 export interface AdditionalInfos {
   userInfo: UserInfo;
   userProfile: UserProfile;
+  teams: Team[];
+}
+
+export interface Token {
+  login: string;
+  id: number;
+  permissions: string[];
   userData: UserData;
 }
 
 export interface AuthInfo {
   token: string;
-  permissions: string[];
+  uncryptedToken: Token;
   additionalInfos: AdditionalInfos;
 }

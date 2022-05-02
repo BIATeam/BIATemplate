@@ -12,10 +12,8 @@ import { SiteFilterComponent } from './components/site-filter/site-filter.compon
 import { SharedModule } from 'src/app/shared/shared.module';
 import { PermissionGuard } from 'src/app/core/bia-core/guards/permission.guard';
 import { Permission } from 'src/app/shared/permission';
-import { UserFromADModule } from 'src/app/domains/user-from-AD/user-from-AD.module';
-import { SiteTableHeaderComponent } from './components/site-table-header/site-table-header.component';
 import { SiteItemComponent } from './views/site-item/site-item.component';
-import { UserOptionModule } from 'src/app/domains/user-option/user-option.module';
+import { UserOptionModule } from 'src/app/domains/bia-domains/user-option/user-option.module';
 
 const ROUTES: Routes = [
   {
@@ -41,10 +39,10 @@ const ROUTES: Routes = [
         data: {
           breadcrumb: 'app.members',
           canNavigate: true,
-          permission: Permission.Member_List_Access
+          permission: Permission.Site_Member_List_Access
         },
         loadChildren: () =>
-          import('./children/members/member.module').then((m) => m.MemberModule)
+          import('./children/members/site-member.module').then((m) => m.SiteMemberModule)
       },
     ]
   },
@@ -59,13 +57,11 @@ const ROUTES: Routes = [
     SiteNewDialogComponent,
     SitesIndexComponent,
     SiteItemComponent,
-    SiteTableHeaderComponent
   ],
   entryComponents: [SiteEditDialogComponent, SiteNewDialogComponent],
   imports: [
     SharedModule,
     UserOptionModule,
-    UserFromADModule,
     RouterModule.forChild(ROUTES),
     StoreModule.forFeature('sites', reducers),
     EffectsModule.forFeature([SitesEffects]),

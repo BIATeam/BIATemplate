@@ -3,7 +3,7 @@ import { SelectItemGroup } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription, combineLatest } from 'rxjs';
 import { View } from '../../model/view';
-import { ViewType, DEFAULT_VIEW } from 'src/app/shared/constants';
+import { ViewType, DEFAULT_VIEW, TeamTypeId, TeamTypeRightPrefixe } from 'src/app/shared/constants';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'src/app/store/state';
 import { getAllViews, getLastViewChanged, getDataLoaded } from '../../store/view.state';
@@ -19,13 +19,14 @@ import { Permission } from 'src/app/shared/permission';
 })
 export class ViewListComponent implements OnInit, OnDestroy {
   groupedViews: SelectItemGroup[];
-  translateKeys: string[] = ['bia.views.system', 'bia.views.default', 'bia.views.site', 'bia.views.user'];
+  translateKeys: string[] = ['bia.views.system', 'bia.views.default', 'bia.views.team', 'bia.views.user'];
   translations: any;
   views: View[];
   selectedView: number;
   defaultView: number;
   private sub = new Subscription();
   @Input() tableStateKey: string;
+  @Input() useViewTeamWithTypeId: TeamTypeId | null;
   @Output() viewChange = new EventEmitter<string>();
 
   constructor(
@@ -73,7 +74,8 @@ export class ViewListComponent implements OnInit, OnDestroy {
     }
   }
 
-  onViewChange() {
+  onViewChange(event: any) {
+    this.selectedView = event.value;
     this.updateFilterValues();
   }
 
@@ -90,14 +92,14 @@ export class ViewListComponent implements OnInit, OnDestroy {
     ];
 
     let defaultView = 0;
-    const currentSiteId = this.authService.getCurrentSiteId();
+    const currentTeamId = (this.useViewTeamWithTypeId == null) ? -1 : this.authService.getCurrentTeamId(this.useViewTeamWithTypeId);
     const systemViews = this.views.filter(
       (v) =>
         v.viewType === ViewType.System
     );
-    const siteViews = this.views.filter(
+    const teamViews = this.views.filter(
       (v) =>
-        v.viewType === ViewType.Site && (currentSiteId < 1 || v.viewSites.some((vs) => vs.siteId === currentSiteId))
+        v.viewType === ViewType.Team && (v.viewTeams.some((vs) => currentTeamId == vs.teamId ))
     );
     const userViews = this.views.filter((v) => v.viewType === ViewType.User);
     if (systemViews.length > 0) {
@@ -120,19 +122,19 @@ export class ViewListComponent implements OnInit, OnDestroy {
       ];
     }
 
-    if (siteViews.length > 0) {
+    if (teamViews.length > 0) {
       this.groupedViews.push({
-        label: this.translations['bia.views.site'],
-        items: siteViews.map((v) => {
+        label: this.translations['bia.views.team'],
+        items: teamViews.map((v) => {
           return { label: v.name, value: v.id };
         })
       });
 
-      const siteDefault = siteViews.filter((v) =>
-        v.viewSites.some((y) => y.siteId === currentSiteId && y.isDefault === true)
+      const teamDefault = teamViews.filter((v) =>
+        v.viewTeams.some((y) => currentTeamId == y.teamId  && y.isDefault === true)
       )[0];
-      if (siteDefault) {
-        defaultView = siteDefault.id;
+      if (teamDefault) {
+        defaultView = teamDefault.id;
       }
     }
 
@@ -194,16 +196,22 @@ export class ViewListComponent implements OnInit, OnDestroy {
   }
 
   showEditButton() {
+    let canSetTeamView = false;
+    if (this.useViewTeamWithTypeId != null)
+    {
+      var teamTypeRightPrefixe = TeamTypeRightPrefixe.find(t => t.key == this.useViewTeamWithTypeId)?.value;
+      canSetTeamView = this.authService.hasPermission(teamTypeRightPrefixe + Permission.View_AddTeamViewSuffix) ||
+        this.authService.hasPermission(teamTypeRightPrefixe + Permission.View_UpdateTeamViewSuffix) ||
+        this.authService.hasPermission(teamTypeRightPrefixe + Permission.View_SetDefaultTeamViewSuffix) ||
+        this.authService.hasPermission(teamTypeRightPrefixe + Permission.View_AssignToTeamSuffix) ||
+        this.authService.hasPermission(Permission.View_DeleteTeamView);
+    }
     return (
-      this.authService.hasPermission(Permission.View_AddSiteView) ||
+      canSetTeamView ||
       this.authService.hasPermission(Permission.View_AddUserView) ||
       this.authService.hasPermission(Permission.View_UpdateUserView) ||
-      this.authService.hasPermission(Permission.View_UpdateSiteView) ||
       this.authService.hasPermission(Permission.View_DeleteUserView) ||
-      this.authService.hasPermission(Permission.View_DeleteSiteView) ||
-      this.authService.hasPermission(Permission.View_SetDefaultUserView) ||
-      this.authService.hasPermission(Permission.View_SetDefaultSiteView) ||
-      this.authService.hasPermission(Permission.View_AssignToSite)
+      this.authService.hasPermission(Permission.View_SetDefaultUserView)
     );
   }
 }

@@ -17,6 +17,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
     using BIA.Net.Core.Domain.RepoContract.QueryCustomizer;
     using BIA.Net.Core.Domain.Service;
     using BIA.Net.Core.Domain.Specification;
+    using TheBIADevCompany.BIATemplate.Crosscutting.Common;
     using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.RepoContract;
 
@@ -28,17 +29,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
         /// <summary>
         /// The claims principal.
         /// </summary>
-        private readonly int currentSiteId;
-
-        /// <summary>
-        /// The claims principal.
-        /// </summary>
         private readonly int userId;
-
-        /// <summary>
-        /// The claims principal.
-        /// </summary>
-        private readonly List<string> permissions;
 
         /// <summary>
         /// The signalR Service.
@@ -63,43 +54,29 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
         {
             this.userContext = userContext;
             this.Repository.QueryCustomizer = queryCustomizer;
-            var userDataDto = (principal as BIAClaimsPrincipal).GetUserData<UserDataDto>();
             this.clientForHubService = clientForHubService;
-            this.currentSiteId = userDataDto == null ? 0 : userDataDto.CurrentSiteId;
             this.userId = (principal as BIAClaimsPrincipal).GetUserId();
-
-            // Test if not service
-            if (this.userId != 0)
-            {
-                this.permissions = (principal as BIAClaimsPrincipal).GetUserPermissions().ToList();
-            }
-            else
-            {
-                this.permissions = new List<string>();
-            }
+            bool isTeamAccesAll = (principal as BIAClaimsPrincipal).GetUserPermissions().Any(x => x == Rights.Teams.AccessAll);
 
             this.filtersContext.Add(
-                AccessMode.All,
-                new DirectSpecification<Notification>(n =>
-                    n.Site.Members.Any(m => m.UserId == this.userId)
-                    && (n.NotifiedPermissions.Count == 0
+                 AccessMode.Read,
+                 new DirectSpecification<Notification>(n =>
+                    (n.NotifiedTeams.Count == 0 || n.NotifiedTeams.Any(nt =>
+                        (nt.Roles.Count == 0 && (isTeamAccesAll || nt.Team.Members.Any(member => member.UserId == this.userId)))
                         ||
-                        n.NotifiedPermissions.Any(r => n.Site.Members.Any(m => m.UserId == this.userId && m.MemberRoles.Any(mr => mr.Role.PermissionRoles.Any(pr => pr.PermissionId == r.PermissionId)))))
+                        (nt.Roles.Count > 0 && nt.Team.Members.Any(member => member.UserId == this.userId && member.MemberRoles.Any(mr => nt.Roles.Any(ntr => mr.RoleId == ntr.RoleId))))))
                     && (n.NotifiedUsers.Count == 0 || n.NotifiedUsers.Any(u => u.UserId == this.userId))));
-
-            this.filtersContext.Add(
-                    AccessMode.Read,
-                    new DirectSpecification<Notification>(n =>
-                        n.SiteId == this.currentSiteId
-                        && (n.NotifiedPermissions.Count == 0 || n.NotifiedPermissions.Any(r => this.permissions.Contains(r.Permission.Code)))
-                        && (n.NotifiedUsers.Count == 0 || n.NotifiedUsers.Any(u => u.UserId == this.userId))));
         }
 
         /// <inheritdoc/>
-        public async Task<NotificationDto> SetAsRead(NotificationDto notification)
+        public async Task SetAsRead(int id)
         {
+            var notification = await this.Repository.GetEntityAsync(id);
+
             notification.Read = true;
-            return await this.UpdateAsync(notification);
+            await this.Repository.UnitOfWork.CommitAsync();
+
+            _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notification-domain" }, "notification-removeUnread", notification.Id);
         }
 
         /// <inheritdoc/>
@@ -119,21 +96,19 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
                     throw new ElementNotFoundException();
                 }
 
-                dto.SiteId = entity.SiteId;
-
                 if (entity.Read && !dto.Read)
                 {
-                    _ = this.clientForHubService.SendTargetedMessage(dto.SiteId.ToString(), "notification-domain", "notification-addUnread", dto);
+                    _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notification-domain" }, "notification-addUnread", dto);
                 }
                 else if (!entity.Read && dto.Read)
                 {
-                    _ = this.clientForHubService.SendTargetedMessage(dto.SiteId.ToString(), "notification-domain", "notification-removeUnread", dto.Id);
+                    _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notification-domain" }, "notification-removeUnread", dto.Id);
                 }
 
-                _ = this.clientForHubService.SendTargetedMessage(dto.SiteId.ToString(), "notifications", "refresh-notifications", dto);
+                _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notifications" }, "refresh-notifications", dto);
 
-                mapper.DtoToEntity(dto, entity, mapperMode);
-                this.Repository.Update(entity);
+                mapper.DtoToEntity(dto, entity, mapperMode, this.Repository.UnitOfWork);
+
                 await this.Repository.UnitOfWork.CommitAsync();
                 dto.DtoState = DtoState.Unchanged;
                 mapper.MapEntityKeysInDto(entity, dto);
@@ -150,8 +125,8 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
             string mapperMode = null)
         {
             var notification = await base.RemoveAsync(id, accessMode: accessMode, queryMode: queryMode, mapperMode: mapperMode);
-            _ = this.clientForHubService.SendTargetedMessage(notification.SiteId.ToString(), "notification-domain", "notification-removeUnread", notification.Id);
-            _ = this.clientForHubService.SendTargetedMessage(notification.SiteId.ToString(), "notifications", "refresh-notifications", notification);
+            _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notification-domain" }, "notification-removeUnread", notification.Id);
+            _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notifications" }, "refresh-notifications", notification);
             return notification;
         }
 
@@ -159,12 +134,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
         public override async Task<List<NotificationDto>> RemoveAsync(List<int> ids, string accessMode = "Delete", string queryMode = "Delete", string mapperMode = null)
         {
             var deletedDtos = await base.RemoveAsync(ids, accessMode, queryMode, mapperMode);
-            deletedDtos.Select(m => m.SiteId).Distinct().ToList().ForEach(parentId =>
-            {
-                var siteDeletedDtos = deletedDtos.Where(s => s.SiteId == parentId);
-                _ = this.clientForHubService.SendTargetedMessage(parentId.ToString(), "notification-domain", "notification-removeSeveralUnread", siteDeletedDtos.Select(s => s.Id).ToList());
-                _ = this.clientForHubService.SendTargetedMessage(parentId.ToString(), "notifications", "refresh-notifications-several", siteDeletedDtos);
-            });
+
+            _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notification-domain" }, "notification-removeSeveralUnread", deletedDtos.Select(s => s.Id).ToList());
+            _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notifications" }, "refresh-notifications-several", deletedDtos);
 
             return deletedDtos;
         }
@@ -176,10 +148,10 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
 
             if (!dto.Read)
             {
-                _ = this.clientForHubService.SendTargetedMessage(notification.SiteId.ToString(), "notification-domain", "notification-addUnread", notification);
+                _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notification-domain" }, "notification-addUnread", notification);
             }
 
-            _ = this.clientForHubService.SendTargetedMessage(notification.SiteId.ToString(), "notifications", "refresh-notifications", notification);
+            _ = this.clientForHubService.SendMessage(new TargetedFeatureDto { FeatureName = "notifications" }, "refresh-notifications", notification);
             return notification;
         }
 

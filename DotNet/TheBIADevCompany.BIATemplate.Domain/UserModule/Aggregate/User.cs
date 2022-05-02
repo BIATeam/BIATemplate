@@ -6,15 +6,15 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
     using BIA.Net.Core.Domain;
+    using global::Audit.EntityFramework;
     using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
 
     /// <summary>
     /// The user entity.
     /// </summary>
+    [AuditInclude]
     public class User : VersionedTable, IEntity<int>
     {
         /// <summary>
@@ -130,6 +130,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
         /// <summary>
         /// Gets or sets the last login date.
         /// </summary>
+        [AuditIgnore]
         public DateTime? LastLoginDate { get; set; }
 
         /// <summary>
@@ -141,5 +142,10 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
         /// Gets or sets the collection of notifications.
         /// </summary>
         public ICollection<NotificationUser> NotificationUsers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of roles.
+        /// </summary>
+        public ICollection<Role> Roles { get; set; }
     }
 }

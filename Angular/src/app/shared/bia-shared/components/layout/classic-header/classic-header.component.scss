@@ -6,10 +6,11 @@
 
 .topbar {
   height: 35px;
-  color: white!important;
+  color: white !important;
 }
 
-.logos {
+.logos,
+.controls {
   .separator {
     height: 24px;
     border-left: 1px solid;
@@ -119,16 +120,31 @@
   margin-left: 8px;
 }
 
-.pi-star-o {
-  padding-left: 0.5rem;
-}
-
 .app-icon-header {
   margin-top: auto;
   margin-bottom: auto;
 }
 
+.notification-actions {
+  margin-top: 16px;
+}
+
+bia-notification-team-warning {
+  padding-top: 16px;
+}
 :host ::ng-deep {
+  bia-online-offline-icon {
+    i {
+      margin-left: 8px;
+      margin-right: 8px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+  }
+  .separator {
+    font-size: xxx-large;
+    margin-right: 12px;
+  }
   .p-component {
     border-width: 0px !important;
   }
@@ -137,17 +153,15 @@
     background-color: transparent !important;
   }
 
-  p-menubar .p-menubar{
+  p-menubar .p-menubar {
     .p-menubar-start {
       margin-right: auto;
     }
   }
   p-megamenu {
+    margin-left: -12px;
     .p-megamenu {
       padding: 0;
-    }
-    .p-megamenu-root-list {
-      // margin-top: 17px;
     }
 
     .p-state-active {
@@ -158,7 +172,7 @@
   p-megamenu {
     .p-menuitem-link {
       // padding-top: 0.45rem!important;
-      padding-top: 0.3em!important;
+      padding-top: 0.3em !important;
     }
     .p-megamenu-panel {
       width: 10em;
@@ -183,31 +197,5 @@
     .p-menuitem-text {
       font-family: 'oswald-light';
     }
-  }
-
-  p-dropdown  {
-    .p-dropdown {
-      min-width: 12.5em;
-      background-image: linear-gradient(to bottom, white, white), linear-gradient(to bottom, white, white);
-      padding-bottom: 2px;
-      .p-dropdown-label {
-        padding-top: 2px;
-        padding-bottom: 2px;
-        padding-left: 2px;
-      }
-      background-color: transparent;
-      .p-inputtext {
-        color: white !important;
-      }
-    }
-    .p-dropdown:not(.p-disabled) {
-      &:hover   {
-        background-image: linear-gradient(to bottom, white, white), linear-gradient(to bottom, white, white)!important;
-      }
-    }
-    .p-dropdown-trigger-icon {
-      color: white !important;
-    }
-    
   }
 }

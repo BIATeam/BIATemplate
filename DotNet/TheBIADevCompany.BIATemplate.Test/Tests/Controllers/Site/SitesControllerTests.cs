@@ -13,6 +13,7 @@ namespace TheBIADevCompany.BIATemplate.Test.Tests.Controllers.Site
     using TheBIADevCompany.BIATemplate.Domain.Dto.Site;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers;
+    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site;
     using TheBIADevCompany.BIATemplate.Test.Data;
 
     /// <summary>
@@ -187,7 +188,7 @@ namespace TheBIADevCompany.BIATemplate.Test.Tests.Controllers.Site
 
             this.principalBuilder.MockPrincipalUserPermissions(new List<string>
                 {
-                    Rights.Sites.AccessAll,
+                    Rights.Teams.AccessAll,
                 });
 
             #endregion Setup additional context

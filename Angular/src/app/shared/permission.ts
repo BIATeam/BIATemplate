@@ -1,11 +1,8 @@
 export enum Permission {
+  Background_Task_Admin = 'Background_Task_Admin',
+  Background_Task_Read_Only = 'Background_Task_Read_Only',
+
   Home_Access = 'Home_Access',
-  Member_Create = 'Member_Create',
-  Member_Delete = 'Member_Delete',
-  Member_List_Access = 'Member_List_Access',
-  Member_Read = 'Member_Read',
-  Member_Save = 'Member_Save',
-  Member_Update = 'Member_Update',
   Notification_Create = 'Notification_Create',
   Notification_List_Access = 'Notification_List_Access',
   Notification_Delete = 'Notification_Delete',
@@ -18,21 +15,28 @@ export enum Permission {
   Site_Read = 'Site_Read',
   Site_Save = 'Site_Save',
   Site_Update = 'Site_Update',
+  Site_Member_Create = 'Site_Member_Create',
+  Site_Member_Delete = 'Site_Member_Delete',
+  Site_Member_List_Access = 'Site_Member_List_Access',
+  Site_Member_Update = 'Site_Member_Update',
+
   User_Add = 'User_Add',
   User_Delete = 'User_Delete',
   User_List = 'User_List',
   User_ListAD = 'User_ListAD',
   User_List_Access = 'User_List_Access',
   User_Sync = 'User_Sync',
+  User_UpdateRoles = 'User_UpdateRoles',
+  
   LdapDomains_List = 'LdapDomains_List',
   View_List = 'View_List',
   View_AddUserView = 'View_Add_UserView',
-  View_AddSiteView = 'View_Add_SiteView',
+  View_AddTeamViewSuffix = '_View_Add_TeamView',
   View_UpdateUserView = 'View_Update_UserView',
-  View_UpdateSiteView = 'View_Update_SiteView',
+  View_UpdateTeamViewSuffix = '_View_Update_TeamView',
   View_DeleteUserView = 'View_Delete_UserView',
-  View_DeleteSiteView = 'View_Delete_SiteView',
+  View_DeleteTeamView = 'View_Delete_TeamView',
   View_SetDefaultUserView = 'View_Set_Default_UserView',
-  View_SetDefaultSiteView = 'View_Set_Default_SiteView',
-  View_AssignToSite = 'View_Assign_To_Site'
+  View_SetDefaultTeamViewSuffix = '_View_Set_Default_TeamView',
+  View_AssignToTeamSuffix = '_View_Assign_To_Team'
 }

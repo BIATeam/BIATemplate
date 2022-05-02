@@ -6,7 +6,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
     using BIA.Net.Core.Domain;
     using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.TranslationModule.Aggregate;
@@ -63,19 +62,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
         public virtual User CreatedBy { get; set; }
 
         /// <summary>
-        /// Gets or sets the site identifier.
+        /// Gets or sets the teams to be notified, if any.
         /// </summary>
-        public int SiteId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the site.
-        /// </summary>
-        public virtual Site Site { get; set; }
-
-        /// <summary>
-        /// Gets or sets the role to be notified, if any.
-        /// </summary>
-        public ICollection<NotificationPermission> NotifiedPermissions { get; set; }
+        public ICollection<NotificationTeam> NotifiedTeams { get; set; }
 
         /// <summary>
         /// Gets or sets the list of users to be notified.

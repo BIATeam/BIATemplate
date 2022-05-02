@@ -14,6 +14,7 @@ import { DictOptionDto } from '../bia-table/dict-option-dto';
 })
 export class BiaCalcTableComponent extends BiaTableComponent implements OnInit {
   @Input() canAdd = true;
+  @Input() canEdit = true;
   @Output() save = new EventEmitter<any>();
   @Input() dictOptionDtos: DictOptionDto[];
 
@@ -134,17 +135,24 @@ export class BiaCalcTableComponent extends BiaTableComponent implements OnInit {
 
   public onFocusout() {
     setTimeout(() => {
-      if (this.isInMultiSelect !== true && this.getParentComponent(document.activeElement, 'bia-calc-form') === null) {
+      if (this.isInMultiSelect !== true &&
+        this.getParentComponent(document.activeElement, 'bia-calc-form') === null &&
+        this.getParentComponent(document.activeElement, 'p-datepicker') === null
+      ) {
         this.initEditableRow(null);
       }
     }, 200);
   }
 
   public onShowCalendar() {
-    this.currentRow = this.getParentComponent(document.activeElement, 'ui-selectable-row') as HTMLElement;
+    this.currentRow = this.getParentComponent(document.activeElement, 'p-selectable-row') as HTMLElement;
   }
 
   public onBlurCalendar() {
+    this.currentRow?.focus();
+  }
+
+  public onCloseCalendar() {
     this.currentRow?.focus();
   }
 

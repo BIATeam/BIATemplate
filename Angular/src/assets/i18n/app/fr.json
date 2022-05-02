@@ -2,15 +2,16 @@
   "app": {
     "members": "Membres",
     "sites": "Sites",
+    "teams": "Equipes",
     "users": "Utilisateurs",
     "notifications": "Notifications"
   },
   "member": {
     "add": "Ajouter membre",
-    "listOfSiteMembers": "Liste des membres du site ",
+    "listOfSiteMembers": "Liste des membres",
     "manage": "Gérer membre",
     "roles": "Roles",
-    "rolesForSite": "Roles pour le site",
+    "rolesForSite": "Roles",
     "user": "Utilisateur"
   },
   "msg": {

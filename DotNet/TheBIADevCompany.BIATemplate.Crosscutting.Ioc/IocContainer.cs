@@ -4,9 +4,11 @@
 
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
 {
+    using Audit.Core;
+    using Audit.EntityFramework;
+    using BIA.Net.Core.Common.Configuration.CommonFeature;
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Infrastructure.Data;
-    using BIA.Net.Core.Infrastructure.Data.Repositories;
     using BIA.Net.Core.Infrastructure.Service.Repositories;
     using BIA.Net.Core.IocContainer;
     using Hangfire;
@@ -21,6 +23,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Service;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
+    using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories.QueryCustomizer;
     using TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories;
 
@@ -54,10 +57,10 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
         private static void ConfigureApplicationContainer(IServiceCollection collection)
         {
             // Application Layer
+            collection.AddTransient<ITeamAppService, TeamAppService>();
             collection.AddTransient<ISiteAppService, SiteAppService>();
             collection.AddTransient<IMemberAppService, MemberAppService>();
             collection.AddTransient<IRoleAppService, RoleAppService>();
-            collection.AddTransient<IPermissionAppService, PermissionAppService>();
             collection.AddTransient<IUserAppService, UserAppService>();
             collection.AddTransient<IViewAppService, ViewAppService>();
             collection.AddTransient<IBackgroundJobClient, BackgroundJobClient>();
@@ -84,8 +87,9 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             {
                 options.UseSqlServer(configuration.GetConnectionString("BIATemplateDatabase"));
                 options.EnableSensitiveDataLogging();
+                options.AddInterceptors(new AuditSaveChangesInterceptor());
             });
-            collection.AddDbContext<IQueryableUnitOfWork, DataContextReadOnly>(
+            collection.AddDbContext<IQueryableUnitOfWorkReadOnly, DataContextReadOnly>(
                 options =>
                 {
                     options.UseSqlServer(configuration.GetConnectionString("BIATemplateDatabase"));
@@ -96,6 +100,9 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             collection.AddTransient<IMemberQueryCustomizer, MemberQueryCustomizer>();
             collection.AddTransient<IViewQueryCustomizer, ViewQueryCustomizer>();
             collection.AddTransient<INotificationQueryCustomizer, NotificationQueryCustomizer>();
+            collection.Configure<AuditConfiguration>(
+               configuration.GetSection("BiaNet:ApiFeatures:AuditConfiguration"));
+            collection.AddSingleton<AuditFeature>();
         }
 
         private static void ConfigureInfrastructureServiceContainer(IServiceCollection collection)

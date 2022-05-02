@@ -50,6 +50,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate
         /// <summary>
         /// Gets or sets the collection of view site.
         /// </summary>
-        public ICollection<ViewSite> ViewSites { get; set; }
+        public ICollection<ViewTeam> ViewTeams { get; set; }
     }
 }

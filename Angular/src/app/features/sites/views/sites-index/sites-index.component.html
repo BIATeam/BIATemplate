@@ -9,19 +9,28 @@
       (closeFilter)="onCloseFilter()"
     ></app-site-filter>
     <div fxFlex="100">
-      <app-site-table-header
-        [headerTitle]="'site.listOf' | translate"
-        [haveFilter]="haveFilter"
-        [showFilter]="showFilter"
-        [showBtnFilter]="true"
-        [canAdd]="canAdd"
-        [canEdit]="canEdit"
-        (create)="onCreate()"
-        (openFilter)="onOpenFilter()"
-        (delete)="onDelete()"
-        (edit)="onEdit()"
-        [selectedElements]="selectedSites"
-      ></app-site-table-header>
+      <bia-table-header
+      [headerTitle]="'site.listOf' | translate"
+      [canAdd]="canAdd"
+      [canDelete]="canDelete"
+      [canExportCSV]="false"
+      [showBtnFilter]="true"
+      [showFilter]="showFilter"
+      [haveFilter]="haveFilter"
+      (openFilter)="onOpenFilter()"
+      (create)="onCreate()"
+      (delete)="onDelete()"
+      [selectedElements]="selectedSites">
+        <ng-template pTemplate="actionOnSelected">
+          <button
+          pButton
+          [disabled]="selectedSites?.length !== 1"
+          *ngIf="canEdit"
+          class="p-button-outlined"
+          label="{{ 'site.edit' | translate }}"
+          (click)="onEdit()"></button>
+        </ng-template>
+      </bia-table-header>
       <bia-table-controller
         [defaultPageSize]="defaultPageSize"
         [length]="totalCount$ | async"
@@ -41,10 +50,10 @@
         [configuration]="tableConfiguration"
         [showColSearch]="showColSearch"
         [globalSearchValue]="globalSearchValue"
-        [canEdit]="canManageMembers"
+        [canClickRow]="canManageMembers"
         [canSelectElement]="canDelete"
         [loading]="loading$ | async"
-        (edit)="onManageMember($event)"
+        (clickRow)="onManageMember($event)"
         (loadLazy)="onLoadLazy($event)"
         [viewPreference]="viewPreference"
         [advancedFilter]="advancedFilter"

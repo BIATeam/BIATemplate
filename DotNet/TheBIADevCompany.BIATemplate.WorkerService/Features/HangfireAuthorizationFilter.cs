@@ -4,35 +4,36 @@
 
 namespace TheBIADevCompany.BIATemplate.WorkerService.Features
 {
+    using System;
+    using System.Linq;
     using System.Net;
+    using BIA.Net.Core.Presentation.Common.Authentication;
     using Hangfire.Dashboard;
-    using TheBIADevCompany.BIATemplate.Application.User;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// Manage the authorisation to acced to the dashboard.
     /// </summary>
     public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
     {
-        /// <summary>
-        /// The helper used for AD.
-        /// </summary>
-        private readonly IUserAppService userAppService;
-
-        private readonly string userPermission;
-
         private readonly bool authorizeAllLocal;
+        private readonly string userPermission;
+        private readonly string secretKey;
+        private readonly IJwtFactory jwtFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HangfireAuthorizationFilter"/> class.
         /// </summary>
-        /// <param name="userAppService">Service to get user right.</param>
         /// <param name="authorizeAllLocal">True if local connection authorize all user.</param>
         /// <param name="userPermission">right to use.</param>
-        public HangfireAuthorizationFilter(IUserAppService userAppService, bool authorizeAllLocal, string userPermission)
+        /// <param name="secretKey">the secret Key.</param>
+        /// <param name="jwtFactory">the jwtFactory.</param>
+        public HangfireAuthorizationFilter(bool authorizeAllLocal, string userPermission, string secretKey, IJwtFactory jwtFactory)
         {
-            this.userAppService = userAppService;
             this.userPermission = userPermission;
             this.authorizeAllLocal = authorizeAllLocal;
+            this.secretKey = secretKey;
+            this.jwtFactory = jwtFactory;
         }
 
         /// <summary>
@@ -43,26 +44,56 @@ namespace TheBIADevCompany.BIATemplate.WorkerService.Features
         public bool Authorize(DashboardContext context)
         {
             var httpContext = context.GetHttpContext();
-
-            if (this.authorizeAllLocal &&
-                (httpContext.Connection.RemoteIpAddress.Equals(httpContext.Connection.LocalIpAddress) || IPAddress.IsLoopback(httpContext.Connection.RemoteIpAddress)))
+            bool isLocal = httpContext.Connection.RemoteIpAddress.Equals(httpContext.Connection.LocalIpAddress) || IPAddress.IsLoopback(httpContext.Connection.RemoteIpAddress);
+            if (this.authorizeAllLocal && isLocal)
             {
                 return true;
             }
 
-            if (httpContext.User.Identity.IsAuthenticated)
-            {
-#pragma warning disable CA1416 // Validate platform compatibility
-                var sid = ((System.Security.Principal.WindowsIdentity)httpContext.User.Identity).User.Value;
-#pragma warning restore CA1416 // Validate platform compatibility
-                var userRolesFromUserDirectory = this.userAppService.GetUserDirectoryRolesAsync(sid).Result;
-                var userMainPermissions = this.userAppService.TranslateRolesInPermissions(userRolesFromUserDirectory);
-                return userMainPermissions.Contains(this.userPermission);
-            }
-            else
+            if (string.IsNullOrEmpty(this.userPermission))
             {
                 return false;
             }
+
+            var jwtToken = string.Empty;
+
+            if (httpContext.Request.Query.ContainsKey("jwt_token"))
+            {
+                jwtToken = httpContext.Request.Query["jwt_token"].FirstOrDefault();
+                this.SetCookie(httpContext, jwtToken, httpContext.Request.Host.Value == "localhost");
+            }
+            else
+            {
+                jwtToken = httpContext.Request.Cookies["_hangfireCookie"];
+            }
+
+            if (string.IsNullOrEmpty(jwtToken))
+            {
+                return false;
+            }
+
+            var principal = this.jwtFactory.GetPrincipalFromToken(jwtToken, this.secretKey);
+            if (principal.IsInRole(this.userPermission))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SetCookie(HttpContext httpContext, string jwtToken, bool isLocalhost)
+        {
+            httpContext.Response.Cookies.Append(
+                "_hangfireCookie",
+                jwtToken,
+                new CookieOptions()
+                {
+                    Secure = !isLocalhost,
+                    SameSite = isLocalhost ? SameSiteMode.Unspecified : SameSiteMode.None,
+                    Path = "/",
+                    IsEssential = true,
+                    Expires = DateTime.Now.AddMinutes(30),
+                });
         }
     }
 }

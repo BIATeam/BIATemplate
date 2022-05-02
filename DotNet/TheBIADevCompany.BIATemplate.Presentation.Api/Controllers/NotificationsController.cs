@@ -178,6 +178,43 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         }
 
         /// <summary>
+        /// Sets a notification as read.
+        /// </summary>
+        /// <param name="id">The notification identifier.</param>
+        /// <returns>Ok() if success, error if failed.</returns>
+        [HttpPut("setAsRead/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = Rights.Notifications.Read)]
+        public async Task<IActionResult> SetAsRead(int id)
+        {
+            if (id == 0)
+            {
+                return this.BadRequest();
+            }
+
+            try
+            {
+                await this.notificationService.SetAsRead(id);
+                return this.Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                return this.ValidationProblem();
+            }
+            catch (ElementNotFoundException)
+            {
+                return this.NotFound();
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
         /// Remove a notification.
         /// </summary>
         /// <param name="id">The notification identifier.</param>
@@ -269,7 +306,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
                 // If it's the first time this notification is read
                 if (!dto.Read)
                 {
-                    await this.notificationService.SetAsRead(dto);
+                    await this.notificationService.SetAsRead(id);
                 }
 
                 return this.Ok(dto);

@@ -26,12 +26,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="BIA.Net.Core.Test" Version="3.5.*" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-		<PackageReference Include="Moq" Version="4.16.1" />
-		<PackageReference Include="MSTest.TestAdapter" Version="2.2.5" />
-		<PackageReference Include="MSTest.TestFramework" Version="2.2.5" />
-		<PackageReference Include="coverlet.collector" Version="3.0.3">
+		<PackageReference Include="BIA.Net.Core.Test" Version="3.6.*" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+		<PackageReference Include="Moq" Version="4.17.2" />
+		<PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
+		<PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
+		<PackageReference Include="coverlet.collector" Version="3.1.2">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -39,13 +39,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\TheBIADevCompany.BIATemplate.Presentation.Api\TheBIADevCompany.BIATemplate.Presentation.Api.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Update="SonarAnalyzer.CSharp" Version="8.25.0.33663">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
 	</ItemGroup>
 
 </Project>

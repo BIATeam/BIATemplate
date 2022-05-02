@@ -8,7 +8,9 @@ namespace TheBIADevCompany.BIATemplate.Test.IoC
     using Microsoft.Extensions.DependencyInjection;
     using TheBIADevCompany.BIATemplate.Crosscutting.Ioc;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
-    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers;
+    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site;
+    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User;
+    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.View;
     using TheBIADevCompany.BIATemplate.Test.Data;
 
     /// <summary>

@@ -10,6 +10,7 @@ namespace TheBIADevCompany.BIATemplate.Test.Tests.Services.Site
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using TheBIADevCompany.BIATemplate.Application.Site;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
+    using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.Dto.Site;
     using TheBIADevCompany.BIATemplate.Test.Data;
 
@@ -39,7 +40,7 @@ namespace TheBIADevCompany.BIATemplate.Test.Tests.Services.Site
             // Mock authentication data (IPrincipal).
             this.principalBuilder.MockPrincipalUserPermissions(new List<string>
                 {
-                    Rights.Sites.AccessAll,
+                    Rights.Teams.AccessAll,
                 });
 
             // Initialize the service to test.
@@ -130,7 +131,14 @@ namespace TheBIADevCompany.BIATemplate.Test.Tests.Services.Site
                 })
                 .MockPrincipalUserData(new UserDataDto()
                 {
-                    CurrentSiteId = 1,
+                    CurrentTeams =
+                    {
+                        new CurrentTeamDto()
+                        {
+                            TeamTypeId = (int)TeamTypeId.Site,
+                            TeamId = 1,
+                        },
+                    },
                 });
 
             // Insert additional data in the DB.

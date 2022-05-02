@@ -14,6 +14,7 @@ namespace TheBIADevCompany.BIATemplate.Application.Site
     using BIA.Net.Core.Domain.Service;
     using BIA.Net.Core.Domain.Specification;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
+    using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.Dto.Site;
     using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
 
@@ -43,7 +44,7 @@ namespace TheBIADevCompany.BIATemplate.Application.Site
         {
             UserDataDto userData = this.principal.GetUserData<UserDataDto>();
             IEnumerable<string> currentUserPermissions = this.principal.GetUserPermissions();
-            int siteId = currentUserPermissions?.Any(x => x == Rights.Sites.AccessAll) == true ? default : userData.CurrentSiteId;
+            int siteId = currentUserPermissions?.Any(x => x == Rights.Teams.AccessAll) == true ? default : userData.GetCurrentTeamId((int)TeamTypeId.Site);
 
             return await this.GetRangeAsync<SiteInfoDto, SiteInfoMapper, SiteFilterDto>(filters: filters, specification: SiteSpecification.SearchGetAll(filters, siteId));
         }
@@ -55,7 +56,7 @@ namespace TheBIADevCompany.BIATemplate.Application.Site
             userId = userId > 0 ? userId : this.principal.GetUserId();
 
             SiteMapper mapper = this.InitMapper<SiteDto, SiteMapper>();
-            if (userPermissions?.Any(x => x == Rights.Sites.AccessAll) == true)
+            if (userPermissions?.Any(x => x == Rights.Teams.AccessAll) == true)
             {
                 return await this.Repository.GetAllResultAsync(mapper.EntityToDto(userId));
             }

@@ -7,8 +7,8 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using BIA.Net.Core.Domain.Dto.Base;
+    using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.Service;
-    using TheBIADevCompany.BIATemplate.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
 
     /// <summary>
@@ -21,21 +21,23 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// </summary>
         /// <param name="filters">The filters.</param>
         /// <returns>The list of MemberDto.</returns>
-        Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeBySiteAsync(PagingFilterFormatDto filters);
+        Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeByTeamAsync(PagingFilterFormatDto filters);
 
         /// <summary>
         /// Sets the default site.
         /// </summary>
-        /// <param name="siteId">The site identifier.</param>
+        /// <param name="teamId">The team identifier.</param>
+        /// <param name="teamTypeId">The team type identifier.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task SetDefaultSiteAsync(int siteId);
+        Task SetDefaultTeamAsync(int teamId, int teamTypeId);
 
         /// <summary>
         /// Sets the default role.
         /// </summary>
-        /// <param name="roleId">The role identifier.</param>
+        /// <param name="teamId">The team identifier.</param>
+        /// <param name="roleIds">The roles identifier.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task SetDefaultRoleAsync(int roleId);
+        Task SetDefaultRoleAsync(int teamId, List<int> roleIds);
 
         /// <summary>
         /// Generates CSV content.
