@@ -3,7 +3,7 @@
 // </copyright>
 #define UseHubForClientInNotification
 
-namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
+namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Notification
 {
     using System;
     using System.Collections.Generic;

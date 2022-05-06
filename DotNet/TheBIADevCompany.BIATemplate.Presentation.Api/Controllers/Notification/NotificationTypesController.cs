@@ -1,7 +1,7 @@
 // <copyright file="NotificationTypesController.cs" company="TheBIADevCompany">
 //     Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
-namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
+namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Notification
 {
     using System.Threading.Tasks;
     using BIA.Net.Presentation.Api.Controllers.Base;

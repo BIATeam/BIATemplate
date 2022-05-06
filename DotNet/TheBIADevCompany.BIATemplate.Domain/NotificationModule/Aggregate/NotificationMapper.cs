@@ -15,6 +15,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
     using BIA.Net.Core.Domain.Service;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
+    using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.TranslationModule.Aggregate;
 
     /// <summary>
@@ -37,7 +38,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
                     { "Type", notification => notification.Type.NotificationTypeTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? notification.Type.Label },
                     { "Read", notification => notification.Read },
                     { "CreatedBy", notification => notification.CreatedBy.FirstName + notification.CreatedBy.LastName + " (" + notification.CreatedBy.Login + ")" },
-                    { "NotifiedTeams", notification => notification.NotifiedTeams.Select(x => x.Team.Title) },
+                    { "NotifiedTeams", notification => notification.NotifiedTeams.Select(x => x.Team.Title).OrderBy(x => x) },
                     { "NotifiedUsers", notification => notification.NotifiedUsers.Select(x => x.User.FirstName + " " + x.User.LastName + " (" + x.User.Login + ")").OrderBy(x => x) },
                 };
             }
@@ -65,10 +66,10 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
             {
                 foreach (var userDto in dto.NotifiedUsers.Where(x => x.DtoState == DtoState.Deleted))
                 {
-                    var connectingAirport = entity.NotifiedUsers.FirstOrDefault(x => x.UserId == userDto.Id && x.NotificationId == dto.Id);
-                    if (connectingAirport != null)
+                    var user = entity.NotifiedUsers.FirstOrDefault(x => x.UserId == userDto.Id);
+                    if (user != null)
                     {
-                        entity.NotifiedUsers.Remove(connectingAirport);
+                        entity.NotifiedUsers.Remove(user);
                     }
                 }
 
@@ -85,7 +86,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
             {
                 foreach (var teamDto in dto.NotifiedTeams.Where(x => x.DtoState == DtoState.Deleted))
                 {
-                    var notifiedTeams = entity.NotifiedTeams.FirstOrDefault(x => x.TeamId == teamDto.Id && x.NotificationId == dto.Id);
+                    var notifiedTeams = entity.NotifiedTeams.FirstOrDefault(x => x.TeamId == teamDto.Team.Id);
                     if (notifiedTeams != null)
                     {
                         entity.NotifiedTeams.Remove(notifiedTeams);
@@ -97,7 +98,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
                 {
                     entity.NotifiedTeams.Add(new NotificationTeam
                     {
-                        TeamId = teamDto.Id,
+                        TeamId = teamDto.Team.Id,
                         NotificationId = dto.Id,
                         Roles = teamDto.Roles != null ? teamDto.Roles.Select(role => new NotificationTeamRole
                         {
@@ -105,6 +106,32 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
                             RoleId = role.Id,
                         }).ToList() : null,
                     });
+                }
+
+                foreach (var teamDto in dto.NotifiedTeams.Where(x => x.DtoState == DtoState.Modified))
+                {
+                    var notifiedTeam = entity.NotifiedTeams.FirstOrDefault(x => x.TeamId == teamDto.Team.Id);
+                    if (notifiedTeam != null)
+                    {
+                        foreach (var roleDto in teamDto.Roles.Where(x => x.DtoState == DtoState.Deleted))
+                        {
+                            var role = notifiedTeam.Roles.FirstOrDefault(x => x.RoleId == roleDto.Id);
+                            if (role != null)
+                            {
+                                notifiedTeam.Roles.Remove(role);
+                            }
+                        }
+
+                        notifiedTeam.Roles = notifiedTeam.Roles ?? new List<NotificationTeamRole>();
+                        foreach (var roleDto in teamDto.Roles.Where(w => w.DtoState == DtoState.Added))
+                        {
+                            notifiedTeam.Roles.Add(new NotificationTeamRole
+                            {
+                                RoleId = roleDto.Id,
+                                NotificationTeamId = teamDto.Id,
+                            });
+                        }
+                    }
                 }
             }
 
@@ -142,152 +169,76 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate
         /// <inheritdoc cref="BaseMapper{TDto,TEntity}.EntityToDto"/>
         public override Expression<Func<Notification, NotificationDto>> EntityToDto(string mapperMode)
         {
-            if (mapperMode == MapperMode.Item)
+            return entity => new NotificationDto
             {
-                return entity => new NotificationDto
+                Id = entity.Id,
+                Title = entity.Title,
+                Description = entity.Description,
+                TitleTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Title).FirstOrDefault() ?? entity.Title,
+                DescriptionTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Description).FirstOrDefault() ?? entity.Description,
+
+                CreatedDate = entity.CreatedDate,
+
+                CreatedBy = entity.CreatedBy != null ? new OptionDto
                 {
-                    Id = entity.Id,
-                    Title = entity.Title,
-                    Description = entity.Description,
-                    TitleTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Title).FirstOrDefault() ?? entity.Title,
-                    DescriptionTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Description).FirstOrDefault() ?? entity.Description,
+                    Id = entity.CreatedBy.Id,
+                    Display = entity.CreatedBy.FirstName + " " + entity.CreatedBy.LastName + " (" + entity.CreatedBy.Login + ")",
+                }
+                : null,
 
-                    CreatedDate = entity.CreatedDate,
-
-                    CreatedBy = entity.CreatedBy != null ? new OptionDto
-                    {
-                        Id = entity.CreatedBy.Id,
-                        Display = entity.CreatedBy.FirstName + " " + entity.CreatedBy.LastName + " (" + entity.CreatedBy.Login + ")",
-                    }
-                    : null,
-
-                    Read = entity.Read,
-                    Type = new OptionDto
-                    {
-                        Id = entity.TypeId,
-                        Display = entity.Type.NotificationTypeTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Type.Label,
-                    },
-
-                    JData = entity.JData,
-
-                    NotifiedTeams = entity.NotifiedTeams.Select(nt => new NotificationTeamDto
-                    {
-                        Id = nt.TeamId,
-                        TypeId = nt.Team.TeamTypeId,
-                        Display = nt.Team.Title,
-                        Roles = nt.Roles != null ? nt.Roles.Select(ntr => new OptionDto
-                        {
-                            Id = ntr.RoleId,
-                            Display = ntr.Role.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Type.Label,
-                        }).ToList() : null,
-                    }).ToList(),
-
-                    NotifiedUsers = entity.NotifiedUsers.Select(nu => new OptionDto
-                    {
-                        Id = nu.User.Id,
-                        Display = nu.User.FirstName + " " + nu.User.LastName + " (" + nu.User.Login + ")",
-                    }).ToList(),
-
-                    NotificationTranslations = entity.NotificationTranslations.Select(nt => new NotificationTranslationDto
-                    {
-                        DtoState = DtoState.Unchanged,
-                        Id = nt.Id,
-                        LanguageId = nt.LanguageId,
-                        Title = nt.Title,
-                        Description = nt.Description,
-                    }).ToList(),
-                };
-            }
-            else
-            {
-                return entity => new NotificationDto
+                Read = entity.Read,
+                Type = new OptionDto
                 {
-                    Id = entity.Id,
-                    Title = entity.Title,
-                    Description = entity.Description,
-                    TitleTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Title).FirstOrDefault() ?? entity.Title,
-                    DescriptionTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Description).FirstOrDefault() ?? entity.Description,
+                    Id = entity.TypeId,
+                    Display = entity.Type.NotificationTypeTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Type.Label,
+                },
 
-                    CreatedDate = entity.CreatedDate,
+                JData = entity.JData,
 
-                    CreatedBy = entity.CreatedBy != null ? new OptionDto
+                NotifiedTeams = entity.NotifiedTeams.Select(nt => new NotificationTeamDto
+                {
+                    Id = nt.TeamId,
+                    Team = new OptionDto
                     {
-                        Id = entity.CreatedBy.Id,
-                        Display = entity.CreatedBy.FirstName + " " + entity.CreatedBy.LastName + " (" + entity.CreatedBy.Login + ")",
-                    }
-                    : null,
-
-                    Read = entity.Read,
-                    Type = new OptionDto
-                    {
-                        Id = entity.TypeId,
-                        Display = entity.Type.NotificationTypeTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Type.Label,
+                        Display = (nt.Team != null) ? nt.Team.Title : string.Empty,
+                        Id = (nt.Team != null) ? nt.Team.Id : 0,
                     },
+                    TeamTypeId = nt.Team != null ? nt.Team.TeamTypeId : (int)TeamTypeId.Root,
 
-                    JData = entity.JData,
-
-                    NotifiedTeams = entity.NotifiedTeams.Select(nt => new NotificationTeamDto
+                    Roles = nt.Roles != null ? nt.Roles.Select(ntr => new OptionDto
                     {
-                        Id = nt.TeamId,
-                        TypeId = nt.Team.TeamTypeId,
-                        Display = nt.Team.Title,
-                        Roles = nt.Roles != null ? nt.Roles.Select(ntr => new OptionDto
-                        {
-                            Id = ntr.RoleId,
-                            Display = ntr.Role.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Type.Label,
-                        }).ToList() : null,
-                    }).ToList(),
+                        Id = ntr.RoleId,
+                        Display = ntr.Role.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? ntr.Role.Label,
+                    }).ToList() : null,
+                }).ToList(),
 
-                    NotifiedUsers = entity.NotifiedUsers.Select(nu => new OptionDto
-                    {
-                        Id = nu.User.Id,
-                        Display = nu.User.FirstName + " " + nu.User.LastName + " (" + nu.User.Login + ")",
-                    }).ToList(),
-                };
-            }
+                NotifiedUsers = entity.NotifiedUsers.Select(nu => new OptionDto
+                {
+                    Id = nu.User.Id,
+                    Display = nu.User.FirstName + " " + nu.User.LastName + " (" + nu.User.Login + ")",
+                }).ToList(),
+
+                NotificationTranslations = entity.NotificationTranslations.Select(nt => new NotificationTranslationDto
+                {
+                    DtoState = DtoState.Unchanged,
+                    Id = nt.Id,
+                    LanguageId = nt.LanguageId,
+                    Title = nt.Title,
+                    Description = nt.Description,
+                }).ToList(),
+            };
         }
 
         /// <inheritdoc/>
         public override void MapEntityKeysInDto(Notification entity, NotificationDto dto)
         {
             dto.Id = entity.Id;
-
-            dto.NotifiedTeams = entity.NotifiedTeams?.Select(nt => new NotificationTeamDto
-            {
-                Id = nt.TeamId,
-                Roles = nt.Roles != null ? nt.Roles.Select(ntr => new OptionDto
-                {
-                    Id = ntr.RoleId,
-                }).ToList() : null,
-            }).ToList();
-
-            dto.NotifiedUsers = entity.NotifiedUsers?.Select(nu => new OptionDto
-            {
-                Id = nu.UserId,
-            }).ToList();
         }
 
         /// <inheritdoc/>
         public override Expression<Func<Notification, object>>[] IncludesBeforeDelete()
         {
             return new Expression<Func<Notification, object>>[] { x => x.NotifiedTeams, x => x.NotifiedUsers };
-        }
-
-        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.DtoToRecord"/>
-        public override Func<NotificationDto, object[]> DtoToRecord()
-        {
-            return x => (new object[]
-            {
-                CSVString(x.Title),
-                CSVString(x.Description),
-                CSVString(x.Type?.Display),
-                x.Read ? "X" : string.Empty,
-                x.CreatedDate.ToString("yyyy-MM-dd"),
-                CSVString(x.CreatedBy?.Display),
-                CSVString(string.Join(" - ", x.NotifiedTeams?.Select(ca => ca.Display).ToList())),
-                CSVString(string.Join(" - ", x.NotifiedUsers?.Select(ca => ca.Display).ToList())),
-                CSVString(x.JData),
-            });
         }
     }
 }

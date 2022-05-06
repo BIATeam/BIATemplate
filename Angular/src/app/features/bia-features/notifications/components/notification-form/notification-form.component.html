@@ -6,7 +6,7 @@
           <p-tabPanel header="{{ 'translation.defaultLanguage' | translate }}">
             <div fxLayout="row" fxLayoutAlign="center">
               <div class="app-field-container" fxFlex="90">
-                <span class="md-inputfield">
+                <span class="p-float-label">
                   <input formControlName="title" type="text" pInputText maxlength="64" style ="width:100%"/>
                   <label><span class="bia-star-mandatory">*</span>{{ 'notification.title' | translate }}</label>
                 </span>
@@ -14,7 +14,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="center">
               <div class="app-field-container" fxFlex="90">
-                <span class="md-inputfield">
+                <span class="p-float-label">
                   <input formControlName="description" type="text" pInputText maxlength="256" style ="width:100%"/>
                   <label><span class="bia-star-mandatory">*</span>{{ 'notification.description' | translate }}</label>
                 </span>
@@ -30,7 +30,7 @@
                 <input formControlName="languageId" type="hidden" />
                 <div fxLayout="row" fxLayoutAlign="center">
                   <div class="app-field-container" fxFlex="90">
-                    <span class="md-inputfield">
+                    <span class="p-float-label">
                       <input formControlName="title" type="text" pInputText maxlength="64" style ="width:100%" (change)="changeTranslation(i)"/>
                       <label><span class="bia-star-mandatory">*</span>{{ 'notification.title' | translate }}</label>
                     </span>
@@ -38,7 +38,7 @@
                 </div>
                 <div fxLayout="row" fxLayoutAlign="center">
                   <div class="app-field-container" fxFlex="90">
-                    <span class="md-inputfield">
+                    <span class="p-float-label">
                       <input formControlName="description" type="text" pInputText maxlength="256" style ="width:100%" (change)="changeTranslation(i)"/>
                       <label><span class="bia-star-mandatory">*</span>{{ 'notification.description' | translate }}</label>
                     </span>
@@ -56,7 +56,7 @@
             </ng-template>
             <div fxLayout="row" fxLayoutAlign="center">
               <div class="app-field-container" fxFlex="90">
-                <span class="md-inputfield">
+                <span class="p-float-label">
                   <p-dropdown
                       [options]="missingLanguageOptions"
                       placeholder="&nbsp;"
@@ -82,7 +82,7 @@
 
       <div fxLayout="row" fxLayoutAlign="center">
         <div class="app-field-container" fxFlex="90">
-          <span class="md-inputfield">
+          <span class="p-float-label">
             <p-dropdown
               [options]="notificationTypeOptions"
               placeholder="&nbsp;"
@@ -103,7 +103,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="center">
         <div class="app-field-container" fxFlex="90">
-          <span class="md-inputfield">
+          <span class="p-float-label">
             <p-calendar
               biaLocale
               formControlName="createdDate"
@@ -116,9 +116,66 @@
           </span>
         </div>
       </div>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="top" fxFlex="50">
+      <div fxLayout="row" fxLayoutAlign="center">
+        <div fxFlex="100">
+          <p-fieldset legend="{{ 'notification.notifiedTeams' | translate }}">
+            <p-table [value]="notifiedTeams.controls" [responsive]="true" styleClass="p-datatable-striped">
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th>Team</th>
+                      <th>Roles</th>
+                      <th>          
+                        <i class="pi pi-plus bia-mat-tiny-fab bia-pointer" pTooltip="{{ 'bia.add' | translate }}"
+                        tooltipPosition="left" (click)="addNewRow()"></i>
+                      </th>
+                  </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                <ng-container formArrayName="notifiedTeams">  
+                  <tr [formGroupName]="rowIndex">  
+                      <td>
+                       <p-celleditor>
+                        <p-dropdown
+                          [options]="teamOptions"
+                          placeholder="&nbsp;"
+                          formControlName="team"
+                          optionLabel="display"
+                          datakey="id"
+                          [style]="{ width: '100%' }"
+                          [showClear]="true"
+                        ></p-dropdown>
+                      </p-celleditor>
+                      </td>  
+                      <td>  
+                        <p-celleditor>
+                        <p-multiSelect
+                          defaultLabel="&nbsp;"
+                          [options]="roleOptions"
+                          formControlName="roles"
+                          optionLabel="display"
+                          datakey="id"
+                          [virtualScroll]="true"
+                          [style]="{ width: '100%' }"
+                          appendTo="body"
+                        ></p-multiSelect>
+                      </p-celleditor>
+                      </td>   
+                      <td>  
+                        <i class="pi pi-trash bia-mat-tiny-fab bia-pointer" pTooltip="{{ 'bia.delete' | translate }}"
+                        tooltipPosition="left" (click)="onDeleteRow(rowIndex)"></i>
+                      </td>  
+                  </tr>  
+                </ng-container> 
+              </ng-template>
+            </p-table>
+          </p-fieldset>
+        </div>
+      </div>
       <div fxLayout="row" fxLayoutAlign="center">
         <div class="app-field-container" fxFlex="90">
-          <span class="md-inputfield">
+          <span class="p-float-label">
             <p-dropdown
               [options]="userOptions"
               placeholder="&nbsp;"
@@ -134,7 +191,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="center">
         <div class="app-field-container" fxFlex="90">
-          <span class="md-inputfield">
+          <span class="p-float-label">
             <p-multiSelect
               defaultLabel="&nbsp;"
               [options]="userOptions"
@@ -150,7 +207,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="center">
         <div fxFlex="90">
-          <!-- <span class="md-inputfield">
+          <!-- <span class="p-float-label">
             <textarea formControlName="jData" type="text" pInputText maxlength="64" style ="width:100%" rows="5" pInputTextarea>
             </textarea>
             <label>{{ 'notification.jData' | translate }}</label>
@@ -163,15 +220,17 @@
       </div>
     </div>
   </div>
+
   <div fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end end">
     <button pButton label="{{ 'bia.save' | translate }}" type="submit" [disabled]="!form.valid"></button>
     <button
       pButton
       label="{{ 'bia.cancel' | translate }}"
       type="button"
-      class="ui-button-secondary"
+      class="p-button-outlined"
       (click)="onCancel()"
     ></button>
   </div>
 
 </form>
+

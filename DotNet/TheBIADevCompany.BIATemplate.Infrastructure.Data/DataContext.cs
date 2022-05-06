@@ -8,7 +8,6 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using BIA.Net.Core.Infrastructure.Data;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-
     using TheBIADevCompany.BIATemplate.Domain.Audit.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
