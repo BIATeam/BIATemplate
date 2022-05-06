@@ -23,10 +23,8 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
 #if UseHubForClientInTeam
     using Microsoft.AspNetCore.SignalR;
 #endif
-    using TheBIADevCompany.BIATemplate.Application.Plane;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
-    using TheBIADevCompany.BIATemplate.Domain.Dto.Plane;
 
     /// <summary>
     /// The API controller used to manage Teams.
