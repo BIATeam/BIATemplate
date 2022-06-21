@@ -12,7 +12,7 @@
         "ConnectionStringName": "BIATemplateDatabase"
       },
       "DatabaseHandler": {
-        "IsActive": false,
+        "IsActive": false
       },
       "ClientForHub": {
         "IsActive": true

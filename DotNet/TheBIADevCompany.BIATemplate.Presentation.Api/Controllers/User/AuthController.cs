@@ -265,7 +265,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
             var allRoles = userRolesFromUserDirectory;
 
             // get user rights
-            if (userRolesFromUserDirectory.Contains(Constants.Role.User))
+            if (userRolesFromUserDirectory.Contains(Constants.Role.User) || userRolesFromUserDirectory.Contains(Constants.Role.Admin))
             {
                 var userRoles = await this.roleAppService.GetUserRolesAsync(userInfo.Id);
                 allRoles.AddRange(userRoles);

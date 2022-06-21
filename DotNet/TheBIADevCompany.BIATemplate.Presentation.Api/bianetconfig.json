@@ -142,7 +142,7 @@
       // Role
       {
         "Names": [ "Roles_Options" ],
-        "Roles": [ "User" ]
+        "Roles": [ "Admin", "User" ]
       },
       {
         "Names": [ "Roles_List" ],
@@ -203,7 +203,7 @@
       // User
       {
         "Names": [ "User_Options" ],
-        "Roles": [ "User" ]
+        "Roles": [ "Admin", "User" ]
       },
       {
         "Names": [ "User_List_Access", "User_List", "User_Read", "User_Delete", "User_Sync", "User_UpdateRoles" ],
@@ -230,7 +230,7 @@
       // Notifications
       {
         "Names": [ "Notification_List_Access", "Notification_Delete", "Notification_Read" ],
-        "Roles": [ "User" ]
+        "Roles": [ "Admin", "User" ]
       },
       {
         "Names": [ "Notification_Update", "Notification_Create", "NotificationType_Options" ],
