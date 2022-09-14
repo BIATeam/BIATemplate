@@ -127,5 +127,125 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         {
             return this.Ok(Constants.Application.FrontEndVersion);
         }
+<<<<<<< HEAD
+=======
+
+        private async Task<List<string>> GetRoles(LoginParamDto loginParam, UserDataDto userData, List<string> userRolesFromUserDirectory, UserInfoDto userInfo, IEnumerable<TeamDto> allTeams)
+        {
+            // the main roles
+            var allRoles = userRolesFromUserDirectory;
+
+            // get user rights
+            if (userRolesFromUserDirectory.Contains(Constants.Role.User) || userRolesFromUserDirectory.Contains(Constants.Role.Admin))
+            {
+                var userRoles = await this.roleAppService.GetUserRolesAsync(userInfo.Id);
+                allRoles.AddRange(userRoles);
+
+                if (loginParam.TeamsConfig != null)
+                {
+                    foreach (var teamConfig in loginParam.TeamsConfig)
+                    {
+                        CurrentTeamDto teamLogin = loginParam.CurrentTeamLogins?.FirstOrDefault(ct => ct.TeamTypeId == teamConfig.TeamTypeId);
+                        if (teamLogin == null && teamConfig.InHeader)
+                        {
+                            // if it is in header we select the default one with default roles.
+                            teamLogin = new CurrentTeamDto
+                            {
+                                TeamTypeId = teamConfig.TeamTypeId,
+                                TeamId = 0,
+                                UseDefaultRoles = true,
+                                CurrentRoleIds = { },
+                            };
+                        }
+
+                        if (teamLogin != null)
+                        {
+                            var teams = allTeams.Where(t => t.TeamTypeId == teamLogin.TeamTypeId);
+                            var team = teams?.OrderByDescending(x => x.IsDefault).FirstOrDefault();
+
+                            CurrentTeamDto currentTeam = new ();
+                            currentTeam.TeamTypeId = teamLogin.TeamTypeId;
+
+                            if (team != null)
+                            {
+                                if (teamLogin.TeamId > 0 && teams.Any(s => s.Id == teamLogin.TeamId))
+                                {
+                                    currentTeam.TeamId = teamLogin.TeamId;
+                                    currentTeam.TeamTitle = teams.First(s => s.Id == teamLogin.TeamId).Title;
+                                }
+                                else
+                                {
+                                    currentTeam.TeamId = team.Id;
+                                    currentTeam.TeamTitle = team.Title;
+                                }
+                            }
+
+                            if (currentTeam.TeamId > 0)
+                            {
+                                var roles = await this.roleAppService.GetMemberRolesAsync(currentTeam.TeamId, userInfo.Id);
+                                var roleMode = loginParam.TeamsConfig?.FirstOrDefault(r => r.TeamTypeId == currentTeam.TeamTypeId)?.RoleMode ?? RoleMode.AllRoles;
+
+                                if (roleMode == RoleMode.AllRoles)
+                                {
+                                    currentTeam.CurrentRoleIds = roles.Select(r => r.Id).ToList();
+                                }
+                                else if (roleMode == RoleMode.SingleRole)
+                                {
+                                    RoleDto role = roles?.OrderByDescending(x => x.IsDefault).FirstOrDefault();
+                                    if (role != null)
+                                    {
+                                        if (teamLogin.CurrentRoleIds != null && teamLogin.CurrentRoleIds.Count == 1 && roles.Any(s => s.Id == teamLogin.CurrentRoleIds.First()))
+                                        {
+                                            currentTeam.CurrentRoleIds = new List<int> { teamLogin.CurrentRoleIds.First() };
+                                        }
+                                        else
+                                        {
+                                            currentTeam.CurrentRoleIds = new List<int> { role.Id };
+                                        }
+                                    }
+                                    else
+                                    {
+                                        currentTeam.CurrentRoleIds = new List<int>();
+                                    }
+                                }
+                                else
+                                {
+                                    if (roles.Any())
+                                    {
+                                        if (!teamLogin.UseDefaultRoles)
+                                        {
+                                            List<int> roleIdsToSet = roles.Where(r => teamLogin.CurrentRoleIds != null && teamLogin.CurrentRoleIds.Any(tr => tr == r.Id)).Select(r => r.Id).ToList();
+                                            currentTeam.CurrentRoleIds = roleIdsToSet;
+                                        }
+                                        else
+                                        {
+                                            currentTeam.CurrentRoleIds = roles.Where(x => x.IsDefault).Select(r => r.Id).ToList();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        currentTeam.CurrentRoleIds = new List<int>();
+                                    }
+                                }
+
+                                userData.CurrentTeams.Add(currentTeam);
+
+                                // add the sites roles (filter if singleRole mode is used)
+                                allRoles.AddRange(roles.Where(r => currentTeam.CurrentRoleIds.Any(id => id == r.Id)).Select(r => r.Code).ToList());
+
+                                // add computed roles (can be customized)
+                                if (currentTeam.TeamTypeId == (int)TeamTypeId.Site)
+                                {
+                                    allRoles.Add(Constants.Role.SiteMember);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return allRoles;
+        }
+>>>>>>> 488dc0a3a1d23550c8d6075947a682187d4dd6c6
     }
 }

@@ -12,7 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <PackageReference Include="BIA.Net.Core.Domain.Dto" Version="3.7.*" />
+=======
+    <PackageReference Include="BIA.Net.Core.Domain.Dto" Version="3.6.*" />
+>>>>>>> 488dc0a3a1d23550c8d6075947a682187d4dd6c6
   </ItemGroup>
 
 </Project>
