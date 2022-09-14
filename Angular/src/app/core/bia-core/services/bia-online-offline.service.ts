@@ -3,10 +3,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, Subscription, throwError, timer } from 'rxjs';
 import { catchError, filter, first, skip } from 'rxjs/operators';
-<<<<<<< HEAD
 import { AppSettingsService } from 'src/app/domains/bia-domains/app-settings/services/app-settings.service';
-=======
->>>>>>> 488dc0a3a1d23550c8d6075947a682187d4dd6c6
 import { environment } from 'src/environments/environment';
 import { AppDB } from '../db';
 import { AuthService } from './auth.service';
@@ -47,12 +44,8 @@ export class BiaOnlineOfflineService implements OnDestroy {
     protected db: AppDB,
     protected biaMessageService: BiaMessageService,
     protected translateService: TranslateService,
-<<<<<<< HEAD
     protected authService: AuthService,
     protected appSettingsService: AppSettingsService) {
-=======
-    protected authService: AuthService) {
->>>>>>> 488dc0a3a1d23550c8d6075947a682187d4dd6c6
     BiaOnlineOfflineService._IsModeEnabled = true;
     this.init();
   }
