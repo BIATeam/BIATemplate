@@ -1,0 +1,71 @@
+{
+  "app": {
+    "members": "Miembros",
+    "sites": "Sitios",
+    "teams": "Equipos",
+    "users": "Usuarios",
+    "notifications": "Notificaciones"
+  },
+  "member": {
+    "add": "Añadir miembro",
+    "listOfSiteMembers": "Lista de miembros",
+    "manage": "Gestionar miembro",
+    "roles": "Roles",
+    "rolesForSite": "Roles",
+    "user": "Usuario"
+  },
+  "msg": {
+    "hideFilters": "Ocultar filtros",
+    "showFilters": "Mostrar filtros",
+    "welcome": "BIA es una biblioteca de componentes, construida con el marco Angular"
+  },
+  "site": {
+    "add": "Añadir sitios",
+    "admins": "Administradores",
+    "edit": "Editar sitios",
+    "listOf": "Lista de sitios",
+    "selectUser": "Selecciona un usuario",
+    "title": "Title"
+  },
+  "translation": 
+  {  
+    "defaultLanguage" :"Defecto (Inglesa)"
+  },
+  "user": {
+    "add": "Añadir usuario",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "listOf": "Lista de usuarios",
+    "login": "Login",
+    "cannotAddMember": "No se puede añadir el miembro ${login} en el repositorio ldap."
+  },
+  "notification": {
+    "action": "Action",
+    "add": "Añadir notificación",
+    "listOf": "Notificaciones",
+    "title": "Título",
+    "detail": "Detalle de la notificación",
+    "description": "Descripción",
+    "createdDate": "Fecha",
+    "type": {
+      "title": "Tipo",
+      "task": "Tarea",
+      "info": "Información",
+      "success": "Éxito",
+      "warn": "Advertencia",
+      "error": "Error"
+    },
+    "read": "Leer",
+    "createdBy": "Creado por",
+    "notifiedPermissions": "Permisos notificados",
+    "notifiedTeams": "Equipos notificados",
+    "notifiedUsers": "Usuarios notificados",
+    "jData": "Datos en JSON",
+    "setUnread": "Marcar como no leída",
+    "success": {
+      "deprecated:": "transaltion will be done in database in next version",
+      "title": "Notificación enviada con éxito",
+      "description": "Descripción a personalizar en las traducciones i18n para cada función"
+    }
+  }
+}

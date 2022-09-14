@@ -1,0 +1,71 @@
+{
+  "app": {
+    "members": "Membres",
+    "sites": "Sites",
+    "teams": "Equipes",
+    "users": "Utilisateurs",
+    "notifications": "Notifications"
+  },
+  "member": {
+    "add": "Ajouter membre",
+    "listOfSiteMembers": "Liste des membres",
+    "manage": "Gérer membre",
+    "roles": "Roles",
+    "rolesForSite": "Roles",
+    "user": "Utilisateur"
+  },
+  "msg": {
+    "hideFilters": "Masquer les filtres",
+    "showFilters": "Afficher les filtres",
+    "welcome": "BIA est une librarie de composants, construite avec le framework Angular"
+  },
+  "site": {
+    "add": "Ajouter site",
+    "admins": "Administrateurs",
+    "edit": "Modifier site",
+    "listOf": "Liste de sites",
+    "selectUser": "Sélectionner un utilisateur",
+    "title": "Titre"
+  },
+  "translation": 
+  {  
+    "defaultLanguage" :"Defaut (Anglais)"
+  },
+  "user": {
+    "add": "Ajouter utilisateur",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "listOf": "Liste des utilisateurs",
+    "login": "Login",
+    "cannotAddMember": "Impossible d'ajouter le membre ${login} dans le groupe AD."
+  },
+  "notification": {
+    "action": "Action",
+    "add": "Ajouter notification",
+    "listOf": "Notifications",
+    "title": "Titre",
+    "detail": "Détail de la notification",
+    "description": "Description",
+    "createdDate": "Date",
+    "type": {
+      "title": "Type",
+      "task": "Tâche",
+      "info": "Information",
+      "success": "Succès",
+      "warn": "Avertissement",
+      "error": "Erreur"
+    },
+    "read": "Lue",
+    "createdBy": "Créé par",
+    "notifiedPermissions": "Autorisations notifiées",
+    "notifiedTeams": "Equipes notifiées",
+    "notifiedUsers": "Utilisateurs notifiés",
+    "jData": "Données en JSON",
+    "setUnread": "Marquer non lue",
+    "success": {
+      "deprecated:": "translation will be done in database in next version",
+      "title": "Succès envoi de notification",
+      "description": "Description à customiser dans les traductions i18n pour chaque feature"
+    }
+  }
+}

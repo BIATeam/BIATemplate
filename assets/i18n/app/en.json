@@ -1,0 +1,71 @@
+{
+  "app": {
+    "members": "Members",
+    "sites": "Sites",
+    "teams": "Teams",
+    "users": "Users",
+    "notifications": "Notifications"
+  },
+  "member": {
+    "add": "Add member",
+    "listOfSiteMembers": "List of members",
+    "manage": "Manage member",
+    "roles": "Roles",
+    "rolesForSite": "Roles",
+    "user": "User"
+  },
+  "msg": {
+    "hideFilters": "Hide filters",
+    "showFilters": "Show filters",
+    "welcome": "BIA is a component library, built with the Angular framework"
+  },
+  "site": {
+    "add": "Add site",
+    "admins": "Administrators",
+    "edit": "Edit site",
+    "listOf": "List of sites",
+    "selectUser": "Select a user",
+    "title": "Title"
+  },
+  "translation": 
+  {  
+    "defaultLanguage" :"Default (English)"
+  },
+  "user": {
+    "add": "Add user",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "listOf": "List of users",
+    "login": "Login",
+    "cannotAddMember": "Cannot add member ${login} on ldap repository."
+  },
+  "notification": {
+    "action": "Action",
+    "add": "Add notification",
+    "listOf": "Notifications",
+    "title": "Title",
+    "detail": "Notification detail",
+    "description": "Description",
+    "createdDate": "Date",
+    "type": {
+      "title": "Type",
+      "task": "Task",
+      "info": "Information",
+      "success": "Success",
+      "warn": "Warning",
+      "error": "Error"
+    },
+    "read": "Read",
+    "createdBy": "Created by",
+    "notifiedPermissions": "Notified permissions",
+    "notifiedTeams": "Notified teams",
+    "notifiedUsers": "Notified users",
+    "jData": "Data in JSON",
+    "setUnread": "Mark as unread",
+    "success": {
+      "deprecated:": "transaltion will be done in database in next version",
+      "title": "Notification sent successfully",
+      "description": "Description to be customised in i18n traductions for each feature"
+    }
+  }
+}
