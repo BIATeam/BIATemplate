@@ -110,6 +110,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
         /// <summary>
         /// Gets or sets the DAI date.
         /// </summary>
+        [AuditIgnore]
         public DateTime DaiDate { get; set; }
 
         /// <summary>

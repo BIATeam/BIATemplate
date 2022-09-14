@@ -3,14 +3,17 @@
     "Environment": {
       "Type": "DEV",
       // UrlMatomo shoulld now contain the name of the php and js (originaly matomo.js & matomo.php) => rename to bypass ublock
-      "UrlMatomo": "https://matomo-int.the-shared-tools-domain-name.bia/matomo(torename)"
+      "UrlMatomo": "https://matomo-int.the-shared-tools-domain-name.bia/matomo(torename)",
+      "SiteIdMatomo": "1"
+    },
+    "CommonFeatures": {
+      "ClientForHub": {
+        "SignalRUrl": "https://the-bia-dev-team-int.the-deploy-domain-name.bia/BIATemplate/WebApi/HubForClients"
+      }
     },
     "ApiFeatures": {
       "Swagger": {
         "IsActive": true
-      },
-      "ClientForHub": {
-        "SignalRUrl": "http://localhost/BIATemplate/WebApi/HubForClients"
       }
     },
     "EmailConfiguration": {
@@ -19,6 +22,26 @@
       "SmtpPort": 25
     },
     "Authentication": {
+      "Keycloak": {
+        "IsActive": false,
+        "BaseUrl": "http://localhost:8080",
+        "Configuration": {
+          "idpHint": "darwin",
+          "realm": "BIA-Realm",
+          "Authority": "/realms/BIA-Realm",
+          "RequireHttpsMetadata": false,
+          "ValidAudience": "account"
+        },
+        "Api": {
+          "TokenConf": {
+            "RelativeUrl": "/realms/BIA-Realm/protocol/openid-connect/token",
+            "ClientId": "biatemplate",
+            "GrantType": "password",
+            "CredentialKeyInWindowsVault": "BIA:KeycloakSearchUserAccount"
+          },
+          "SearchUserRelativeUrl": "/admin/realms/BIA-Realm/users"
+        }
+      },
       "LdapDomains": [
         {
           "Name": "DOMAIN_BIA_1",
@@ -31,7 +54,7 @@
           "LdapName": "the-user-domain2-name.bia",
           "ContainsGroup": true,
           "ContainsUser": true
-        }//,
+        } //,
         //{
         //  "Name": "DOMAIN_BIA_3",
         //  "LdapName": "the-user-domain3-name.bia",

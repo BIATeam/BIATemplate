@@ -145,7 +145,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
         }
 
         /// <summary>
-        /// The sites rights.
+        /// The teams rights.
         /// </summary>
         public static class Teams
         {

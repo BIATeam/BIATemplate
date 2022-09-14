@@ -10,6 +10,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
     using System.Text;
     using System.Threading.Tasks;
     using BIA.Net.Core.Common;
+    using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Common.Exceptions;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.User;
@@ -17,6 +18,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
@@ -33,12 +35,19 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         private readonly IUserAppService userService;
 
         /// <summary>
+        /// The configuration of the BiaNet section.
+        /// </summary>
+        private readonly BiaNetSection configuration;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="UsersController"/> class.
         /// </summary>
         /// <param name="userService">The user service.</param>
-        public UsersController(IUserAppService userService)
+        /// <param name="configuration">The configuration.</param>
+        public UsersController(IUserAppService userService, IOptions<BiaNetSection> configuration)
         {
             this.userService = userService;
+            this.configuration = configuration.Value;
         }
 
         /// <summary>
@@ -91,7 +100,17 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
                 return this.BadRequest();
             }
 
-            var results = await this.userService.GetAllADUserAsync(filter, ldapName, returnSize);
+            IEnumerable<UserFromDirectoryDto> results = default;
+
+            if (this.configuration?.Authentication?.Keycloak?.IsActive == true)
+            {
+                results = await this.userService.GetAllIdpUserAsync(filter, returnSize);
+            }
+            else
+            {
+                results = await this.userService.GetAllADUserAsync(filter, ldapName, returnSize);
+            }
+
             int resultCount = results.Count();
 
             this.HttpContext.Response.Headers.Add(BIAConstants.HttpHeaders.TotalCount, resultCount.ToString());
@@ -143,8 +162,17 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         [Authorize(Roles = Rights.Users.Add)]
         public async Task<IActionResult> Add([FromBody] IEnumerable<UserFromDirectoryDto> users)
         {
-            ResultAddUsersFromDirectoryDto result = await this.userService.AddFromDirectory(users);
-            if (result.Errors.Any())
+            ResultAddUsersFromDirectoryDto result = default;
+            if (this.configuration?.Authentication?.Keycloak?.IsActive == true)
+            {
+                result = await this.userService.AddFromIdPAsync(users);
+            }
+            else
+            {
+                result = await this.userService.AddFromDirectory(users);
+            }
+
+            if (result.Errors?.Any() == true)
             {
                 return this.StatusCode(303, result.Errors);
             }
@@ -253,21 +281,28 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
                 return this.BadRequest();
             }
 
-            StringBuilder sb = new StringBuilder();
-
-            foreach (int id in ids)
+            if (this.configuration?.Authentication?.Keycloak?.IsActive == true)
             {
-                var error = await this.userService.RemoveInGroupAsync(id);
-                if (error != string.Empty)
-                {
-                    sb.Append(error);
-                }
+                await this.userService.DeactivateUsersAsync(ids);
             }
-
-            var errors = sb.ToString();
-            if (!string.IsNullOrEmpty(errors))
+            else
             {
-                return this.Problem(errors);
+                StringBuilder sb = new StringBuilder();
+
+                foreach (int id in ids)
+                {
+                    var error = await this.userService.RemoveInGroupAsync(id);
+                    if (error != string.Empty)
+                    {
+                        sb.Append(error);
+                    }
+                }
+
+                var errors = sb.ToString();
+                if (!string.IsNullOrEmpty(errors))
+                {
+                    return this.Problem(errors);
+                }
             }
 
             return this.Ok();
@@ -298,15 +333,14 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         /// <summary>
         /// Generates a csv file according to the filters.
         /// </summary>
-        /// <param name="filters">filters ( <see cref="LazyLoadDto"/>).</param>
+        /// <param name="filters">filters ( <see cref="PagingFilterFormatDto"/>).</param>
         /// <returns>a csv file.</returns>
         [HttpPost("csv")]
         [Authorize(Roles = Rights.Users.ListAccess)]
         public virtual async Task<IActionResult> GetFile([FromBody] PagingFilterFormatDto filters)
         {
-            byte[] buffer = await this.userService.ExportCSV(filters);
-            string fileName = $"Users-{DateTime.Now:MM-dd-yyyy-HH-mm}{BIAConstants.Csv.Extension}";
-            return this.File(buffer, BIAConstants.Csv.ContentType + ";charset=utf-8", fileName);
+            byte[] buffer = await this.userService.GetCsvAsync(filters);
+            return this.File(buffer, BIAConstants.Csv.ContentType + ";charset=utf-8", $"Planes{BIAConstants.Csv.Extension}");
         }
     }
 }

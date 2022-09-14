@@ -7,25 +7,22 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Text;
     using System.Threading.Tasks;
     using BIA.Net.Core.Common;
     using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Common.Helpers;
-    using BIA.Net.Core.Domain;
-    using BIA.Net.Core.Domain.Dto;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.Option;
     using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.QueryOrder;
     using BIA.Net.Core.Domain.RepoContract;
-    using BIA.Net.Core.Domain.RepoContract.QueryCustomizer;
     using BIA.Net.Core.Domain.Service;
     using BIA.Net.Core.Domain.Specification;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
+    using TheBIADevCompany.BIATemplate.Domain.RepoContract;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Service;
 
@@ -34,11 +31,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     /// </summary>
     public class UserAppService : FilteredServiceBase<User, int>, IUserAppService
     {
-        /// <summary>
-        /// The user right domain service.
-        /// </summary>
-        private readonly IUserPermissionDomainService userPermissionDomainService;
-
         /// <summary>
         /// The user synchronize domain service.
         /// </summary>
@@ -59,32 +51,34 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// </summary>
         private readonly ILogger<UserAppService> logger;
 
+        private readonly IIdentityProviderRepository identityProviderRepository;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserAppService"/> class.
+        /// Initializes a new instance of the <see cref="UserAppService" /> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        /// <param name="userPermissionDomainService">The user right domain service.</param>
         /// <param name="userSynchronizeDomainService">The user synchronize domain service.</param>
         /// <param name="configuration">The configuration of the BiaNet section.</param>
         /// <param name="userDirectoryHelper">The user directory helper.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="userContext">The user context.</param>
+        /// <param name="identityProviderRepository">The identity provider repository.</param>
         public UserAppService(
             ITGenericRepository<User, int> repository,
-            IUserPermissionDomainService userPermissionDomainService,
             IUserSynchronizeDomainService userSynchronizeDomainService,
             IOptions<BiaNetSection> configuration,
             IUserDirectoryRepository<UserFromDirectory> userDirectoryHelper,
             ILogger<UserAppService> logger,
-            UserContext userContext)
+            UserContext userContext,
+            IIdentityProviderRepository identityProviderRepository)
             : base(repository)
         {
-            this.userPermissionDomainService = userPermissionDomainService;
             this.userSynchronizeDomainService = userSynchronizeDomainService;
             this.configuration = configuration.Value;
             this.userDirectoryHelper = userDirectoryHelper;
             this.logger = logger;
             this.userContext = userContext;
+            this.identityProviderRepository = identityProviderRepository;
 
             this.filtersContext.Add(AccessMode.Read, new DirectSpecification<User>(u => u.IsActive));
         }
@@ -149,34 +143,10 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             return await this.Repository.GetResultAsync(UserSelectBuilder.SelectUserInfo(), filter: user => user.Sid == sid);
         }
 
-        /// <inheritdoc cref="IUserAppService.GetUserProfileAsync"/>
-        public async Task<UserProfileDto> GetUserProfileAsync(string login)
+        /// <inheritdoc cref="IUserAppService.GetUserInfoAsync"/>
+        public async Task<UserInfoDto> GetUserInfoAsync(Guid guid)
         {
-            var profile = new UserProfileDto();
-
-            var url = this.configuration.UserProfile.Url;
-            if (!string.IsNullOrEmpty(url))
-            {
-                var parameters = new Dictionary<string, string> { { "login", login } };
-                Dictionary<string, string> result;
-
-                try
-                {
-                    result = await RequestHelper.GetAsync<Dictionary<string, string>>(url, parameters);
-                }
-                catch (Exception exception)
-                {
-                    result = new Dictionary<string, string>();
-                    this.logger.LogError(exception, "An error occured while getting the user profile.");
-                }
-
-                foreach (var item in result)
-                {
-                    typeof(UserProfileDto).GetProperty(item.Key)?.SetValue(profile, item.Value);
-                }
-            }
-
-            return profile;
+            return await this.Repository.GetResultAsync(UserSelectBuilder.SelectUserInfo(), filter: user => user.Guid == guid);
         }
 
         /// <inheritdoc/>
@@ -193,6 +163,13 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             return await Task.FromResult(this.userDirectoryHelper.SearchUsers(filter, ldapName, max).OrderBy(o => o.LastName).ThenBy(o => o.FirstName)
                 .Select(UserFromDirectoryMapper.EntityToDto())
                 .ToList());
+        }
+
+        /// <inheritdoc cref="IUserAppService.GetAllIdpUserAsync"/>
+        public async Task<IEnumerable<UserFromDirectoryDto>> GetAllIdpUserAsync(string filter, int max = 10)
+        {
+            List<UserFromDirectory> userFromDirectories = await this.identityProviderRepository.SearchAsync(filter, max);
+            return userFromDirectories.Select(UserFromDirectoryMapper.EntityToDto());
         }
 
         /// <inheritdoc cref="IUserAppService.AddFromDirectory"/>
@@ -253,6 +230,100 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             }
 
             return result;
+        }
+
+        /// <inheritdoc cref="IUserAppService.AddFromIdPAsync"/>
+        public async Task<ResultAddUsersFromDirectoryDto> AddFromIdPAsync(IEnumerable<UserFromDirectoryDto> userFromDirectoryDtos)
+        {
+            ResultAddUsersFromDirectoryDto result = null;
+
+            if (userFromDirectoryDtos?.Any() == true)
+            {
+                List<int> userIdAddeds = new List<int>();
+                List<User> userToAdds = new List<User>();
+
+                List<Guid> guids = userFromDirectoryDtos.Select(x => x.Guid).Where(x => x != Guid.Empty).ToList();
+                List<User> userDbs = (await this.Repository.GetAllEntityAsync(filter: x => guids.Contains(x.Guid))).ToList();
+                List<UserFromDirectoryDto> userFromDirectoryDtoToAdds = userFromDirectoryDtos.Where(x => !userDbs.Select(userDb => userDb.Guid).Contains(x.Guid)).ToList();
+
+                // ADD
+                List<UserFromDirectory> userFromDirectoryToAdds = PropertyMapper.Map<UserFromDirectoryDto, UserFromDirectory>(userFromDirectoryDtoToAdds).ToList();
+
+                if (userFromDirectoryToAdds?.Any() == true)
+                {
+                    foreach (UserFromDirectory userFromDirectoryToAdd in userFromDirectoryToAdds)
+                    {
+                        User user = new User();
+                        UserFromDirectory.UpdateUserFieldFromDirectory(user, userFromDirectoryToAdd);
+                        user.Login = user.Login?.ToUpper();
+                        if (string.IsNullOrWhiteSpace(user.Sid) && user.Guid != Guid.Empty)
+                        {
+                            user.Sid = user.Guid.ToString();
+                        }
+
+                        userToAdds.Add(user);
+                    }
+
+                    this.Repository.AddRange(userToAdds);
+                }
+
+                // UPDATE IsActive property
+                List<User> userToUpdates = userDbs.Where(x => !x.IsActive).ToList();
+                if (userToUpdates?.Any() == true)
+                {
+                    foreach (User userToUpdate in userToUpdates)
+                    {
+                        userToUpdate.IsActive = true;
+                        this.Repository.SetModified(userToUpdate);
+                    }
+                }
+
+                // SAVE
+                await this.Repository.UnitOfWork.CommitAsync();
+
+                // Fill userIdAddeds
+                if (userToUpdates?.Any() == true)
+                {
+                    userIdAddeds.AddRange(userToUpdates.Select(x => x.Id).ToList());
+                }
+
+                if (userToAdds?.Any() == true)
+                {
+                    userIdAddeds.AddRange(userToAdds.Select(x => x.Id).ToList());
+                }
+
+                // Fill result object
+                result = new ResultAddUsersFromDirectoryDto();
+                result.UsersAddedDtos = (await this.GetAllAsync<OptionDto, UserOptionMapper>(
+                    filter: x => userIdAddeds.Contains(x.Id),
+                    queryOrder: new QueryOrder<User>().OrderBy(o => o.LastName).ThenBy(o => o.FirstName))).ToList();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Deactivates the users asynchronous.
+        /// </summary>
+        /// <param name="ids">The ids.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task DeactivateUsersAsync(List<int> ids)
+        {
+            if (ids?.Any() == true)
+            {
+                List<User> users = (await this.Repository.GetAllEntityAsync(filter: x => x.IsActive && ids.Contains(x.Id))).ToList();
+
+                if (users?.Any() == true)
+                {
+                    foreach (User user in users)
+                    {
+                        user.IsActive = false;
+                        this.Repository.SetModified(user);
+                    }
+
+                    await this.Repository.UnitOfWork.CommitAsync();
+                }
+            }
         }
 
         /// <inheritdoc cref="IUserAppService.RemoveInGroupAsync"/>
@@ -321,49 +392,11 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             }
         }
 
-        /// <inheritdoc/>
-        public async Task<byte[]> ExportCSV(PagingFilterFormatDto filters)
-        {
-            // We ignore paging to return all records
-            filters.First = 0;
-            filters.Rows = 0;
-
-            var queryFilter = new PagingFilterFormatDto
-            {
-                Filters = filters.Filters,
-                GlobalFilter = filters.GlobalFilter,
-                SortField = filters.SortField,
-                SortOrder = filters.SortOrder,
-            };
-
-            var query = await this.GetRangeAsync<UserDto, UserMapper, PagingFilterFormatDto>(filters: queryFilter);
-
-            List<object[]> records = query.results.Select(user => new object[]
-            {
-                user.LastName,
-                user.FirstName,
-                user.Login,
-                string.Join("|", user.Roles.Select(r => r.Display)),
-            }).ToList();
-
-            List<string> columnHeaders = null;
-            if (filters is PagingFilterFormatDto fileFilters)
-            {
-                columnHeaders = fileFilters.Columns.Select(x => x.Value).ToList();
-            }
-
-            StringBuilder csv = new StringBuilder();
-            records.ForEach(line =>
-            {
-                csv.AppendLine(string.Join(BIAConstants.Csv.Separator, line));
-            });
-
-            string csvSep = $"sep={BIAConstants.Csv.Separator}\n";
-            var buffer = Encoding.GetEncoding("iso-8859-1").GetBytes($"{csvSep}{string.Join(BIAConstants.Csv.Separator, columnHeaders ?? new List<string>())}\r\n{csv}");
-            return buffer;
-        }
-
-        private void SelectDefaultLanguage(UserInfoDto userInfo)
+        /// <summary>
+        /// Selects the default language.
+        /// </summary>
+        /// <param name="userInfo">The user information.</param>
+        public void SelectDefaultLanguage(UserInfoDto userInfo)
         {
             userInfo.Language = this.configuration.Cultures.Where(w => w.IsDefaultForCountryCodes.Any(cc => cc == userInfo.Country))
                 .Select(s => s.Code)
@@ -376,6 +409,12 @@ namespace TheBIADevCompany.BIATemplate.Application.User
                     .Select(s => s.Code)
                     .FirstOrDefault();
             }
+        }
+
+        /// <inheritdoc cref="IUserAppService.GetCsvAsync"/>
+        public virtual async Task<byte[]> GetCsvAsync(PagingFilterFormatDto filters)
+        {
+            return await this.GetCsvAsync<UserDto, UserMapper, PagingFilterFormatDto>(filters: filters);
         }
     }
 }

@@ -63,7 +63,11 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             }
             else
             {
-                return await this.Repository.GetAllResultAsync(mapper.EntityToDto(userId), specification: new DirectSpecification<Team>(team => team.Members.Any(member => member.UserId == userId)));
+                return await this.Repository.GetAllResultAsync(
+                    mapper.EntityToDto(userId),
+                    specification: new DirectSpecification<Team>(team =>
+                        team.Members.Any(member =>
+                        member.UserId == userId)));
             }
         }
     }

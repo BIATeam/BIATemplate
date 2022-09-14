@@ -1,16 +1,9 @@
 {
   "BiaNet": {
-    "ApiFeatures": {
+    "CommonFeatures": {
       "DistributedCache": {
         "IsActive": true,
         "ConnectionStringName": "BIATemplateDatabase"
-      },
-      "DelegateJobToWorker": {
-        "IsActive": true,
-        "ConnectionStringName": "BIATemplateDatabase"
-      },
-      "HubForClients": {
-        "IsActive": true
       },
       "ClientForHub": {
         "IsActive": true
@@ -20,6 +13,27 @@
         "ConnectionStringName": "BIATemplateDatabase"
       }
     },
+    "ApiFeatures": {
+      "HangfireDashboard": {
+        "IsActive": true,
+        "DashboardAdmin": true,
+        "DashboardAdminPermission": "Background_Task_Admin",
+        "DashboardReadOnly": true,
+        "DashboardReadOnlyPermission": "Background_Task_Read_Only",
+        "ServerName": "BIATemplate",
+        "ConnectionStringName": "BIATemplateDatabase"
+      },
+      "DelegateJobToWorker": {
+        "IsActive": true,
+        "ConnectionStringName": "BIATemplateDatabase"
+      },
+      "HubForClients": {
+        "IsActive": true
+      }
+    },
+    "Security": {
+      "Audience": "http://localhost/"
+    },
     "EmailConfiguration": {
       "From": "noreply-BIATemplate@the-mail-domain.bia",
       "SmtpHost": "smtp",
@@ -28,9 +42,6 @@
     "Authentication": {
       "LdapCacheGroupDuration": 200, //in minutes
       "LdapCacheUserDuration": 1800 //in minutes
-    },
-    "Security": {
-      "Audience": "https://studio-jetlab.analytics.safran,https://app-jetlab.analytics.safran"
     },
     "Jwt": {
       "Issuer": "BIATemplateApi",
@@ -130,19 +141,19 @@
         "Roles": [ "Admin", "Site_Admin", "Site_Member" ]
       },
       // Member
-      {
-        "Names": [ "App_Member_List_Access", "App_Member_Create", "App_Member_Read", "App_Member_Update", "App_Member_Delete", "App_Member_Save" ],
-        "Roles": [ "Admin", "Site_Admin" ]
-      },
+      //{
+      //  "Names": [ "App_Member_List_Access", "App_Member_Create", "App_Member_Read", "App_Member_Update", "App_Member_Delete", "App_Member_Save" ],
+      //  "Roles": [ "Admin", "Site_Admin" ]
+      //},
       // Permission
-      {
-        "Names": [ "Permissions_Options" ],
-        "Roles": [ "User" ]
-      },
+      //{
+      //  "Names": [ "Permissions_Options" ],
+      //  "Roles": [ "User" ]
+      //},
       // Role
       {
         "Names": [ "Roles_Options" ],
-        "Roles": [ "User" ]
+        "Roles": [ "Admin", "User" ]
       },
       {
         "Names": [ "Roles_List" ],
@@ -203,7 +214,7 @@
       // User
       {
         "Names": [ "User_Options" ],
-        "Roles": [ "User" ]
+        "Roles": [ "Admin", "User" ]
       },
       {
         "Names": [ "User_List_Access", "User_List", "User_Read", "User_Delete", "User_Sync", "User_UpdateRoles" ],
@@ -230,7 +241,7 @@
       // Notifications
       {
         "Names": [ "Notification_List_Access", "Notification_Delete", "Notification_Read" ],
-        "Roles": [ "User" ]
+        "Roles": [ "Admin", "User" ]
       },
       {
         "Names": [ "Notification_Update", "Notification_Create", "NotificationType_Options" ],

@@ -1,4 +1,4 @@
-import {NgxLoggerLevel} from 'ngx-logger';
+import { NgxLoggerLevel } from 'ngx-logger';
 
 export const environment = {
   helpUrl: '',
@@ -14,5 +14,5 @@ export const environment = {
       level: NgxLoggerLevel.DEBUG,
       serverLogLevel: NgxLoggerLevel.ERROR
     }
-  },
+  }
 };
