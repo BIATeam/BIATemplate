@@ -1,19 +1,17 @@
-// <copyright file="SiteFilterDto.cs" company="TheBIADevCompany">
+// <copyright file="SiteAdvancedFilterDto.cs" company="TheBIADevCompany">
 //     Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Domain.Dto.Site
 {
-    using BIA.Net.Core.Domain.Dto.Base;
-
     /// <summary>
     /// The site filter DTO.
     /// </summary>
-    public class SiteFilterDto : LazyLoadDto
+    public class SiteAdvancedFilterDto
     {
         /// <summary>
         /// Gets or sets the user identifier.
         /// </summary>
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
     }
 }

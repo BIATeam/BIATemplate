@@ -120,6 +120,8 @@ import { BiaFormComponent } from './components/form/bia-form/bia-form.component'
 import { BiaInputComponent } from './components/form/bia-input/bia-input.component';
 import { BiaTableInputComponent } from './components/table/bia-table-input/bia-table-input.component';
 import { BiaTableOutputComponent } from './components/table/bia-table-output/bia-table-output.component';
+import { BiaOutputComponent } from './components/form/bia-output/bia-output.component';
+import { BiaTableFilterComponent } from './components/table/bia-table-filter/bia-table-filter.component';
 
 const PRIMENG_MODULES = [
 //  AccordionModule,
@@ -192,8 +194,10 @@ const COMPONENTS = [
   SpinnerComponent,
   IeWarningComponent,
   BiaTableComponent,
+  BiaTableFilterComponent,
   BiaFormComponent,
   BiaInputComponent,
+  BiaOutputComponent,
   BiaTableInputComponent,
   BiaTableOutputComponent,
   BiaCalcTableComponent,

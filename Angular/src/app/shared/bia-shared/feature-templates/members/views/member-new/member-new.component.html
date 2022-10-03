@@ -1,9 +1,8 @@
 <bia-member-form-new
     [members]="members"
-    [roleOptions]="memberOptionsService.roleOptions$| async"
-    [userOptions]="memberOptionsService.userOptions$| async"
-    [teamId]="teamId"
+    [roleOptions]="memberService.optionsService.roleOptions$| async"
+    [userOptions]="memberService.optionsService.userOptions$| async"
     [canAddFromDirectory]="canAddFromDirectory"
     (cancel)="onCancelled()" 
-    (save)="onSubmitted($event)"
+    (save)="onSubmittedMulti($event)"
 ></bia-member-form-new>

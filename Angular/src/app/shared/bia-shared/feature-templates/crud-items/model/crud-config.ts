@@ -1,5 +1,6 @@
 import { TeamTypeId } from "src/app/shared/constants";
 import { BiaFieldsConfig } from "../../../model/bia-field-config";
+import { BiaTableState } from "../../../model/bia-table-state";
 
 
 export class CrudConfig {
@@ -9,10 +10,12 @@ export class CrudConfig {
   useSignalR: boolean;
   useView: boolean;
   tableStateKey: string;
-  useViewTeamWithTypeId: TeamTypeId;
+  useViewTeamWithTypeId: TeamTypeId | null;
   usePopup: boolean;
   useOfflineMode: boolean;
   fieldsConfig: BiaFieldsConfig;
+  defaultViewPref: BiaTableState;
+  optionFilter : any;
 
   constructor({featureName,
     fieldsConfig,
@@ -21,9 +24,10 @@ export class CrudConfig {
     useSignalR = false,
     useView = false,
     tableStateKey = featureName + 'Grid',
-    useViewTeamWithTypeId = TeamTypeId.Site,
+    useViewTeamWithTypeId = null,
     usePopup = true,
     useOfflineMode = false,
+    optionFilter = undefined,
     } :
     {
       featureName: string,
@@ -33,12 +37,14 @@ export class CrudConfig {
       useSignalR?: boolean,
       useView?: boolean,
       tableStateKey?: string,
-      useViewTeamWithTypeId?: TeamTypeId,
+      useViewTeamWithTypeId?: TeamTypeId | null,
       usePopup?: boolean,
       useOfflineMode?: boolean,
+      optionFilter?: any,
     })
   {
     this.featureName = featureName;
+    this.fieldsConfig = fieldsConfig;
     this.storeKey = storeKey;
     this.useCalcMode = useCalcMode;
     this.useSignalR = useSignalR;
@@ -47,6 +53,6 @@ export class CrudConfig {
     this.useViewTeamWithTypeId = useViewTeamWithTypeId;
     this.usePopup = usePopup;
     this.useOfflineMode = useOfflineMode;
-    this.fieldsConfig = fieldsConfig;
+    this.optionFilter = optionFilter;
   }
 }

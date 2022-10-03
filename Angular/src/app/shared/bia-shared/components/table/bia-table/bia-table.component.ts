@@ -3,10 +3,11 @@ import { Table } from 'primeng/table';
 import { LazyLoadEvent, PrimeTemplate, TableState } from 'primeng/api';
 import { BiaFieldsConfig, PropType, BiaFieldConfig } from '../../../model/bia-field-config';
 import { AuthService } from 'src/app/core/bia-core/services/auth.service';
-import { DEFAULT_VIEW, TABLE_FILTER_GLOBAL } from 'src/app/shared/constants';
+import { TABLE_FILTER_GLOBAL } from 'src/app/shared/constants';
 import { KeyValuePair } from '../../../model/key-value-pair';
 import { Observable, timer, of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { BiaTableState } from '../../../model/bia-table-state';
 
 
 const objectsEqual = (o1 :any, o2:any) =>
@@ -37,7 +38,6 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
   @Input() loading = false;
   @Input() tableStateKey: string;
   @Input() viewPreference: string;
-  @Input() advancedFilter: any;
   @Input() actionColumnLabel = 'bia.actions';
   @Input() showLoadingAfter = 100;
 
@@ -177,44 +177,46 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
   }
 
   saveStateNoEmit() {
-    // Copy of the PrimeNG funcion (replace this by this.table) and comment emit and add custom
-    const storage = this.table.getStorage();
-    let state : any = {};
-    if (this.table.paginator) {
-        state.first = this.table.first;
-        state.rows = this.table.rows;
-    }
-    if (this.table.sortField) {
-        state.sortField = this.table.sortField;
-        state.sortOrder = this.table.sortOrder;
-    }
-    if (this.table.multiSortMeta) {
-        state.multiSortMeta = this.table.multiSortMeta;
-    }
-    if (this.table.hasFilter()) {
-        state.filters = this.table.filters;
-    }
-    if (this.table.resizableColumns) {
-        this.table.saveColumnWidths(state);
-    }
-    if (this.table.reorderableColumns) {
-        this.table.saveColumnOrder(state);
-    }
-    if (this.table.selection) {
-        state.selection = this.table.selection;
-    }
-    if (Object.keys(this.table.expandedRowKeys).length) {
-        state.expandedRowKeys = this.table.expandedRowKeys;
-    }
+    if (this.table.stateKey !== undefined && this.table.stateKey !== '') {
+      // Copy of the PrimeNG funcion (replace this by this.table) and comment emit and add custom
+      const storage = this.table.getStorage();
+      let state : any = {};
+      if (this.table.paginator) {
+          state.first = this.table.first;
+          state.rows = this.table.rows;
+      }
+      if (this.table.sortField) {
+          state.sortField = this.table.sortField;
+          state.sortOrder = this.table.sortOrder;
+      }
+      if (this.table.multiSortMeta) {
+          state.multiSortMeta = this.table.multiSortMeta;
+      }
+      if (this.table.hasFilter()) {
+          state.filters = this.table.filters;
+      }
+      if (this.table.resizableColumns) {
+          this.table.saveColumnWidths(state);
+      }
+      if (this.table.reorderableColumns) {
+          this.table.saveColumnOrder(state);
+      }
+      if (this.table.selection) {
+          state.selection = this.table.selection;
+      }
+      if (Object.keys(this.table.expandedRowKeys).length) {
+          state.expandedRowKeys = this.table.expandedRowKeys;
+      }
 
-    const customState: any = this.advancedFilter ? { advancedFilter: this.advancedFilter, ...state } : state;
+      const customState: any = this.configuration.advancedFilter ? { advancedFilter: this.configuration.advancedFilter, ...state } : state;
 
-    storage.setItem(this.table.stateKey, JSON.stringify(customState));
-    //this.table.onStateSave.emit(state);
+      storage.setItem(this.table.stateKey, JSON.stringify(customState));
+      //this.table.onStateSave.emit(state);
+  }
 }
 
   protected getColumns(): BiaFieldConfig[] {
-    const tableState: TableState | null = this.getTableState();
+    const tableState: BiaTableState | null = this.getTableState();
     let columns: BiaFieldConfig[] = [];
     let columnOrder: string[] = [];
     if (tableState && tableState.columnOrder) {
@@ -262,27 +264,18 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
     }
   }
 
+  private firstViewPreferenceApply : boolean = false;
+
   protected onViewPreferenceChange(changes: SimpleChanges) {
     if (this.table && this.table.isStateful() && changes.viewPreference) {
       let viewPreference = changes.viewPreference.currentValue;
-      if (viewPreference === DEFAULT_VIEW) {
-        const defaultState: TableState = this.createDefaultTableState();
-        viewPreference = JSON.stringify(defaultState);
+      if (!this.firstViewPreferenceApply || sessionStorage.getItem(this.tableStateKey)!==viewPreference)
+      {
+        this.firstViewPreferenceApply = true;
+        sessionStorage.setItem(this.tableStateKey, viewPreference);
+        this.restoreStateTable();
       }
-      sessionStorage.setItem(this.tableStateKey, viewPreference);
-      this.restoreStateTable();
     }
-  }
-
-  protected createDefaultTableState(): TableState {
-    return <TableState>{
-      first: 0,
-      rows: this.defaultPageSize,
-      sortField: this.defaultSortField,
-      sortOrder: this.defaultSortOrder,
-      filters: {},
-      columnOrder: this.defaultColumns
-    };
   }
 
   clickElement(itemId: number) {
@@ -313,6 +306,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
   }
 
   onLoadLazy(event: LazyLoadEvent) {
+    this.saveTableState();
     setTimeout(() => 
     this.loadLazy.emit(event)
     , 0);
@@ -324,7 +318,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
 
   onStateSave(state: TableState) {
     if (this.table && Object.keys(state).length) {
-      const customState: any = this.advancedFilter ? { advancedFilter: this.advancedFilter, ...state } : state;
+      const customState: BiaTableState = { advancedFilter: this.configuration.advancedFilter, ...state };
       if (this.table.stateKey !== undefined && this.table.stateKey !== '') {
         const storage = this.table.getStorage();
         const jsonCustomState: string = JSON.stringify(customState);
@@ -344,7 +338,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
 
   protected restoreStateTable() {
     if (this.table) {
-      const tableState: TableState | null = this.getTableState();
+      const tableState: BiaTableState | null = this.getTableState();
       if (tableState?.columnOrder) {
 
         this.updateDisplayedColumns(false);
@@ -365,10 +359,10 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
     }
   }
 
-  protected getTableState(): TableState | null {
+  protected getTableState(): BiaTableState | null {
     const stateString: string | null = sessionStorage.getItem(this.tableStateKey);
     if (stateString && stateString?.length > 0) {
-      const state: TableState = JSON.parse(stateString);
+      const state: BiaTableState = JSON.parse(stateString);
       return state;
     }
 

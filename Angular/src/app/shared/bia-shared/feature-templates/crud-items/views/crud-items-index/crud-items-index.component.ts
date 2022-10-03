@@ -21,6 +21,8 @@ import { BaseDto } from 'src/app/shared/bia-shared/model/base-dto';
 import { CrudItemService } from '../../services/crud-item.service';
 import { CrudConfig } from '../../model/crud-config';
 import { BiaOnlineOfflineService } from 'src/app/core/bia-core/services/bia-online-offline.service';
+import { BiaTableState } from 'src/app/shared/bia-shared/model/bia-table-state';
+import { AuthService } from 'src/app/core/bia-core/services/auth.service';
 
 @Component({
   selector: 'bia-crud-items-index',
@@ -34,7 +36,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
   @HostBinding('class.bia-flex') flex = true;
   @ViewChild(BiaTableComponent, { static: false }) biaTableComponent: BiaTableComponent;
   @ViewChild(CrudItemTableComponent, { static: false }) crudItemTableComponent: CrudItemTableComponent<CrudItem>;
-  protected get crudItemListComponent() {
+  public get crudItemListComponent() {
     if (!this.crudConfiguration.useCalcMode) {
       return this.biaTableComponent;
     }
@@ -60,15 +62,17 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
   popupTitle: string;
   tableStateKey: string | undefined;
   tableState: string;
-  sortFieldValue = 'msn';
+  sortFieldValue = '';
   useViewTeamWithTypeId: TeamTypeId | null;
-  parentIds: string[];
+  defaultViewPref: BiaTableState;
+
 
   protected store: Store<AppState>;
   protected router: Router;
   public activatedRoute: ActivatedRoute;
   protected translateService: TranslateService;
   protected biaTranslationService: BiaTranslationService;
+  protected authService: AuthService;
 
   constructor(
     protected injector: Injector,
@@ -79,6 +83,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
     this.activatedRoute = this.injector.get<ActivatedRoute>(ActivatedRoute);
     this.translateService = this.injector.get<TranslateService>(TranslateService);
     this.biaTranslationService = this.injector.get<BiaTranslationService>(BiaTranslationService);
+    this.authService = this.injector.get<AuthService>(AuthService);
   }
 
   useViewChange(e: boolean) {
@@ -123,7 +128,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
       this.isLoadAllOptionsSubsribe = true;
       this.sub.add(
         this.biaTranslationService.currentCulture$.subscribe(event => {
-          this.crudItemService.optionsService.loadAllOptions();
+          this.crudItemService.optionsService.loadAllOptions(this.crudConfiguration.optionFilter);
         })
       );
     }
@@ -167,11 +172,17 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
 /*    this.tableStateKey = this.crudConfiguration.useView ? this.crudConfiguration.tableStateKey : undefined;
     this.useViewTeamWithTypeId = this.crudConfiguration.useView ? this.crudConfiguration.useViewTeamWithTypeId : null;
 */
-    this.parentIds = [];
     this.sub = new Subscription();
 
     this.initTableConfiguration();
-    this.setPermissions();
+    this.sub.add(
+      this.authService.authInfo$.subscribe((authInfo) => {
+        if (authInfo) {
+          this.setPermissions();
+        }
+      })
+    );
+    
     this.crudItems$ = this.crudItemService.crudItems$;
     this.totalCount$ = this.crudItemService.totalCount$;
     this.loading$ = this.crudItemService.loadingGetAll$;
@@ -224,7 +235,11 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
     }
   }
 
-  onEdit(crudItemId: number) {
+  onClickRow(crudItemId: any) {
+    this.onEdit(crudItemId)
+  }
+
+  onEdit(crudItemId: any) {
     if (!this.crudConfiguration.useCalcMode) {
       this.router.navigate([crudItemId, 'edit'], { relativeTo: this.activatedRoute });
     }
@@ -271,7 +286,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
   }
 
   onLoadLazy(lazyLoadEvent: LazyLoadEvent) {
-    const pagingAndFilter: PagingFilterFormatDto = { parentIds: this.parentIds, ...lazyLoadEvent };
+    const pagingAndFilter: PagingFilterFormatDto = { advancedFilter: this.crudConfiguration.fieldsConfig.advancedFilter, parentIds: this.crudItemService.getParentIds().map((id => id.toString())), ...lazyLoadEvent };
     this.crudItemService.loadAllByPost(pagingAndFilter);
   }
 
@@ -289,10 +304,11 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
 
   onViewChange(viewPreference: string) {
     this.viewPreference = viewPreference;
+    this.updateAdvancedFilterByView(viewPreference);
   }
 
   onStateSave(tableState: string) {
-    // this.viewPreference = tableState;
+    this.viewPreference = tableState;
     this.tableState = tableState;
   }
 
@@ -300,7 +316,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
     const columns: { [key: string]: string } = {};
     this.crudItemListComponent.getPrimeNgTable().columns.map((x: BiaFieldConfig) => (columns[x.field] = this.translateService.instant(x.header)));
     const columnsAndFilter: PagingFilterFormatDto = {
-      parentIds: this.parentIds, columns: columns, ...this.crudItemListComponent.getLazyLoadMetadata()
+      parentIds: this.crudItemService.getParentIds().map((id => id.toString())), columns: columns, ...this.crudItemListComponent.getLazyLoadMetadata()
     };
     this.crudItemService.dasService.getFile(columnsAndFilter).subscribe((data) => {
       FileSaver.saveAs(data, this.translateService.instant('app.crudItems') + '.csv');
@@ -314,11 +330,59 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto> implements OnInit
     this.canAdd = true;
   }
   protected initTableConfiguration() {
-    //this.sub.add(this.biaTranslationService.currentCultureDateFormat$.subscribe((dateFormat) => {
-      /*let tableConfiguration = {
-        columns: this.crudConfiguration.columns.map<BiaFieldConfig>(object => object.clone())}*/
-      this.columns = this.crudConfiguration.fieldsConfig.columns.map((col) => <KeyValuePair>{ key: col.field, value: col.header });
-      this.displayedColumns = [...this.columns];
-    //}));
+    this.columns = this.crudConfiguration.fieldsConfig.columns.map((col) => <KeyValuePair>{ key: col.field, value: col.header });
+    this.displayedColumns = [...this.columns];
+    this.sortFieldValue = this.columns[0].key;
+
+    this.defaultViewPref = <BiaTableState>{
+        first: 0,
+        rows: this.defaultPageSize,
+        sortField: this.sortFieldValue,
+        sortOrder: 1,
+        filters: {},
+        columnOrder: this.crudConfiguration.fieldsConfig.columns.map((x) => x.field),
+        advancedFilter: undefined,
+      }
+  }
+
+
+  // Advanced Filter;
+  showAdvancedFilter = false;
+  haveAdvancedFilter = false;
+
+
+  onFilter(advancedFilter: any) {
+    this.crudConfiguration.fieldsConfig.advancedFilter = advancedFilter;
+    this.crudItemListComponent.table.saveState();
+    this.checkHaveAdvancedFilter();
+    this.onLoadLazy(this.crudItemListComponent.getLazyLoadMetadata());
+  }
+
+  checkHaveAdvancedFilter()
+  {
+    this.haveAdvancedFilter =  false;
+  }
+
+  private updateAdvancedFilterByView(viewPreference: string) {
+    if (viewPreference) {
+      const state = JSON.parse(viewPreference);
+      if (state) {
+        this.crudConfiguration.fieldsConfig.advancedFilter = state.advancedFilter;
+        this.checkHaveAdvancedFilter();
+      }
+    }
+    else
+    {
+      this.crudConfiguration.fieldsConfig.advancedFilter = {};
+      this.checkHaveAdvancedFilter();
+    }
+  }
+
+  onCloseFilter() {
+    this.showAdvancedFilter = false;
+  }
+
+  onOpenFilter() {
+    this.showAdvancedFilter = true;
   }
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, EventEmitter, Output, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { SelectItemGroup, TableState } from 'primeng/api';
+import { FilterMetadata, SelectItemGroup } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription, combineLatest } from 'rxjs';
 import { View } from '../../model/view';
-import { ViewType, DEFAULT_VIEW, TeamTypeId, TeamTypeRightPrefixe } from 'src/app/shared/constants';
+import { ViewType, TeamTypeId, TeamTypeRightPrefixe } from 'src/app/shared/constants';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'src/app/store/state';
 import { getAllViews, getLastViewChanged, getDataLoaded } from '../../store/view.state';
@@ -14,6 +14,7 @@ import { Permission } from 'src/app/shared/permission';
 import { ActivatedRoute } from '@angular/router';
 import { QUERY_STRING_VIEW } from '../../model/view.constants';
 import { KeyValuePair } from 'src/app/shared/bia-shared/model/key-value-pair';
+import { BiaTableState } from 'src/app/shared/bia-shared/model/bia-table-state';
 
 @Component({
   selector: 'bia-view-list',
@@ -32,6 +33,7 @@ export class ViewListComponent implements OnInit, OnChanges, OnDestroy {
   private sub = new Subscription();
   @Input() tableStateKey: string;
   @Input() tableState: string;
+  @Input() defaultViewPref: BiaTableState;
   @Input() useViewTeamWithTypeId: TeamTypeId | null;
   @Input() displayedColumns: string[]; 
   @Input() columns: KeyValuePair[]; 
@@ -106,35 +108,26 @@ export class ViewListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private GetCorrespondingViewId(preference: string) : number {
-    let pref: TableState = JSON.parse(preference);
-    pref.selection = null;
+    let pref: BiaTableState = JSON.parse(preference);
     pref.columnWidths = undefined;
-    if (pref.first===0 &&
-        (pref.filters === undefined || JSON.stringify(pref.filters) === "{}") &&
-        JSON.stringify(pref.columnOrder) === JSON.stringify(this.columns.map((c) => c.key)) &&
-        pref.rows === 10 &&
-        pref.sortField === this.columns[0].key &&
-        pref.sortOrder === 1)
+    if (this.defaultViewPref != undefined)
     {
-      return 0;
+        if (this.areViewsEgals(pref, this.defaultViewPref))
+        {
+          return 0;
+        }
     }
-    else 
-    {
-      console.log ("GetCorrespondingViewId: pref" + JSON.stringify(pref) + " >> " + JSON.stringify(pref.filters) + " >> " + JSON.stringify(this.columns.map((c) => c.key)) + " >> " + this.columns[0].key)
-      console.log ("GetCorrespondingViewId: 1 >> " + (pref.filters === undefined || JSON.stringify(pref.filters) === "{}"));
-      console.log ("GetCorrespondingViewId: 2 >> " + (JSON.stringify(pref.columnOrder) === JSON.stringify(this.columns.map((c) => c.key))));
-      console.log ("GetCorrespondingViewId: 3 >> " + (pref.sortField === this.columns[0].key));
+    else{
+      console.log ("ViewList component Error: defaultViewPref is not defined");
     }
 
-    let prefString =  JSON.stringify(pref);
+    // let prefString =  JSON.stringify(pref);
     // console.log("GetCorrespondingView : " + prefString  )
     if (this.views)
     {
       let correspondingView = this.views.find(v => {
-        const viewPref: TableState = JSON.parse(v.preference);
-        viewPref.selection = null;
-        let correspondFind = prefString === JSON.stringify(viewPref)
-        return correspondFind;
+        const viewPref: BiaTableState = JSON.parse(v.preference);
+        return this.areViewsEgals(pref,viewPref);
       });
       if (correspondingView)
       {
@@ -143,6 +136,111 @@ export class ViewListComponent implements OnInit, OnChanges, OnDestroy {
     }
     return this.currentView;
   }
+
+  private areViewsEgals(view1: BiaTableState, view2: BiaTableState)
+  {
+    return (  
+      view1.first===view2.first &&
+      (
+        this.areFilterEgals(view1.filters,view2.filters)
+      ) &&
+      JSON.stringify(view1.columnOrder) === JSON.stringify(view2.columnOrder) &&
+      view1.rows === view2.rows &&
+      view1.sortField === view2.sortField &&
+      view1.sortOrder === view2.sortOrder &&
+      (
+        this.isNullUndefEmptyStr(view1.advancedFilter) && this.isNullUndefEmptyStr(view2.advancedFilter)
+        ||
+        JSON.stringify(view1.advancedFilter) === JSON.stringify(view2.advancedFilter)
+      )
+    )
+  }
+
+  private areFilterEgals(filters1: {[s: string]: FilterMetadata | FilterMetadata[];} | undefined, filters2: {[s: string]: FilterMetadata | FilterMetadata[];} | undefined ) :boolean
+  {
+    if (this.isNullUndefEmptyStr(filters1) && (this.isNullUndefEmptyStr(filters2)))
+    {
+      return true;
+    }
+    if (JSON.stringify(filters1) === JSON.stringify(filters2))
+    {
+      return true;
+    }
+
+    for (let key in filters1) {
+      let value1 = filters1[key];
+      let value2 = filters2?filters2[key]:undefined;
+      if (JSON.stringify(this.standardizeFilterMetadata(value1)) !== JSON.stringify(this.standardizeFilterMetadata(value2)))
+      {
+        return false;
+      }
+    }
+    for (let key in filters2) {
+      if (filters1 == undefined || !(key in filters1))
+      {
+        if (JSON.stringify(this.standardizeFilterMetadata(filters2[key]))!= JSON.stringify([]))
+        {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  private standardizeFilterMetadata( filterMetadata : FilterMetadata | FilterMetadata[] | undefined)  : FilterMetadata[]
+  {
+    let standardized: FilterMetadata[] = []
+    if (this.isValueNullUndefEmptyStr(filterMetadata))
+    {
+      return standardized;
+    }
+    if (Array.isArray(filterMetadata))
+    {
+      (filterMetadata as FilterMetadata[]).forEach(element => {
+        if (!this.isValueNullUndefEmptyStr(element.value))
+        {
+          standardized.push({...element});
+        }
+      });
+    }
+
+    if (!this.isValueNullUndefEmptyStr((filterMetadata as FilterMetadata)['value']))
+    {
+      standardized.push({...filterMetadata as FilterMetadata})
+    }
+
+    if (standardized.length === 1)
+    {
+      standardized[0].operator='and';
+    }
+    return standardized;
+  }
+
+  private isNullUndefEmptyStr(obj : any) : boolean
+  {
+    if (this.isValueNullUndefEmptyStr(obj )) 
+    {
+      return true;
+    }
+    if (JSON.stringify(obj) === "{}")
+    {
+      return true;
+    }
+    return Object.values(obj).every(value => {
+      // 👇️ check for multiple conditions
+      if (this.isValueNullUndefEmptyStr(value)) {
+        return true;
+      }
+      return false;
+    });
+  }
+
+  private isValueNullUndefEmptyStr(obj : any) : boolean
+  {
+    return (obj === null || obj === undefined || obj === '') 
+  }
+  
 
   onViewChange(event: any) {
     this.selectedView = event.value;
@@ -265,18 +363,18 @@ export class ViewListComponent implements OnInit, OnChanges, OnDestroy {
         if (this.selectedView !== 0) {
           const view = this.views.find((v) => v.id === this.selectedView);
           if (view) {
-            this.saveViewState(view.preference);
+            //this.saveViewState(view.preference);
             this.isFirstEmitDone = true;
             this.viewChange.emit(view.preference);
           }
         } else {
           this.isFirstEmitDone = true;
-          this.viewChange.emit(DEFAULT_VIEW);
+          this.viewChange.emit(JSON.stringify(this.defaultViewPref));
         }
       }
     });
   }
-
+/*
   private saveViewState(stateString: string) {
     if (stateString) {
       const state = JSON.parse(stateString);
@@ -286,7 +384,7 @@ export class ViewListComponent implements OnInit, OnChanges, OnDestroy {
       stateString = JSON.stringify(state);
       sessionStorage.setItem(this.tableStateKey, stateString);
     }
-  }
+  }*/
 
   private getViewState(): string | null {
     return sessionStorage.getItem(this.tableStateKey);

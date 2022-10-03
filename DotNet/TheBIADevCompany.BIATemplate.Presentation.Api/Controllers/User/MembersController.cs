@@ -1,7 +1,7 @@
 // <copyright file="MembersController.cs" company="TheBIADevCompany">
 //     Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
-// #define UseHubForClientInMember
+#define UseHubForClientInMember
 
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
 {
@@ -51,8 +51,8 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         /// </summary>
         /// <param name="memberService">The member application service.</param>
         /// <param name="teamAppService">The team service.</param>
-#if UseHubForClientInMember
         /// <param name="clientForHubService">The hub for client.</param>
+#if UseHubForClientInMember
         public MembersController(
             IMemberAppService memberService, ITeamAppService teamAppService, IClientForHubRepository clientForHubService)
 #else
@@ -77,7 +77,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetAll([FromBody] PagingFilterFormatDto filters)
         {
-            if (filters.ParentIds != null && filters.ParentIds.Length > 0)
+            if (filters.ParentIds != null && filters.ParentIds.Length > 0 && filters.ParentIds[0] != null)
             {
                 if (!this.IsAuthorizeForTeam(int.Parse(filters.ParentIds[0]), Rights.Members.ListAccessSuffix).Result)
                 {
@@ -327,7 +327,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Remove([FromQuery] List<int> ids)
         {
-            if (ids?.Any() != true)
+            if (ids == null || ids?.Any() != true)
             {
                 return this.BadRequest();
             }

@@ -10,6 +10,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site
     using System.Threading.Tasks;
     using BIA.Net.Core.Common;
     using BIA.Net.Core.Common.Exceptions;
+    using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Presentation.Api.Controllers.Base;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -58,9 +59,9 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site
         [HttpPost("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = Rights.Sites.ListAccess)]
-        public async Task<IActionResult> GetAll([FromBody] SiteFilterDto filters)
+        public async Task<IActionResult> GetAll([FromBody] PagingFilterFormatDto<SiteAdvancedFilterDto> filters)
         {
-            var (results, total) = await this.siteService.GetAllWithMembersAsync(filters);
+            var (results, total) = await this.siteService.GetRangeWithMembersAsync(filters);
 
             this.HttpContext.Response.Headers.Add(BIAConstants.HttpHeaders.TotalCount, total.ToString());
 
@@ -87,7 +88,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site
 
             try
             {
-                var dto = await this.siteService.GetAsync(id);
+                var dto = await this.siteService.GetWithMembersAsync(id);
                 return this.Ok(dto);
             }
             catch (ElementNotFoundException)
@@ -212,7 +213,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site
         [Authorize(Roles = Rights.Sites.Delete)]
         public async Task<IActionResult> Remove([FromQuery] List<int> ids)
         {
-            if (ids?.Any() != true)
+            if (ids == null || ids?.Any() != true)
             {
                 return this.BadRequest();
             }

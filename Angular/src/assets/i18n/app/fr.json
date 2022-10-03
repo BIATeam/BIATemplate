@@ -8,10 +8,9 @@
   },
   "member": {
     "add": "Ajouter membre",
-    "listOfSiteMembers": "Liste des membres",
+    "listOf": "Liste des membres",
     "manage": "Gérer membre",
     "roles": "Roles",
-    "rolesForSite": "Roles",
     "user": "Utilisateur"
   },
   "msg": {
@@ -24,7 +23,7 @@
     "admins": "Administrateurs",
     "edit": "Modifier site",
     "listOf": "Liste de sites",
-    "selectUser": "Sélectionner un utilisateur",
+    "filterMember": "Utilisateur membre",
     "title": "Titre"
   },
   "translation": 

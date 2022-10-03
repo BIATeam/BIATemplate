@@ -258,7 +258,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// </returns>
         public async Task<AuthInfoDTO<UserDataDto, AdditionalInfoDto>> LoginOnTeamsAsync(IIdentity identity, LoginParamDto loginParam)
         {
-            if (identity?.IsAuthenticated != true || string.IsNullOrWhiteSpace(this.principal?.GetUserLogin()))
+            if (identity == null || identity?.IsAuthenticated != true || string.IsNullOrWhiteSpace(this.principal?.GetUserLogin()))
             {
                 if (identity == null)
                 {
