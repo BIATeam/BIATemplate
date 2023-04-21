@@ -114,7 +114,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         [Authorize(Roles = Rights.Users.Add)]
         public async Task<IActionResult> AddInGroup([FromBody] IEnumerable<UserFromDirectoryDto> users)
         {
-            string errors = await this.userService.AddInGroupAsync(users);
+            string errors = await this.userService.AddFromDirectory(users);
             if (!string.IsNullOrEmpty(errors))
             {
                 return this.StatusCode(303, errors);

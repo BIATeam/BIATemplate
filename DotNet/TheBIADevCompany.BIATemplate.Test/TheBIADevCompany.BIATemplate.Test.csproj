@@ -7,7 +7,7 @@
 
 		<Company>TheBIADevCompany</Company>
 
-		<Copyright>Copyright © TheBIADevCompany 2020</Copyright>
+		<Copyright>Copyright � TheBIADevCompany 2020</Copyright>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -24,7 +24,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="BIA.Net.Core.Test" Version="3.3.0" />
+		<PackageReference Include="BIA.Net.Core.Test" Version="3.3.*" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
 		<PackageReference Include="Moq" Version="4.15.2" />
 		<PackageReference Include="MSTest.TestAdapter" Version="2.1.1" />

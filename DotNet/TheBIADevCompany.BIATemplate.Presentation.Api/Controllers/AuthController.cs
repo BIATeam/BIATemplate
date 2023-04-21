@@ -7,13 +7,16 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Presentation.Api.Authentication;
     using BIA.Net.Presentation.Api.Controllers.Base;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using TheBIADevCompany.BIATemplate.Application.Site;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
@@ -50,6 +53,11 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         private readonly ILogger<AuthController> logger;
 
         /// <summary>
+        /// The configuration of the BiaNet section.
+        /// </summary>
+        private readonly IEnumerable<LdapDomain> ldapDomains;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AuthController"/> class.
         /// </summary>
         /// <param name="jwtFactory">The JWT factory.</param>
@@ -57,13 +65,15 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         /// <param name="siteAppService">The site application service.</param>
         /// <param name="roleAppService">The role application service.</param>
         /// <param name="logger">The logger.</param>
-        public AuthController(IJwtFactory jwtFactory, IUserAppService userAppService, ISiteAppService siteAppService, IRoleAppService roleAppService, ILogger<AuthController> logger)
+        /// <param name="configuration">The configuration.</param>
+        public AuthController(IJwtFactory jwtFactory, IUserAppService userAppService, ISiteAppService siteAppService, IRoleAppService roleAppService, ILogger<AuthController> logger, IOptions<BiaNetSection> configuration)
         {
             this.jwtFactory = jwtFactory;
             this.userAppService = userAppService;
             this.siteAppService = siteAppService;
             this.roleAppService = roleAppService;
             this.logger = logger;
+            this.ldapDomains = configuration.Value.Authentication.LdapDomains;
         }
 
         /// <summary>
@@ -71,7 +81,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         /// </summary>
         /// <param name="singleRoleMode">Whether the front is configured to use a single role at a time.</param>
         /// <returns>The JWT if authenticated.</returns>
-        [HttpGet("login/{singleRoleMode}")]
+        [HttpGet("login/{singleRoleMode?}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -89,7 +99,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
         /// <returns>
         /// The JWT if authenticated.
         /// </returns>
-        [HttpGet("login/site/{siteId}/{singleRoleMode}/{roleId?}")]
+        [HttpGet("login/site/{siteId}/{singleRoleMode?}/{roleId?}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -111,58 +121,89 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
             }
 
             var login = identity.Name.Split('\\').LastOrDefault();
+
             var sid = ((System.Security.Principal.WindowsIdentity)identity).User.Value;
 
             if (string.IsNullOrEmpty(login))
             {
                 this.logger.LogWarning("Unauthorized because bad login");
-                return this.BadRequest("Incorrect login");
+                return this.Unauthorized("Incorrect login");
             }
 
             if (string.IsNullOrEmpty(sid))
             {
                 this.logger.LogWarning("Unauthorized because bad sid");
-                return this.BadRequest("Incorrect sid");
+                return this.Unauthorized("Incorrect sid");
+            }
+
+            var domain = identity.Name.Split('\\').FirstOrDefault();
+            if (!this.ldapDomains.Any(ld => ld.Name.Equals(domain)))
+            {
+                this.logger.LogWarning("Unauthorized because bad domain");
+                return this.Unauthorized("Incorrect domain");
             }
 
             // parallel launch the get user profile
             var userProfileTask = this.userAppService.GetUserProfileAsync(login);
 
-            // get roles
-            var userRolesFromUserDirectory = await this.userAppService.GetUserDirectoryRolesAsync(sid);
+            // Get userInfo
+            UserInfoDto userInfo = await this.userAppService.GetUserInfoAsync(login);
 
-            if (userRolesFromUserDirectory == null || !userRolesFromUserDirectory.Any())
+            // get roles
+            var userRoles = await this.userAppService.GetUserDirectoryRolesAsync(userInfo?.Id > 0, sid);
+
+            if (userRoles?.Any() != true)
             {
                 this.logger.LogInformation("Unauthorized because No roles found");
                 return this.Forbid("No roles found");
             }
 
-            // get user info
-            UserInfoDto userInfo = null;
-            if (userRolesFromUserDirectory.Contains(Constants.Role.User))
+            if (userInfo == null && !string.IsNullOrWhiteSpace(sid) && userRoles.Contains(Constants.Role.User))
             {
-                userInfo = await this.userAppService.GetCreateUserInfoAsync(sid);
+                // automatic creation from ldap, only use if user do not need fine Role on team.
                 try
                 {
+                    userInfo = await this.userAppService.CreateUserInfoFromLdapAsync(sid, login);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, "Cannot create user... Probably database is read only...");
+                }
+            }
+
+            if (userInfo != null)
+            {
+                try
+                {
+                    // The date of the last connection is updated in the database
                     await this.userAppService.UpdateLastLoginDateAndActivate(userInfo.Id);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    this.logger.LogWarning("Cannot update last login date... Probably database is read only...");
+                    this.logger.LogError(ex, "Cannot update last login date... Probably database is read only...");
                 }
             }
-            else
+
+            // If the user does not exist in the database
+            if (userInfo == null)
             {
-                userInfo = new UserInfoDto { Login = login, Language = Constants.DefaultValues.Language };
+                // We create a UserInfoDto object from principal
+                userInfo = new UserInfoDto
+                {
+                    Login = login,
+                    Language = Constants.DefaultValues.Language,
+                };
             }
+
+            this.userAppService.SelectDefaultLanguage(userInfo);
 
             // get user rights
             List<string> userRights = null;
-            if (userRolesFromUserDirectory.Contains(Constants.Role.User))
+            if (userRoles.Contains(Constants.Role.User))
             {
                 if (siteId < 1)
                 {
-                    var userMainRights = this.userAppService.TranslateRolesInRights(userRolesFromUserDirectory);
+                    var userMainRights = this.userAppService.TranslateRolesInRights(userRoles);
                     var sites = await this.siteAppService.GetAllAsync(userInfo.Id, userMainRights);
                     var site = sites?.OrderByDescending(x => x.IsDefault).FirstOrDefault();
 
@@ -186,7 +227,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
 
                 if (siteId > 0)
                 {
-                    userRights = await this.userAppService.GetRightsForUserAsync(userRolesFromUserDirectory, sid, siteId, roleId);
+                    userRights = await this.userAppService.GetRightsForUserAsync(userRoles, userInfo.Id, siteId, roleId);
                     if (userRights == null || !userRights.Any())
                     {
                         this.logger.LogInformation("Unauthorized because no user rights for site : " + siteId);
@@ -198,7 +239,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
             // For admin and non user
             if (userRights == null)
             {
-                userRights = await this.userAppService.GetRightsForUserAsync(userRolesFromUserDirectory, sid, 0, 0);
+                userRights = await this.userAppService.GetRightsForUserAsync(userRoles, userInfo.Id, 0, 0);
             }
 
             if (userRights == null || !userRights.Any())

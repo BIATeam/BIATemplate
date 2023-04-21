@@ -107,7 +107,7 @@
       // Ldap Domain
       {
         "Name": "LdapDomains_List",
-        "Roles": [ "Admin", "Site_Admin" ]
+        "Roles": [ "Admin", "UserManager", "Site_Admin" ]
       },
       // Site
       {
@@ -120,8 +120,12 @@
       },
       // User
       {
-        "Names": [ "User_List_Access", "User_List", "User_ListAD", "User_Add", "User_Delete", "User_Sync" ],
-        "Roles": [ "Admin" ]
+        "Names": [ "User_List_Access", "User_List", "User_Sync" ],
+        "Roles": [ "Admin", "UserManager" ]
+      },
+      {
+        "Names": [ "User_ListAD", "User_Add", "User_Delete" ],
+        "Roles": [ "UserManager" ]
       },
       // View
       {
