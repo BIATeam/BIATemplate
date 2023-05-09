@@ -32,12 +32,12 @@ namespace TheBIADevCompany.BIATemplate.Application.Job
         private readonly IBIATemplateAppRepository appRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WakeUpTask"/> class.
+        /// Initializes a new instance of the <see cref="WakeUpTask" /> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="roleAppService">The role app service.</param>
         /// <param name="logger">logger.</param>
         /// <param name="webApiRepository">the front webiApi repository.</param>
+        /// <param name="appRepository">The application repository.</param>
         public WakeUpTask(IConfiguration configuration, ILogger<WakeUpTask> logger, IBIATemplateWebApiRepository webApiRepository, IBIATemplateAppRepository appRepository)
             : base(configuration, logger)
         {
