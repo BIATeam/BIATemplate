@@ -4,6 +4,7 @@
 
 namespace TheBIADevCompany.BIATemplate.WorkerService.Features
 {
+    using System.Linq;
     using Hangfire.Dashboard;
     using TheBIADevCompany.BIATemplate.Application.User;
 
@@ -36,8 +37,10 @@ namespace TheBIADevCompany.BIATemplate.WorkerService.Features
             var httpContext = context.GetHttpContext();
             if (httpContext.User.Identity.IsAuthenticated)
             {
-                var sid = ((System.Security.Principal.WindowsIdentity)httpContext.User.Identity).User.Value;
-                var userRolesFromUserDirectory = this.userAppService.GetUserDirectoryRolesAsync(false, sid).Result;
+                var identity = (System.Security.Principal.WindowsIdentity)httpContext.User.Identity;
+                var sid = identity.User.Value;
+                var domain = identity.Name.Split('\\').FirstOrDefault();
+                var userRolesFromUserDirectory = this.userAppService.GetUserDirectoryRolesAsync(false, sid, domain).Result;
                 var userMainRights = this.userAppService.TranslateRolesInRights(userRolesFromUserDirectory);
                 return userMainRights.Contains("Hangfire_Dashboard");
             }
