@@ -182,7 +182,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
             UserInfoDto userInfo = await this.userAppService.GetUserInfoAsync(login);
 
             // get roles
-            var userRoles = await this.userAppService.GetUserDirectoryRolesAsync(userInfo?.Id > 0, sid, domain);
+            var userRoles = await this.userAppService.GetUserDirectoryRolesAsync(userInfo?.IsActive == true, sid, domain);
 
             // If the user has no role
             if (userRoles?.Any() != true)
@@ -318,7 +318,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
                             var teams = allTeams.Where(t => t.TeamTypeId == teamLogin.TeamTypeId);
                             var team = teams?.OrderByDescending(x => x.IsDefault).FirstOrDefault();
 
-                            CurrentTeamDto currentTeam = new();
+                            CurrentTeamDto currentTeam = new ();
                             currentTeam.TeamTypeId = teamLogin.TeamTypeId;
 
                             if (team != null)

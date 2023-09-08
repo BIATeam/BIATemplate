@@ -13,7 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BIA.Net.Core.WorkerService" Version="3.6.4" />
+    <PackageReference Include="BIA.Net.Core.WorkerService" Version="3.6.5" />
+    <PackageReference Include="Hangfire" Version="1.7.28" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.28" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.28" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Redis" Version="1.1.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
@@ -35,4 +38,10 @@
     </Content>
   </ItemGroup>
   
+  <ItemGroup>
+    <PackageReference Update="SonarAnalyzer.CSharp" Version="8.25.0.33663">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

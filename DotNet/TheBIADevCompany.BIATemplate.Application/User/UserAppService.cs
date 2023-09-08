@@ -38,11 +38,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     public class UserAppService : FilteredServiceBase<User, int>, IUserAppService
     {
         /// <summary>
-        /// The user right domain service.
-        /// </summary>
-        private readonly IUserPermissionDomainService userPermissionDomainService;
-
-        /// <summary>
         /// The user synchronize domain service.
         /// </summary>
         private readonly IUserSynchronizeDomainService userSynchronizeDomainService;
@@ -66,7 +61,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// Initializes a new instance of the <see cref="UserAppService"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        /// <param name="userPermissionDomainService">The user right domain service.</param>
         /// <param name="userSynchronizeDomainService">The user synchronize domain service.</param>
         /// <param name="configuration">The configuration of the BiaNet section.</param>
         /// <param name="userDirectoryHelper">The user directory helper.</param>
@@ -74,7 +68,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <param name="userContext">The user context.</param>
         public UserAppService(
             ITGenericRepository<User, int> repository,
-            IUserPermissionDomainService userPermissionDomainService,
             IUserSynchronizeDomainService userSynchronizeDomainService,
             IOptions<BiaNetSection> configuration,
             IUserDirectoryRepository<UserFromDirectory> userDirectoryHelper,
@@ -82,7 +75,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             UserContext userContext)
             : base(repository)
         {
-            this.userPermissionDomainService = userPermissionDomainService;
             this.userSynchronizeDomainService = userSynchronizeDomainService;
             this.configuration = configuration.Value;
             this.userDirectoryHelper = userDirectoryHelper;
@@ -118,7 +110,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         }
 
         /// <inheritdoc cref="IUserRightDomainService.GetRightsForUserAsync"/>
-         public async Task<List<string>> GetUserDirectoryRolesAsync(bool isUserInDB, string sid, string domain)
+        public async Task<List<string>> GetUserDirectoryRolesAsync(bool isUserInDB, string sid, string domain)
         {
             return await this.userDirectoryHelper.GetUserRolesBySid(isUserInDB, sid, domain);
         }
@@ -148,6 +140,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Country = user.Country,
+                    IsActive = user.IsActive,
                 };
                 return userInfo;
             }
@@ -158,7 +151,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <inheritdoc cref="IUserAppService.GetUserInfoAsync"/>
         public async Task<UserInfoDto> GetUserInfoAsync(string login)
         {
-            return await this.Repository.GetResultAsync(UserSelectBuilder.SelectUserInfo(), filter: user => user.Login == login && user.IsActive);
+            return await this.Repository.GetResultAsync(UserSelectBuilder.SelectUserInfo(), filter: user => user.Login == login);
         }
 
         /// <inheritdoc cref="IUserAppService.GetUserProfileAsync"/>
