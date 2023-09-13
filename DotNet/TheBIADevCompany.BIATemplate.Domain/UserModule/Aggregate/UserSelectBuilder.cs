@@ -43,6 +43,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
                 Login = user.Login,
                 LastName = user.LastName,
                 Country = user.Country,
+                IsActive = user.IsActive,
             };
         }
     }
