@@ -191,7 +191,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
                 return this.Unauthorized("No roles found");
             }
 
-            if (userInfo == null && !string.IsNullOrWhiteSpace(sid) && userRoles.Contains(Constants.Role.User))
+            if (userInfo == null && !string.IsNullOrWhiteSpace(sid) && userRoles?.Contains(Constants.Role.User) == true)
             {
                 // automatic creation from ldap, only use if user do not need fine Role on team.
                 try
@@ -209,7 +209,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
                 try
                 {
                     // The date of the last connection is updated in the database
-                    await this.userAppService.UpdateLastLoginDateAndActivate(userInfo.Id, userRoles.Contains(Constants.Role.User));
+                    await this.userAppService.UpdateLastLoginDateAndActivate(userInfo.Id, userRoles?.Contains(Constants.Role.User) == true);
                 }
                 catch (Exception ex)
                 {
