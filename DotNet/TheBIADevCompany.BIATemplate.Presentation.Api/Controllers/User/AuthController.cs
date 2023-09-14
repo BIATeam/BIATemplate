@@ -209,7 +209,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
                 try
                 {
                     // The date of the last connection is updated in the database
-                    await this.userAppService.UpdateLastLoginDateAndActivate(userInfo.Id);
+                    await this.userAppService.UpdateLastLoginDateAndActivate(userInfo.Id, userRoles.Contains(Constants.Role.User));
                 }
                 catch (Exception ex)
                 {
