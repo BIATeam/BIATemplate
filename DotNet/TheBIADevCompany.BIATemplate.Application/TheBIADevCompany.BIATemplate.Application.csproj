@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BIA.Net.Core.Application" Version="3.5.4" />
+    <PackageReference Include="BIA.Net.Core.Application" Version="3.5.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
   </ItemGroup>
 
@@ -17,12 +17,4 @@
     <ProjectReference Include="..\TheBIADevCompany.BIATemplate.Domain.Dto\TheBIADevCompany.BIATemplate.Domain.Dto.csproj" />
     <ProjectReference Include="..\TheBIADevCompany.BIATemplate.Domain\TheBIADevCompany.BIATemplate.Domain.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="SonarAnalyzer.CSharp" Version="8.25.0.33663">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
 </Project>
