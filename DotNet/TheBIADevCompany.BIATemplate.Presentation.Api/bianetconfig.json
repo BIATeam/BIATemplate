@@ -153,7 +153,7 @@
       // Role
       {
         "Names": [ "Roles_Options" ],
-        "Roles": [ "Admin", "User" ]
+        "Roles": [ "Admin", "UserManager", "User" ]
       },
       {
         "Names": [ "Roles_List" ],
@@ -171,7 +171,7 @@
       // Ldap Domain
       {
         "Name": "LdapDomains_List",
-        "Roles": [ "Admin", "Site_Admin" ]
+        "Roles": [ "Admin", "UserManager", "Site_Admin" ]
       },
       // Site
       {
@@ -185,10 +185,6 @@
       {
         "Names": [ "Site_Member_Create", "Site_Member_Read", "Site_Member_Update", "Site_Member_Delete", "Site_Member_Save" ],
         "Roles": [ "Admin", "Site_Admin" ]
-      },
-      {
-        "Names": [ "User_ListAD", "User_Add" ],
-        "Roles": [ "Site_Admin" ]
       },
       {
         "Names": [ "Site_View_Add_TeamView", "Site_View_Update_TeamView", "Site_View_Set_Default_TeamView", "Site_View_Assign_To_Team" ],
@@ -216,18 +212,10 @@
         "Names": [ "User_Options" ],
         "Roles": [ "Admin", "User" ]
       },
-      {
-        "Names": [ "User_List_Access", "User_List", "User_Read", "User_Delete", "User_Sync", "User_UpdateRoles" ],
-        "Roles": [ "Admin" ]
-      },
-      {
-        "Names": [ "User_ListAD", "User_Add" ],
-        "Roles": [ "Admin" ]
-      },
       // View
       {
         "Name": "View_List",
-        "Roles": [ "User" ]
+        "Roles": [ "Admin", "User" ]
       },
       {
         "Names": [ "View_Add_UserView", "View_Update_UserView", "View_Delete_UserView", "View_Set_Default_UserView" ],
@@ -250,7 +238,7 @@
       {
         "Name": "Background_Task_Admin",
         "LightToken": true,
-        "Roles": [ "Back_Admin" ]
+        "Roles": [ "Admin", "Back_Admin" ]
       },
       {
         "Name": "Background_Task_Read_Only",

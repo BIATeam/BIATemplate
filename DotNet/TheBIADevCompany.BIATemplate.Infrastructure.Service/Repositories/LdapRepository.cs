@@ -6,28 +6,40 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories
 {
     using System;
     using System.DirectoryServices;
+    using System.DirectoryServices.AccountManagement;
+    using System.Runtime.InteropServices;
     using System.Security.Principal;
     using BIA.Net.Core.Common.Configuration;
+    using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Infrastructure.Service.Repositories;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.UserModule.Service;
 
     /// <summary>
     /// Class the manipulate AD.
     /// </summary>
     public class LdapRepository : GenericLdapRepository<UserFromDirectory>
     {
+        private readonly IUserIdentityKeyDomainService userIdentityKeyDomainService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LdapRepository"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="ldapRepositoryHelper">The ldap helper.</param>
-        public LdapRepository(ILogger<GenericLdapRepository<UserFromDirectory>> logger, IOptions<BiaNetSection> configuration, ILdapRepositoryHelper ldapRepositoryHelper)
+        /// <param name="userIdentityKeyDomainService">The user Identity Key Domain Service.</param>
+        public LdapRepository(
+            ILogger<GenericLdapRepository<UserFromDirectory>> logger,
+            IOptions<BiaNetSection> configuration,
+            ILdapRepositoryHelper ldapRepositoryHelper,
+            IUserIdentityKeyDomainService userIdentityKeyDomainService)
             : base(logger, configuration, ldapRepositoryHelper)
         {
+            this.userIdentityKeyDomainService = userIdentityKeyDomainService;
         }
 
         /// <summary>
@@ -85,6 +97,29 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories
             }
 
             return user;
+        }
+
+        /// <summary>
+        /// Gets the Identity Type to search object with the identity key from Directory.
+        /// It is use by the function UserPrincipal.FindByIdentity.
+        /// If you change it parse all other #IdentityKey to be sure thare is a match (Database, Ldap, Idp, WindowsIdentity).
+        /// </summary>
+        /// <returns>Return the Identity Key.</returns>
+        protected override IdentityType GetIdentityKeyType()
+        {
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? IdentityType.SamAccountName : default;
+        }
+
+        /// <summary>
+        /// Gets the Identity Key to compare with User in database.
+        /// It is use to specify the unique identifier that is compare during the authentication process.
+        /// If you change it parse all other #IdentityKey to be sure thare is a match (Database, Ldap, Idp, WindowsIdentity).
+        /// </summary>
+        /// <param name="userFromDirectory">the userFromDirectory.</param>
+        /// <returns>Return the Identity Key.</returns>
+        protected override string GetIdentityKey(UserFromDirectoryDto userFromDirectory)
+        {
+            return this.userIdentityKeyDomainService.GetDirectoryIdentityKey(userFromDirectory);
         }
     }
 }

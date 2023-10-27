@@ -4,9 +4,11 @@
 
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
 {
+    using System;
     using System.Net.Http;
     using Audit.Core;
     using Audit.EntityFramework;
+    using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Common.Configuration.ApiFeature;
     using BIA.Net.Core.Common.Configuration.CommonFeature;
     using BIA.Net.Core.Common.Configuration.WorkerFeature;
@@ -44,9 +46,17 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
         /// specific ones in IocContainerTest.</param>
         public static void ConfigureContainer(IServiceCollection collection, IConfiguration configuration, bool isUnitTest = false)
         {
+            if (configuration == null && !isUnitTest)
+            {
+                throw Exception("Configuration cannot be null");
+            }
+
+            BiaNetSection biaNetSection = new BiaNetSection();
+            configuration?.GetSection("BiaNet").Bind(biaNetSection);
+
             BIAIocContainer.ConfigureContainer(collection, configuration, isUnitTest);
 
-            ConfigureInfrastructureServiceContainer(collection);
+            ConfigureInfrastructureServiceContainer(collection, biaNetSection);
             ConfigureDomainContainer(collection);
             ConfigureApplicationContainer(collection);
 
@@ -58,6 +68,11 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
                 collection.Configure<WorkerFeatures>(configuration.GetSection("BiaNet:WorkerFeatures"));
                 collection.Configure<ApiFeatures>(configuration.GetSection("BiaNet:ApiFeatures"));
             }
+        }
+
+        private static Exception Exception(string v)
+        {
+            throw new NotImplementedException();
         }
 
         private static void ConfigureApplicationContainer(IServiceCollection collection)
@@ -76,6 +91,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
         private static void ConfigureDomainContainer(IServiceCollection collection)
         {
             // Domain Layer
+            collection.AddTransient<IUserIdentityKeyDomainService, UserIdentityKeyDomainService>();
             collection.AddTransient<IUserPermissionDomainService, UserPermissionDomainService>();
             collection.AddTransient<IUserSynchronizeDomainService, UserSynchronizeDomainService>();
             collection.AddTransient<INotificationDomainService, NotificationDomainService>();
@@ -89,17 +105,27 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
 
         private static void ConfigureInfrastructureDataContainer(IServiceCollection collection, IConfiguration configuration)
         {
+            string connectionString = configuration.GetConnectionString("BIATemplateDatabase");
+
             // Infrastructure Data Layer
             collection.AddDbContext<IQueryableUnitOfWork, DataContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("BIATemplateDatabase"));
+                if (connectionString != null)
+                {
+                    options.UseSqlServer(connectionString);
+                }
+
                 options.EnableSensitiveDataLogging();
                 options.AddInterceptors(new AuditSaveChangesInterceptor());
             });
             collection.AddDbContext<IQueryableUnitOfWorkReadOnly, DataContextReadOnly>(
                 options =>
                 {
-                    options.UseSqlServer(configuration.GetConnectionString("BIATemplateDatabase"));
+                    if (connectionString != null)
+                    {
+                        options.UseSqlServer(connectionString);
+                    }
+
                     options.EnableSensitiveDataLogging();
                 },
                 contextLifetime: ServiceLifetime.Transient);
@@ -110,40 +136,44 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             collection.AddSingleton<AuditFeature>();
         }
 
-        private static void ConfigureInfrastructureServiceContainer(IServiceCollection collection)
+        private static void ConfigureInfrastructureServiceContainer(IServiceCollection collection, BiaNetSection biaNetSection)
         {
             // Infrastructure Service Layer
             collection.AddSingleton<IUserDirectoryRepository<UserFromDirectory>, LdapRepository>();
             collection.AddTransient<INotification, NotificationRepository>();
             collection.AddTransient<IClientForHubRepository, SignalRClientForHubRepository>();
 
-            collection.AddHttpClient<IBIATemplateWebApiRepository, BIATemplateWebApiRepository>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                UseDefaultCredentials = true,
-                AllowAutoRedirect = false,
-                UseProxy = false,
-            });
+            collection.AddHttpClient<IBIATemplateWebApiRepository, BIATemplateWebApiRepository>().ConfigurePrimaryHttpMessageHandler(() => CreateHttpClientHandler(biaNetSection));
 
-            collection.AddHttpClient<IBIATemplateAppRepository, BIATemplateAppRepository>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                UseDefaultCredentials = true,
-                AllowAutoRedirect = false,
-                UseProxy = false,
-            });
+            collection.AddHttpClient<IBIATemplateAppRepository, BIATemplateAppRepository>().ConfigurePrimaryHttpMessageHandler(() => CreateHttpClientHandler(biaNetSection));
 
-            collection.AddHttpClient<IUserProfileRepository, UserProfileRepository>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                UseDefaultCredentials = true,
-                AllowAutoRedirect = false,
-                UseProxy = false,
-            });
+            collection.AddHttpClient<IUserProfileRepository, UserProfileRepository>().ConfigurePrimaryHttpMessageHandler(() => CreateHttpClientHandler(biaNetSection));
 
-            collection.AddHttpClient<IIdentityProviderRepository, IdentityProviderRepository>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            collection.AddHttpClient<IIdentityProviderRepository, IdentityProviderRepository>().ConfigurePrimaryHttpMessageHandler(() => CreateHttpClientHandler(biaNetSection, false));
+        }
+
+        /// <summary>
+        /// Creates the HTTP client handler.
+        /// </summary>
+        /// <param name="biaNetSection">The bia net section.</param>
+        /// <returns>HttpClientHandler object.</returns>
+        private static HttpClientHandler CreateHttpClientHandler(BiaNetSection biaNetSection, bool useDefaultCredentials = true)
+        {
+            HttpClientHandler httpClientHandler = new HttpClientHandler
             {
-                UseDefaultCredentials = false,
+                UseDefaultCredentials = useDefaultCredentials,
                 AllowAutoRedirect = false,
                 UseProxy = false,
-            });
+            };
+
+            if (biaNetSection?.Security?.DisableTlsVerify == true)
+            {
+#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
+                httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
+            }
+
+            return httpClientHandler;
         }
     }
 }

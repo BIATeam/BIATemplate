@@ -4,7 +4,6 @@
 
 namespace TheBIADevCompany.BIATemplate.Application.User
 {
-    using System.Security.Principal;
     using System.Threading.Tasks;
     using BIA.Net.Core.Domain.Dto.User;
 
@@ -16,17 +15,8 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <summary>
         /// Logins the on teams asynchronous.
         /// </summary>
-        /// <param name="identity">The identity.</param>
         /// <param name="loginParam">The login parameter.</param>
         /// <returns>AuthInfo.</returns>
-        Task<AuthInfoDTO<UserDataDto, AdditionalInfoDto>> LoginOnTeamsAsync(IIdentity identity, LoginParamDto loginParam);
-
-        /// <summary>
-        /// Logins the on teams asynchronous.
-        /// </summary>
-        /// <param name="identity">The identity.</param>
-        /// <param name="loginParam">The login parameter.</param>
-        /// <returns>AuthInfo.</returns>
-        Task<AuthInfoDTO<UserDataDto, AdditionalInfoDto>> LoginOnTeamsAsync(WindowsIdentity identity, LoginParamDto loginParam);
+        Task<AuthInfoDto<UserDataDto, AdditionalInfoDto>> LoginOnTeamsAsync(LoginParamDto loginParam);
     }
 }

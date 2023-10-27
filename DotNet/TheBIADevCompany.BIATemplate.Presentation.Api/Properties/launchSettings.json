@@ -2,32 +2,45 @@
   "iisSettings": {
     "windowsAuthentication": true,
     "anonymousAuthentication": true,
-    "iis": {
-      "applicationUrl": "http://localhost/BIATemplate/WebApi",
+    "iisExpress": {
+      "applicationUrl": "http://localhost:54321/BIATemplate/WebApi",
       "sslPort": 0
     },
-    "iisExpress": {
-      "applicationUrl": "http://localhost:54321/",
+    "iis": {
+      "applicationUrl": "http://localhost/BIATemplate/WebApi",
       "sslPort": 0
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "IIS": {
-      "commandName": "IIS",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "ancmHostingModel": "InProcess"
-    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "IIS": {
+      "commandName": "IIS",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development4iis"
+      },
+      "ancmHostingModel": "InProcess"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:54321/swagger",
+      "publishAllPorts": true,
+      "DockerfileRunArguments": "--add-host=host.docker.internal:host-gateway -p 54321:8080",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Docker",
+        "KC_SA_USERNAME": "dmeu-int-keycloak-service-account",
+        "KC_SA_PASSWORD": "************",
+        "ConnectionStrings__BIATemplateDatabase": "data source=host.docker.internal;initial catalog=BIATemplate;integrated security=False;User Id=SQLUser_BIATemplate_DEV_RW;Password=SQLUser_BIATemplate_DEV_RW;MultipleActiveResultSets=True;Encrypt=False;App=BIATemplate"
       }
     }
   }

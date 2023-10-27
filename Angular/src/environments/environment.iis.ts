@@ -3,6 +3,10 @@ import { NgxLoggerLevel } from 'ngx-logger';
 export const environment = {
   helpUrl: '',
   reportUrl: '',
+  apiUrlDynamic: {
+    oldValue: '',
+    newValue: ''
+  },
   apiUrl: 'http://localhost/BIATemplate/WebApi/api',
   hubUrl: 'http://localhost/BIATemplate/WebApi/HubForClients',
   urlErrorPage: 'http://localhost/static/error.htm',

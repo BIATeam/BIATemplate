@@ -38,6 +38,7 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
                     config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
                     config.AddJsonFile("bianetconfig.json", optional: false, reloadOnChange: true);
                     config.AddJsonFile($"bianetconfig.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
+                    config.AddEnvironmentVariables();
                 })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
@@ -61,7 +62,7 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
             catch (Exception ex)
             {
                 // NLog: catch setup errors
-                var logger = NLogBuilder.ConfigureNLog(LogManager.Configuration).GetCurrentClassLogger();
+                var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
                 logger.Error(ex, "Stopped program because of exception");
                 throw;
             }

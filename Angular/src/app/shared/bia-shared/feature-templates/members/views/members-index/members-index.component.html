@@ -1,5 +1,5 @@
-<div fxLayout fxLayout.xs="column" fxLayoutWrap="wrap">
-  <div fxFlex="100">
+<div>
+  <div>
     <bia-table-header
       [headerTitle]="'member.listOf' | translate"
       [canAdd]="canAdd && !crudConfiguration.useCalcMode"
@@ -24,11 +24,12 @@
       [tableState]="tableState"
       [defaultViewPref]="defaultViewPref"
       [useViewTeamWithTypeId]="useViewTeamWithTypeId"
+      [hasColumnFilter]="hasColumnFilter"
     >
       <ng-template pTemplate="customControl">
-        <div fxLayout="row" fxLayoutGap="20px" class="bia-table-controller-container">
+        <div class="flex flex-row gap-3 bia-table-controller-container" >
           <i class="pi pi-table bia-pointer" [class]="crudConfiguration.useCalcMode?'enable':'disabled'" 
-          (click)="useClacModeChange(!crudConfiguration.useCalcMode)" 
+          (click)="useCalcModeChange(!crudConfiguration.useCalcMode)" 
           pTooltip="{{ 'bia.useCalcMode' | translate }}" tooltipPosition="top" ></i>
           <i class="pi pi-eye bia-pointer" [class]="crudConfiguration.useView?'enable':'disabled'" 
           (click)="useViewChange(!crudConfiguration.useView)"
@@ -54,7 +55,7 @@
       [canClickRow]="canEdit"
       [canSelectElement]="canDelete"
       [loading]="loading$ | async"
-      (clickRow)="onClickRow($event)"
+      (clickRowId)="onClickRow($event)"
       (loadLazy)="onLoadLazy($event)"
       [viewPreference]="viewPreference"
       [tableStateKey]="tableStateKey"

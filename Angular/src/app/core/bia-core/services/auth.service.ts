@@ -12,7 +12,7 @@ import { DomainTeamsActions } from 'src/app/domains/bia-domains/team/store/teams
 import { AppState } from 'src/app/store/state';
 import { Store } from '@ngrx/store';
 import { BiaOnlineOfflineService } from './bia-online-offline.service';
-
+import { BiaSwUpdateService } from './bia-sw-update.service';
 
 const STORAGE_LOGINPARAM_KEY = 'loginParam';
 const STORAGE_RELOADED_KEY = 'isReloaded';
@@ -34,6 +34,7 @@ export class AuthService extends AbstractDas<AuthInfo> implements OnDestroy {
     protected biaMessageService: BiaMessageService,
     protected translateService: TranslateService,
     private store: Store<AppState>,
+    protected biaSwUpdateService: BiaSwUpdateService
   ) {
     super(injector, 'Auth');
     this.init();
@@ -112,6 +113,20 @@ export class AuthService extends AbstractDas<AuthInfo> implements OnDestroy {
     return <Token>{};
   }
 
+  public DecodeToken(token: string): Token {
+    const jsonDecodedToken: string = atob(token.split('.')[1]);
+    const objDecodedToken: any = JSON.parse(jsonDecodedToken);
+
+    const decodedToken = <Token>{
+      id: +objDecodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid"],
+      login: objDecodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+      userData: JSON.parse(objDecodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata"]),
+      permissions: objDecodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+    };
+
+    return decodedToken;
+  }
+
   public getAdditionalInfos(): AdditionalInfos {
     const authInfo = this.authInfoSubject.value;
     if (authInfo) {
@@ -127,10 +142,13 @@ export class AuthService extends AbstractDas<AuthInfo> implements OnDestroy {
       const loginParam: LoginParamDto = <LoginParamDto>JSON.parse(value);
       loginParam.currentTeamLogins.forEach(tl => { tl.teamId = +tl.teamId; tl.currentRoleIds = tl.currentRoleIds.map(roleId => +roleId) })
       loginParam.teamsConfig = allEnvironments.teams;
+      loginParam.lightToken = false;
+      loginParam.fineGrainedPermission = true;
+      loginParam.additionalInfos = true;
       return loginParam;
     }
 
-    return { currentTeamLogins: [], lightToken: false, teamsConfig: allEnvironments.teams };
+    return { currentTeamLogins: [], lightToken: false, fineGrainedPermission: true, additionalInfos: true, teamsConfig: allEnvironments.teams };
   }
 
   public setLoginParameters(loginParam: LoginParamDto) {
@@ -255,6 +273,9 @@ export class AuthService extends AbstractDas<AuthInfo> implements OnDestroy {
   protected getAuthInfo() {
     return this.http.post<AuthInfo>(`${this.route}LoginAndTeams`, this.getLoginParameters()).pipe(
       map((authInfo: AuthInfo) => {
+        if (authInfo) {
+          authInfo.uncryptedToken = this.DecodeToken(authInfo.token);
+        }
         this.shouldRefreshToken = false;
         this.authInfoSubject.next(authInfo);
         if (BiaOnlineOfflineService.isModeEnabled === true) {
@@ -289,6 +310,9 @@ export class AuthService extends AbstractDas<AuthInfo> implements OnDestroy {
     loginParam.lightToken = true;
     return this.http.post<AuthInfo>(`${this.route}LoginAndTeams`, loginParam).pipe(
       map((authInfo: AuthInfo) => {
+        if (authInfo) {
+          authInfo.uncryptedToken = this.DecodeToken(authInfo.token);
+        }
         return authInfo;
       }),
       catchError((err) => {
@@ -298,20 +322,28 @@ export class AuthService extends AbstractDas<AuthInfo> implements OnDestroy {
     );
   }
 
-  protected getLatestVersion() {
-    const isReloaded = sessionStorage.getItem(STORAGE_RELOADED_KEY);
-    // if a refresh has already been done,
-    if (isReloaded === String(true)) {
-      sessionStorage.removeItem(STORAGE_RELOADED_KEY);
-      const httpCodeUpgradeRequired = 426;
-      window.location.href = environment.urlErrorPage + '?num=' + httpCodeUpgradeRequired;
-    } else {
-      const timer = 7000;
-      this.biaMessageService.showInfo(this.translateService.instant('biaMsg.infoBeforeGetLatestVersion'), timer);
-      setInterval(() => {
-        this.refresh();
-      }, timer);
-    }
+  protected async getLatestVersion() {
+    await this.biaSwUpdateService.checkForUpdate();
+
+    setTimeout(async () => {
+      const isReloaded = sessionStorage.getItem(STORAGE_RELOADED_KEY);
+      // if a refresh has already been done,
+      if (isReloaded === String(true) && this.biaSwUpdateService.newVersionAvailable !== true) {
+        sessionStorage.removeItem(STORAGE_RELOADED_KEY);
+        const httpCodeUpgradeRequired = 426;
+        window.location.href = environment.urlErrorPage + '?num=' + httpCodeUpgradeRequired;
+      } else {
+        if (this.biaSwUpdateService.newVersionAvailable === true) {
+          await this.biaSwUpdateService.activateUpdate();
+        }
+        const timer = 5000;
+        this.biaMessageService.showInfo(this.translateService.instant('biaMsg.infoBeforeGetLatestVersion'), timer);
+        setInterval(() => {
+          this.refresh();
+        }, timer);
+      }
+
+    }, 1000);
   }
 
   protected refresh() {

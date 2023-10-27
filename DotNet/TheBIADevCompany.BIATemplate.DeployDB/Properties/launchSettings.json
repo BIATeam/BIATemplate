@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "TheBIADevCompany.BIATemplate.DeployDB": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "DockerfileRunArguments": "--add-host=host.docker.internal:host-gateway",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Docker",
+        "ConnectionStrings__BIATemplateDatabase": "data source=host.docker.internal;initial catalog=BIATemplate;integrated security=False;User Id=SQLUser_BIATemplate_DEV_U;Password=SQLUser_BIATemplate_DEV_U;MultipleActiveResultSets=True;Encrypt=False;App=BIATemplate"
+      }
+    }
+  }
+}

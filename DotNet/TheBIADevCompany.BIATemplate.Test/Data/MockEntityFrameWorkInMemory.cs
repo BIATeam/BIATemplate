@@ -5,6 +5,7 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using BIA.Net.Core.Infrastructure.Data;
     using BIA.Net.Core.Test.Data;
@@ -96,14 +97,12 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
                 Id = id,
                 Company = "TheBIADevCompany",
                 Country = "France",
-                DaiDate = new DateTime(2000, 1, 1),
+                DaiDate = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 Department = "DM",
                 DistinguishedName = "DistinguishedName",
-                Domain = "EU",
                 Email = $"{firstName}{lastName}@fake.com",
                 ExternalCompany = string.Empty,
                 FirstName = firstName,
-                Guid = Guid.Empty,
                 IsActive = true,
                 IsEmployee = true,
                 IsExternal = false,
@@ -113,7 +112,6 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
                 Manager = "Big BOSS",
                 Members = new List<Member>(),
                 Office = "101",
-                Sid = $"SID-{firstName}{lastName}",
                 Site = DataConstants.DefaultSitesTitles[0],
                 SubDepartment = "BIA",
                 ViewUsers = new List<ViewUser>(),

@@ -6,13 +6,11 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
 {
     using System;
     using System.Threading.Tasks;
-    using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Common.Enum;
     using BIA.Net.Core.Common.Exceptions;
     using BIA.Net.Core.Domain.Dto.User;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
@@ -29,30 +27,25 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         private readonly IAuthAppService authService;
 
         /// <summary>
-        /// The configuration of the BiaNet section.
-        /// </summary>
-        private readonly BiaNetSection configuration;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="AuthController"/> class.
         /// </summary>
         /// <param name="authService">The authentication service.</param>
         /// <param name="configuration">The configuration.</param>
-        public AuthController(IAuthAppService authService, IOptions<BiaNetSection> configuration)
+        public AuthController(IAuthAppService authService)
         {
             this.authService = authService;
-            this.configuration = configuration.Value;
         }
 
         /// <summary>
         /// The login action.
         /// </summary>
+        /// <param name="lightToken">If true return a token without team permission.</param>
         /// <returns>The JWT if authenticated.</returns>
         [HttpGet("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login(bool lightToken = true)
         {
             // used only by swagger.
             LoginParamDto loginParam = new LoginParamDto
@@ -64,7 +57,9 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
                     new TeamConfigDto { TeamTypeId = (int)TeamTypeId.Site, RoleMode = RoleMode.AllRoles, InHeader = true },
                 },
                 CurrentTeamLogins = null,
-                LightToken = false,
+                LightToken = lightToken,
+                FineGrainedPermission = !lightToken,
+                AdditionalInfos = !lightToken,
             };
 
             return await this.LoginOnTeams(loginParam);
@@ -86,16 +81,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
         {
             try
             {
-                AuthInfoDTO<UserDataDto, AdditionalInfoDto> authInfo = default;
-
-                if (this.configuration?.Authentication?.Keycloak?.IsActive == true)
-                {
-                    authInfo = await this.authService.LoginOnTeamsAsync(this.User.Identity, loginParam);
-                }
-                else
-                {
-                    authInfo = await this.authService.LoginOnTeamsAsync((System.Security.Principal.WindowsIdentity)this.User.Identity, loginParam);
-                }
+                AuthInfoDto<UserDataDto, AdditionalInfoDto> authInfo = await this.authService.LoginOnTeamsAsync(loginParam);
 
                 return this.Ok(authInfo);
             }

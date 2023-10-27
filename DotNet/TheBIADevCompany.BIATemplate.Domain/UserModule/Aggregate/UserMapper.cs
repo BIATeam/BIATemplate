@@ -32,7 +32,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
                     { HeaderName.LastName, user => user.LastName },
                     { HeaderName.FirstName, user => user.FirstName },
                     { HeaderName.Login, user => user.Login },
-                    { HeaderName.Guid, user => user.Guid },
                 };
             }
         }
@@ -50,7 +49,6 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
                 LastName = entity.LastName,
                 FirstName = entity.FirstName,
                 Login = entity.Login,
-                Guid = entity.Guid,
                 Roles = entity.Roles.Select(ca => new OptionDto
                 {
                     Id = ca.Id,
@@ -77,7 +75,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
                 foreach (var userRoleDto in dto.Roles.Where(w => w.DtoState == DtoState.Added))
                 {
                     Role role = new Role { Id = userRoleDto.Id };
-                    context.Attach(role); // requiered to map on Id (without get element before)
+                    context.Attach(role); // required to map on Id (without get element before)
                     entity.Roles.Add(role);
                 }
             }
@@ -90,7 +88,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
             {
                 List<object> records = new List<object>();
 
-                if (headerNames != null && headerNames?.Any() == true)
+                if (headerNames?.Any() == true)
                 {
                     foreach (string headerName in headerNames)
                     {

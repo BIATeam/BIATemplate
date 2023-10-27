@@ -4,7 +4,6 @@
 
 namespace TheBIADevCompany.BIATemplate.Application.User
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using BIA.Net.Core.Domain.Dto.Base;
@@ -26,32 +25,26 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         Task<IEnumerable<OptionDto>> GetAllOptionsAsync(string filter = null);
 
         /// <summary>
-        /// Get all roles for a user with its sid.
+        /// Adds the user in DB from UserFromDirectory.
         /// </summary>
-        /// <param name="sid">The user sid.</param>
-        /// <returns>The list of roles.</returns>
-        Task<List<string>> GetUserDirectoryRolesAsync(string sid);
+        /// <param name="identityKey">The identity key.</param>
+        /// <param name="userFromDirectory">The user from directory.</param>
+        /// <returns>The user in DB.</returns>
+        Task<User> AddUserFromUserDirectoryAsync(string identityKey, UserFromDirectory userFromDirectory);
 
         /// <summary>
-        /// Gets user info with its sid and create if not exist.
+        /// Creates the user information from user.
         /// </summary>
-        /// <param name="sid">The sid to search with.</param>
-        /// <returns>The user.</returns>
-        Task<UserInfoDto> GetCreateUserInfoAsync(string sid);
+        /// <param name="user">The user.</param>
+        /// <returns>A UserInfoDto.</returns>
+        UserInfoDto CreateUserInfo(User user);
 
         /// <summary>
-        /// Gets user info with its sid.
+        /// Gets user info with its login.
         /// </summary>
-        /// <param name="sid">The sid to search with.</param>
+        /// <param name="identityKey">The identityKey to search with.</param>
         /// <returns>The user.</returns>
-        Task<UserInfoDto> GetUserInfoAsync(string sid);
-
-        /// <summary>
-        /// Gets user info with its guid.
-        /// </summary>
-        /// <param name="guid">The guid to search with.</param>
-        /// <returns>The user.</returns>
-        Task<UserInfoDto> GetUserInfoAsync(Guid guid);
+        Task<UserInfoDto> GetUserInfoAsync(string identityKey);
 
         /// <summary>
         /// Gets all AD user corresponding to a filter.
@@ -66,9 +59,10 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// Gets all IdP user corresponding to a filter.
         /// </summary>
         /// <param name="filter">The filter.</param>
+        /// <param name="first">Index start.</param>
         /// <param name="max">The max number of items to return.</param>
         /// <returns>The top 10 users found.</returns>
-        Task<IEnumerable<UserFromDirectoryDto>> GetAllIdpUserAsync(string filter, int max = 10);
+        Task<IEnumerable<UserFromDirectoryDto>> GetAllIdpUserAsync(string filter, int first = 0, int max = 10);
 
         /// <summary>
         /// Add a list of users in a group in AD.
@@ -76,20 +70,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <param name="users">The list of users to add.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task<ResultAddUsersFromDirectoryDto> AddFromDirectory(IEnumerable<UserFromDirectoryDto> users);
-
-        /// <summary>
-        /// Adds from identity provider identifier.
-        /// </summary>
-        /// <param name="userFromDirectoryDtos">The user from directory dtos.</param>
-        /// <returns>A <see cref="ResultAddUsersFromDirectoryDto"/>.</returns>
-        Task<ResultAddUsersFromDirectoryDto> AddFromIdPAsync(IEnumerable<UserFromDirectoryDto> userFromDirectoryDtos);
-
-        /// <summary>
-        /// Deactivates the users asynchronous.
-        /// </summary>
-        /// <param name="ids">The ids.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task DeactivateUsersAsync(List<int> ids);
 
         /// <summary>
         /// Remove a user in a group in AD.
@@ -109,21 +89,15 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// Updates the last login date.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
+        /// <param name="activate">activate the user.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task UpdateLastLoginDateAndActivate(int userId);
+        Task UpdateLastLoginDateAndActivate(int userId, bool activate);
 
         /// <summary>
         /// Return all domain with conatinning users.
         /// </summary>
         /// <returns>List of dommain keys.</returns>
         Task<List<string>> GetAllLdapUsersDomains();
-
-        /// <summary>
-        /// Adds an UserAD in the in database.
-        /// </summary>
-        /// <param name="users">The users.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task AddInDBAsync(IEnumerable<UserFromDirectoryDto> users);
 
         /// <summary>
         /// Selects the default language.

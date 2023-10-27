@@ -49,10 +49,10 @@
             "styles": [
               "node_modules/primeng/resources/primeng.min.css",
               "node_modules/primeicons/primeicons.css",
+              "node_modules/primeflex/primeflex.min.css",
               "src/styles.scss"
             ],
-            "scripts": [
-            ],
+            "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
@@ -61,7 +61,9 @@
             "namedChunks": true,
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json",
-            "allowedCommonJsDependencies": ["keycloak-js"]
+            "allowedCommonJsDependencies": [
+              "keycloak-js"
+            ]
           },
           "configurations": {
             "iis": {
@@ -73,6 +75,10 @@
               ]
             },
             "production": {
+              "index": {
+                "input": "src/index.prod.html",
+                "output": "index.html"
+              },
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -105,6 +111,22 @@
                 }
               ]
             },
+            "ocp": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.ocp.ts"
+                }
+              ]
+            },
+            "docker": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker.ts"
+                }
+              ]
+            },
             "es5": {
               "tsConfig": "tsconfig.es5.json"
             }
@@ -125,6 +147,12 @@
             },
             "es5": {
               "browserTarget": "BIATemplate:build:es5"
+            },
+            "ocp": {
+              "browserTarget": "BIATemplate:build:ocp"
+            },
+            "docker": {
+              "browserTarget": "BIATemplate:build:docker"
             }
           }
         },
@@ -150,8 +178,18 @@
       }
     }
   },
-  "defaultProject": "BIATemplate",
   "cli": {
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ],
+    "analytics": false
+  },
+  "schematics": {
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
+    }
   }
 }

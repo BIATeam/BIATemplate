@@ -8,5 +8,11 @@
   },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "i18nJsonEditor.workspaceFolders": [
+    { "name": "app", "path": "./src/assets/i18n/app" }
+  ],
+  "i18n-ally.localesPaths": [
+    "./src/assets/i18n/app"
+  ]
 }

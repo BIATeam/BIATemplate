@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injector } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { catchError, first, map } from 'rxjs/operators';
+import { catchError, first, map, tap } from 'rxjs/operators';
 import { from, NEVER, Observable, of, throwError } from 'rxjs';
 import { LazyLoadEvent } from 'primeng/api';
 import { DataResult } from 'src/app/shared/bia-shared/model/data-result';
@@ -9,6 +8,7 @@ import { DateHelperService } from './date-helper.service';
 import { MatomoTracker } from './matomo/matomo-tracker.service';
 import { BiaOnlineOfflineService } from './bia-online-offline.service';
 import { AppDB, DataItem } from '../db';
+import { BiaEnvironmentService } from './bia-environment.service';
 
 export interface HttpOptions {
   headers?:
@@ -83,16 +83,15 @@ export abstract class GenericDas {
   public static buildRoute(endpoint: string): string {
     let route = '/' + endpoint + '/';
     route = route.replace('//', '/');
-    return environment.apiUrl + route;
+    return BiaEnvironmentService.getApiUrl() + route;
   }
 
-  concatRoute(route: string, endpoint: string | undefined)
-  {
+  concatRoute(route: string, endpoint: string | undefined) {
     return route + `${endpoint ? endpoint + '/' : ''}`.replace('//', '/');
   }
 
   getItem<TOut>(param?: GetParam): Observable<TOut> {
-    const url = `${this.concatRoute(this.route,param?.endpoint)}${param?.id ?? ''}`;
+    const url = `${this.concatRoute(this.route, param?.endpoint)}${param?.id ?? ''}`;
     //const url = `${this.route}${param?.endpoint ?? ''}${param?.id ?? ''}`;
 
     let obs$ = this.http.get<TOut>(url, param?.options).pipe(
@@ -105,10 +104,6 @@ export abstract class GenericDas {
 
     if (param?.offlineMode === true && BiaOnlineOfflineService.isModeEnabled === true) {
       obs$ = this.getWithCatchErrorOffline(obs$, url);
-      obs$.pipe(first()).subscribe((result: TOut) => {
-        this.clearDataByUrl(url);
-        this.addDataTtem(url, result);
-      });
     }
 
     return obs$;
@@ -128,10 +123,6 @@ export abstract class GenericDas {
 
     if (param?.offlineMode === true && BiaOnlineOfflineService.isModeEnabled === true) {
       obs$ = this.getWithCatchErrorOffline(obs$, url);
-      obs$.pipe(first()).subscribe((results: TOut[]) => {
-        this.clearDataByUrl(url);
-        this.addDataTtem(url, results);
-      });
     }
 
     return obs$;
@@ -188,7 +179,13 @@ export abstract class GenericDas {
       param.options = BiaOnlineOfflineService.addHttpHeaderRetry(param.options);
       return this.setWithCatchErrorOffline(this.http.put<TOut>(url, param.item, param.options));
     } else {
-      return this.http.put<TOut>(url, param.item, param.options);
+      return this.http.put<TOut>(url, param.item, param.options).pipe(
+        map((data) => {
+          DateHelperService.fillDate(data);
+          this.translateItem(data);
+          return data;
+        })
+      );
     }
   }
 
@@ -201,7 +198,13 @@ export abstract class GenericDas {
       param.options = BiaOnlineOfflineService.addHttpHeaderRetry(param.options);
       return this.setWithCatchErrorOffline(this.http.post<TOut>(url, param.item, param.options));
     } else {
-      return this.http.post<TOut>(url, param.item, param.options);
+      return this.http.post<TOut>(url, param.item, param.options).pipe(
+        map((data) => {
+          DateHelperService.fillDate(data);
+          this.translateItem(data);
+          return data;
+        })
+      );
     }
   }
 
@@ -254,6 +257,10 @@ export abstract class GenericDas {
 
   protected getWithCatchErrorOffline(obs$: Observable<any>, url: string) {
     return obs$.pipe(
+      tap((result: any) => {
+        this.clearDataByUrl(url);
+        this.addDataTtem(url, result);
+      }),
       catchError((error) => {
         if (BiaOnlineOfflineService.isModeEnabled === true && BiaOnlineOfflineService.isServerAvailable(error) !== true) {
           return from(this.db.datas.get(url)).pipe(
