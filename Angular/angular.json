@@ -19,7 +19,9 @@
         "@schematics/angular:guard": {
           "skipTests": true
         },
-        "@schematics/angular:module": {},
+        "@schematics/angular:module": {
+          
+        },
         "@schematics/angular:pipe": {
           "skipTests": true
         },
@@ -52,7 +54,9 @@
               "node_modules/primeflex/primeflex.min.css",
               "src/styles.scss"
             ],
-            "scripts": [],
+            "scripts": [
+              
+            ],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
@@ -173,7 +177,9 @@
         },
         "deploy": {
           "builder": "angular-cli-ghpages:deploy",
-          "options": {}
+          "options": {
+            
+          }
         }
       }
     }
