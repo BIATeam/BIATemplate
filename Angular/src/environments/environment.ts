@@ -7,14 +7,14 @@ export const environment = {
     oldValue: '',
     newValue: ''
   },
-  apiUrl: 'http://localhost:54321/BIATemplate/WebApi/api',
-  hubUrl: 'http://localhost:54321/BIATemplate/WebApi/HubForClients',
+  apiUrl: 'http://localhost:32128/BIATemplate/WebApi/api',
+  hubUrl: 'http://localhost:32128/BIATemplate/WebApi/HubForClients',
   urlErrorPage: 'http://localhost/static/error.htm',
   useXhrWithCred: true,
   production: false,
   logging: {
     conf: {
-      serverLoggingUrl: 'http://localhost:54321/BIATemplate/WebApi/api/logs',
+      serverLoggingUrl: 'http://localhost:32128/BIATemplate/WebApi/api/logs',
       level: NgxLoggerLevel.DEBUG,
       serverLogLevel: NgxLoggerLevel.ERROR
     }
