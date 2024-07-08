@@ -30,7 +30,7 @@ namespace TheBIADevCompany.BIATemplate.Test.IoC
         /// <param name="services">The collection of services to update.</param>
         public static void ConfigureContainerTest(IServiceCollection services)
         {
-            IocContainer.ConfigureContainer(services, null, true);
+            IocContainer.ConfigureContainer(services, null, true, true);
             BIAIocContainerTest.ConfigureContainerTest<DataContext, DataContextReadOnly>(services);
 
             services.AddTransient<IMockEntityFramework<DataContext, DataContextReadOnly>, MockEntityFrameworkInMemory>();

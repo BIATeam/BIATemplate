@@ -4,9 +4,6 @@
 
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
 {
-    using System.Collections.Generic;
-    using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-
     /// <summary>
     /// The list of all rights.
     /// </summary>
@@ -323,5 +320,8 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// </summary>
             public const string Options = "NotificationType_Options";
         }
+
+        // BIAToolKit - Begin Rights
+        // BIAToolKit - End Rights
     }
 }

@@ -5,13 +5,15 @@ export const NAVIGATION: BiaNavigation[] = [
   {
     labelKey: 'app.users',
     permissions: [Permission.User_List_Access],
-    path: ['/users']
+    path: ['/users'],
   },
   {
     labelKey: 'app.sites',
     permissions: [Permission.Site_List_Access],
-    path: ['/sites']
+    path: ['/sites'],
   },
+  /// BIAToolKit - Begin Navigation
+  /// BIAToolKit - End Navigation
   {
     labelKey: 'bia.administration',
     permissions: [
@@ -22,14 +24,13 @@ export const NAVIGATION: BiaNavigation[] = [
       {
         labelKey: 'bia.backgroundTaskAdmin',
         permissions: [Permission.Background_Task_Admin],
-        path: ['/backgroundtask/admin']
+        path: ['/backgroundtask/admin'],
       },
       {
         labelKey: 'bia.backgroundTaskReadOnly',
         permissions: [Permission.Background_Task_Read_Only],
-        path: ['/backgroundtask/readonly']
+        path: ['/backgroundtask/readonly'],
       },
-    ]
+    ],
   },
-
 ];

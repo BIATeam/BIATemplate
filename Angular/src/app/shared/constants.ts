@@ -1,4 +1,11 @@
-export const APP_SUPPORTED_TRANSLATIONS = ['es-ES', 'fr-FR', 'en-GB', 'es-MX', 'en-US'];
+/* eslint-disable @typescript-eslint/naming-convention */
+export const APP_SUPPORTED_TRANSLATIONS = [
+  'es-ES',
+  'fr-FR',
+  'en-GB',
+  'es-MX',
+  'en-US',
+];
 // English is default value (see translation.defaultLanguage in i18n) so we do not add it manualy.
 export const APP_TANSLATION_IDS_TO_NOT_ADD_MANUALY = [1];
 export const DEFAULT_PAGE_SIZE = 10;
@@ -15,7 +22,7 @@ export const TABLE_FILTER_GLOBAL = 'global|';
 export enum ViewType {
   System = 0,
   Team = 1,
-  User = 2
+  User = 2,
 }
 
 export enum RoleMode {
@@ -41,7 +48,7 @@ export enum TeamTypeId {
   Site = 2,
 }
 
-let TeamTypeRightPrefixe :{ key: TeamTypeId; value: string; }[] = [ 
-  {key: TeamTypeId.Site, value: "Site"},
+const TeamTypeRightPrefixe: { key: TeamTypeId; value: string }[] = [
+  { key: TeamTypeId.Site, value: 'Site' },
 ];
-export {TeamTypeRightPrefixe};
+export { TeamTypeRightPrefixe };

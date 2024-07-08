@@ -60,11 +60,9 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
                 };
 
                 this.GetDbContext().Sites.Add(site);
-                this.GetDbContextReadOnly().Sites.Add(site);
             }
 
             this.GetDbContext().SaveChanges();
-            this.GetDbContextReadOnly().SaveChanges();
         }
 
         #endregion Sites methods
@@ -84,9 +82,6 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
 
             this.GetDbContext().Members.Add(member);
             this.GetDbContext().SaveChanges();
-
-            this.GetDbContextReadOnly().Members.Add(member);
-            this.GetDbContextReadOnly().SaveChanges();
         }
 
         /// <inheritdoc cref="IDataUsers.AddUser(int, string, string, int?, int?, ICollection{MemberRole})"/>
@@ -118,7 +113,6 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
             };
 
             this.GetDbContext().Users.Add(user);
-            this.GetDbContextReadOnly().Users.Add(user);
 
             if (memberId != null)
             {
@@ -128,7 +122,6 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
             {
                 // We do not save changes in the "if", because it is already done by AddMember().
                 this.GetDbContext().SaveChanges();
-                this.GetDbContextReadOnly().SaveChanges();
             }
         }
 

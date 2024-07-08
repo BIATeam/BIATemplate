@@ -16,6 +16,8 @@
     "ApiFeatures": {
       "HangfireDashboard": {
         "IsActive": true,
+        "LogsVisibleInDashboard": true,
+        "LogFiles": "C:\\Logs\\BIATemplate\\${shortdate}_TheBIADevCompany.BIATemplate_WorkerService${hangfire-jobid}.log",
         "DashboardAdmin": true,
         "DashboardAdminPermission": "Background_Task_Admin",
         "DashboardReadOnly": true,
@@ -122,14 +124,8 @@
       }
     ],
     "Permissions": [
-      {
-        "Names": [ "Admin" ],
-        "Roles": [ "Admin" ]
-      },
-      {
-        "Names": [ "Site_Admin" ],
-        "Roles": [ "Site_Admin" ]
-      },
+      // BIAToolKit - Begin Config
+      // BIAToolKit - End Config
       // Home
       {
         "Name": "Home_Access",

@@ -5,18 +5,18 @@ export const environment = {
   reportUrl: '',
   apiUrlDynamic: {
     oldValue: '',
-    newValue: ''
+    newValue: '',
   },
   apiUrl: 'http://localhost:32128/BIATemplate/WebApi/api',
   hubUrl: 'http://localhost:32128/BIATemplate/WebApi/HubForClients',
-  urlErrorPage: 'http://localhost/static/error.htm',
   useXhrWithCred: true,
   production: false,
   logging: {
     conf: {
       serverLoggingUrl: 'http://localhost:32128/BIATemplate/WebApi/api/logs',
       level: NgxLoggerLevel.DEBUG,
-      serverLogLevel: NgxLoggerLevel.ERROR
-    }
-  }
+      serverLogLevel: NgxLoggerLevel.ERROR,
+      withCredentials: true,
+    },
+  },
 };
