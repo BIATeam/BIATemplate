@@ -99,6 +99,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             {
                 collection.AddTransient<IAuthAppService, AuthAppService>();
             }
+
             // BIAToolKit - Begin Dependency 2
             // BIAToolKit - End Dependency 2
         }
