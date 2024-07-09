@@ -27,7 +27,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The framework version.
             /// </summary>
-            public const string FrameworkVersion = "3.8.0";
+            public const string FrameworkVersion = "3.9.0";
         }
 
         /// <summary>
@@ -39,11 +39,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// The default theme.
             /// </summary>
             public const string Theme = "Light";
-
-            /// <summary>
-            /// The default language.
-            /// </summary>
-            public const string Language = "en-US";
         }
 
         /// <summary>
@@ -62,9 +57,14 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             public const string User = "User";
 
             /// <summary>
-            /// The site member role code.
+            /// The right to access to the list of members.
             /// </summary>
-            public const string SiteMember = "Site_Member";
+            public const string TeamMemberSuffix = "_Member";
+
+            /// <summary>
+            /// The right to access to the list of members.
+            /// </summary>
+            public const string TeamMemberOfOneSuffix = "_MemberOfOne";
         }
 
         /// <summary>

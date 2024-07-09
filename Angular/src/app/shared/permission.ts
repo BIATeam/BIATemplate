@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export enum Permission {
   Background_Task_Admin = 'Background_Task_Admin',
   Background_Task_Read_Only = 'Background_Task_Read_Only',
@@ -8,6 +9,9 @@ export enum Permission {
   Notification_Delete = 'Notification_Delete',
   Notification_Read = 'Notification_Read',
   Notification_Update = 'Notification_Update',
+
+  /// BIAToolKit - Begin Permission
+  /// BIAToolKit - End Permission
   Roles_List = 'Roles_List',
   Site_Create = 'Site_Create',
   Site_Delete = 'Site_Delete',
@@ -22,12 +26,13 @@ export enum Permission {
 
   User_Add = 'User_Add',
   User_Delete = 'User_Delete',
+  User_Save = 'User_Save',
   User_List = 'User_List',
   User_ListAD = 'User_ListAD',
   User_List_Access = 'User_List_Access',
   User_Sync = 'User_Sync',
   User_UpdateRoles = 'User_UpdateRoles',
-  
+
   LdapDomains_List = 'LdapDomains_List',
   View_List = 'View_List',
   View_AddUserView = 'View_Add_UserView',
@@ -38,5 +43,5 @@ export enum Permission {
   View_DeleteTeamView = 'View_Delete_TeamView',
   View_SetDefaultUserView = 'View_Set_Default_UserView',
   View_SetDefaultTeamViewSuffix = '_View_Set_Default_TeamView',
-  View_AssignToTeamSuffix = '_View_Assign_To_Team'
+  View_AssignToTeamSuffix = '_View_Assign_To_Team',
 }

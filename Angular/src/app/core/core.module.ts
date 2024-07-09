@@ -17,9 +17,14 @@ import { BiaTranslationService } from './bia-core/services/bia-translation.servi
 
 // https://medium.com/@benmohamehdi/angular-best-practices-coremodule-vs-sharedmodule-25f6721aa2ef
 export class CoreModule {
-  constructor(@Optional() @SkipSelf() parentModule: CoreModule, biaTranslation: BiaTranslationService) {
+  constructor(
+    @Optional() @SkipSelf() parentModule: CoreModule,
+    biaTranslation: BiaTranslationService
+  ) {
     if (parentModule) {
-      throw new Error('CoreModule is already loaded. Import it in the AppModule only');
+      throw new Error(
+        'CoreModule is already loaded. Import it in the AppModule only'
+      );
     }
     biaTranslation.registerLocaleData(biaLocaleEn);
     biaTranslation.registerLocaleData(biaLocaleFr);

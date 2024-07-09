@@ -5,21 +5,28 @@
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
 {
     using System;
+    using System.Collections.Generic;
     using System.Net.Http;
+    using System.Reflection;
     using Audit.Core;
     using Audit.EntityFramework;
     using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Common.Configuration.ApiFeature;
     using BIA.Net.Core.Common.Configuration.CommonFeature;
     using BIA.Net.Core.Common.Configuration.WorkerFeature;
+    using BIA.Net.Core.Domain;
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Infrastructure.Data;
     using BIA.Net.Core.Infrastructure.Service.Repositories;
+    using BIA.Net.Core.Ioc;
     using BIA.Net.Core.IocContainer;
     using Hangfire;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+
+    // BIAToolKit - Begin Dependency 1
+    // BIAToolKit - End Dependency 1
     using TheBIADevCompany.BIATemplate.Application.Site;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Application.View;
@@ -29,6 +36,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Service;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features;
+    using TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories.QueryCustomizer;
     using TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories;
 
@@ -42,9 +50,10 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
         /// </summary>
         /// <param name="collection">The collection of service.</param>
         /// <param name="configuration">The application configuration.</param>
+        /// <param name="isApi">true if it's an API, false if it's a Worker.</param>
         /// <param name="isUnitTest">Are we configuring IoC for unit tests? If so, some IoC shall not be performed here but replaced by
         /// specific ones in IocContainerTest.</param>
-        public static void ConfigureContainer(IServiceCollection collection, IConfiguration configuration, bool isUnitTest = false)
+        public static void ConfigureContainer(IServiceCollection collection, IConfiguration configuration, bool isApi, bool isUnitTest = false)
         {
             if (configuration == null && !isUnitTest)
             {
@@ -54,11 +63,11 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             BiaNetSection biaNetSection = new BiaNetSection();
             configuration?.GetSection("BiaNet").Bind(biaNetSection);
 
-            BIAIocContainer.ConfigureContainer(collection, configuration, isUnitTest);
+            BiaIocContainer.ConfigureContainer(collection, configuration, isUnitTest);
 
             ConfigureInfrastructureServiceContainer(collection, biaNetSection);
             ConfigureDomainContainer(collection);
-            ConfigureApplicationContainer(collection);
+            ConfigureApplicationContainer(collection, isApi);
 
             if (!isUnitTest)
             {
@@ -75,7 +84,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             throw new NotImplementedException();
         }
 
-        private static void ConfigureApplicationContainer(IServiceCollection collection)
+        private static void ConfigureApplicationContainer(IServiceCollection collection, bool isApi)
         {
             // Application Layer
             collection.AddTransient<ITeamAppService, TeamAppService>();
@@ -85,7 +94,14 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             collection.AddTransient<IUserAppService, UserAppService>();
             collection.AddTransient<IViewAppService, ViewAppService>();
             collection.AddTransient<IBackgroundJobClient, BackgroundJobClient>();
-            collection.AddTransient<IAuthAppService, AuthAppService>();
+
+            if (isApi)
+            {
+                collection.AddTransient<IAuthAppService, AuthAppService>();
+            }
+
+            // BIAToolKit - Begin Dependency 2
+            // BIAToolKit - End Dependency 2
         }
 
         private static void ConfigureDomainContainer(IServiceCollection collection)
@@ -96,6 +112,14 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             collection.AddTransient<IUserSynchronizeDomainService, UserSynchronizeDomainService>();
             collection.AddTransient<INotificationDomainService, NotificationDomainService>();
             collection.AddTransient<INotificationTypeDomainService, NotificationTypeDomainService>();
+
+            Type templateType = typeof(BaseMapper<,,>);
+            Assembly assembly = Assembly.Load("TheBIADevCompany.BIATemplate.Domain");
+            List<Type> derivedTypes = ReflectiveEnumerator.GetDerivedTypes(assembly, templateType);
+            foreach (var type in derivedTypes)
+            {
+                collection.AddScoped(type);
+            }
         }
 
         private static void ConfigureCommonContainer(IServiceCollection collection, IConfiguration configuration)
@@ -142,10 +166,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             collection.AddSingleton<IUserDirectoryRepository<UserFromDirectory>, LdapRepository>();
             collection.AddTransient<INotification, NotificationRepository>();
             collection.AddTransient<IClientForHubRepository, SignalRClientForHubRepository>();
-
-            collection.AddHttpClient<IBIATemplateWebApiRepository, BIATemplateWebApiRepository>().ConfigurePrimaryHttpMessageHandler(() => CreateHttpClientHandler(biaNetSection));
-
-            collection.AddHttpClient<IBIATemplateAppRepository, BIATemplateAppRepository>().ConfigurePrimaryHttpMessageHandler(() => CreateHttpClientHandler(biaNetSection));
 
             collection.AddHttpClient<IUserProfileRepository, UserProfileRepository>().ConfigurePrimaryHttpMessageHandler(() => CreateHttpClientHandler(biaNetSection));
 

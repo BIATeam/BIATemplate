@@ -26,13 +26,14 @@
     "filterMember": "Member user",
     "title": "Title"
   },
-  "translation": 
-  {  
-    "defaultLanguage" :"Default (English)"
+  "translation": {
+    "defaultLanguage": "Default (English)"
   },
   "user": {
     "add": "Add user",
+    "edit": "Edit user",
     "firstName": "First Name",
+    "import": "Import users",
     "lastName": "Last Name",
     "listOf": "List of users",
     "login": "Login",

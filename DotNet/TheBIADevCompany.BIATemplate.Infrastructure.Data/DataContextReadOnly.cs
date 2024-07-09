@@ -22,7 +22,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public DataContextReadOnly(DbContextOptions<DataContext> options, ILogger<BIADataContext> logger)
+        public DataContextReadOnly(DbContextOptions<DataContext> options, ILogger<DataContextReadOnly> logger)
             : base(options, logger)
         {
             this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

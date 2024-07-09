@@ -19,9 +19,7 @@
         "@schematics/angular:guard": {
           "skipTests": true
         },
-        "@schematics/angular:module": {
-          
-        },
+        "@schematics/angular:module": {},
         "@schematics/angular:pipe": {
           "skipTests": true
         },
@@ -54,9 +52,7 @@
               "node_modules/primeflex/primeflex.min.css",
               "src/styles.scss"
             ],
-            "scripts": [
-              
-            ],
+            "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
@@ -65,9 +61,7 @@
             "namedChunks": true,
             "serviceWorker": false,
             "ngswConfigPath": "ngsw-config.json",
-            "allowedCommonJsDependencies": [
-              "keycloak-js"
-            ]
+            "allowedCommonJsDependencies": ["keycloak-js"]
           },
           "configurations": {
             "iis": {
@@ -169,25 +163,18 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         },
         "deploy": {
           "builder": "angular-cli-ghpages:deploy",
-          "options": {
-            
-          }
+          "options": {}
         }
       }
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   },
   "schematics": {

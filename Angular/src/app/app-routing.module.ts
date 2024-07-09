@@ -14,47 +14,59 @@ const routes: Routes = [
         path: '',
         component: PageLayoutComponent,
         children: [
+          /// BIAToolKit - Begin Routing
+          /// BIAToolKit - End Routing
           {
             path: 'sites',
             data: {
               breadcrumb: 'app.sites',
-              canNavigate: true
+              canNavigate: true,
             },
-            loadChildren: () => import('./features/sites/site.module').then((m) => m.SiteModule)
+            loadChildren: () =>
+              import('./features/sites/site.module').then(m => m.SiteModule),
           },
           {
             path: 'users',
             data: {
               breadcrumb: 'app.users',
-              canNavigate: true
+              canNavigate: true,
             },
-            loadChildren: () => import('./features/bia-features/users/user.module').then((m) => m.UserModule)
+            loadChildren: () =>
+              import('./features/bia-features/users/user.module').then(
+                m => m.UserModule
+              ),
           },
           {
             path: 'notifications',
             data: {
               breadcrumb: 'app.notifications',
-              canNavigate: true
+              canNavigate: true,
             },
-            loadChildren: () => import('./features/bia-features/notifications/notification.module').then((m) => m.NotificationModule)
+            loadChildren: () =>
+              import(
+                './features/bia-features/notifications/notification.module'
+              ).then(m => m.NotificationModule),
           },
           {
             path: 'backgroundtask',
             data: {
               breadcrumb: 'bia.backgroundtasks',
-              canNavigate: true
+              canNavigate: true,
             },
-            loadChildren: () => import('./features/bia-features/background-task/background-task.module').then((m) => m.BackgroundTaskModule)
-          }
-        ]
-      }
-    ]
+            loadChildren: () =>
+              import(
+                './features/bia-features/background-task/background-task.module'
+              ).then(m => m.BackgroundTaskModule),
+          },
+        ],
+      },
+    ],
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {})],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

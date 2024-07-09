@@ -102,7 +102,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Features
             {
                 Audit.Core.Configuration.AddOnSavingAction(scope =>
                 {
-                    BIAClaimsPrincipal principal = serviceProvider.GetRequiredService<IPrincipal>() as BIAClaimsPrincipal;
+                    BiaClaimsPrincipal principal = serviceProvider.GetRequiredService<IPrincipal>() as BiaClaimsPrincipal;
                     scope.Event.Environment.CustomFields["UserLogin"] = principal.Identity.Name;
                 });
             }

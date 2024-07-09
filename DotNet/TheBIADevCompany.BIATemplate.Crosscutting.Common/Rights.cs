@@ -4,9 +4,6 @@
 
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
 {
-    using System.Collections.Generic;
-    using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-
     /// <summary>
     /// The list of all rights.
     /// </summary>
@@ -216,6 +213,11 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             public const string Delete = "User_Delete";
 
             /// <summary>
+            /// The right to delete users.
+            /// </summary>
+            public const string Save = "User_Save";
+
+            /// <summary>
             /// The right to synchronize users.
             /// </summary>
             public const string Sync = "User_Sync";
@@ -323,5 +325,8 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// </summary>
             public const string Options = "NotificationType_Options";
         }
+
+        // BIAToolKit - Begin Rights
+        // BIAToolKit - End Rights
     }
 }

@@ -26,13 +26,14 @@
     "filterMember": "Usuario miembro",
     "title": "Title"
   },
-  "translation": 
-  {  
-    "defaultLanguage" :"Defecto (Inglesa)"
+  "translation": {
+    "defaultLanguage": "Defecto (Inglesa)"
   },
   "user": {
     "add": "Añadir usuario",
+    "edit": "Editar usuario",
     "firstName": "Nombre",
+    "import": "Importar usuarios",
     "lastName": "Apellido",
     "listOf": "Lista de usuarios",
     "login": "Login",

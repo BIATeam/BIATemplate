@@ -1,0 +1,91 @@
+[
+	{
+		"Feature" : "crud-planes",
+		"Type" : "CRUD",
+		"FeatureName" : "Plane",
+		"FeatureNamePlural" : "Planes",
+		"ZipName" : "crud-planes.zip",
+		"Contains" :
+		{
+			"Include" :
+			[
+				"TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\Plane\\PlanesController.cs",
+				"TheBIADevCompany.BIATemplate.Application\\Plane\\PlaneAppService.cs",
+				"TheBIADevCompany.BIATemplate.Application\\Plane\\IPlaneAppService.cs",
+				"TheBIADevCompany.BIATemplate.Domain\\PlaneModule\\Aggregate\\PlaneMapper.cs",
+				"TheBIADevCompany.BIATemplate.Domain\\PlaneModule\\Aggregate\\Plane.cs",
+				"TheBIADevCompany.BIATemplate.Domain.Dto\\Plane\\PlaneDto.cs"
+			],
+			"Exclude":
+			[]
+		},		
+		"Children" : 
+		[],
+		"Options" :
+		[],
+		"Partial" :
+		[
+			"TheBIADevCompany.BIATemplate.Presentation.Api\\bianetconfig.json",
+			"TheBIADevCompany.BIATemplate.Crosscutting.Ioc\\IocContainer.cs",
+			"TheBIADevCompany.BIATemplate.Crosscutting.Common\\Rights.cs"
+		]
+	},
+	{
+		"Feature" : "airport-option",
+		"Type" : "Option",
+		"FeatureName" : "Airport",
+		"FeatureNamePlural" : "Airports",
+		"ZipName" : "airport-option.zip",
+		"Relation": "many-to-many",
+		"Contains" :
+		{
+			"Include" :
+			[
+				"TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\Plane\\AirportsController.cs",
+				"TheBIADevCompany.BIATemplate.Application\\Plane\\AirportAppService.cs",
+				"TheBIADevCompany.BIATemplate.Application\\Plane\\IAirportAppService.cs"
+			],
+			"Exclude":
+			[]
+		},		
+		"Children" : 
+		[],
+		"Options" :
+		[],
+		"Partial" :
+		[
+			"TheBIADevCompany.BIATemplate.Presentation.Api\\bianetconfig.json",
+			"TheBIADevCompany.BIATemplate.Crosscutting.Ioc\\IocContainer.cs",
+			"TheBIADevCompany.BIATemplate.Crosscutting.Common\\Rights.cs"
+		]
+	},
+	{
+		"Feature" : "plane-type-option",
+		"Type" : "Option",
+		"FeatureName" : "PlaneType",
+		"FeatureNamePlural" : "PlanesTypes",
+		"ZipName" : "plane-type-option.zip",
+		"Relation": "one-to-many",
+		"Contains" :
+		{
+			"Include" :
+			[
+				"TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\Plane\\PlanesTypesController.cs",
+				"TheBIADevCompany.BIATemplate.Application\\Plane\\PlaneTypeAppService.cs",
+				"TheBIADevCompany.BIATemplate.Application\\Plane\\IPlaneTypeAppService.cs"
+			],
+			"Exclude":
+			[]
+		},		
+		"Children" : 
+		[],
+		"Options" :
+		[],
+		"Partial" :
+		[
+			"TheBIADevCompany.BIATemplate.Presentation.Api\\bianetconfig.json",
+			"TheBIADevCompany.BIATemplate.Crosscutting.Ioc\\IocContainer.cs",
+			"TheBIADevCompany.BIATemplate.Crosscutting.Common\\Rights.cs"
+		]
+	}
+]
