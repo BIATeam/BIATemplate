@@ -8,7 +8,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using BIA.Net.Core.Domain.Dto.User;
+#if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
+#endif
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
 
     /// <summary>
@@ -16,6 +18,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
     /// </summary>
     public class UserIdentityKeyDomainService : IUserIdentityKeyDomainService
     {
+#if BIA_FRONT_FEATURE
         // -------------------------------- DataBase EntityKey --------------------------------------
 
         /// <summary>
@@ -65,6 +68,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Service
         }
 
         // -------------------------------- Directory EntityKey --------------------------------------
+#endif
 
         /// <summary>
         /// Check the Identity Key from the User in database.

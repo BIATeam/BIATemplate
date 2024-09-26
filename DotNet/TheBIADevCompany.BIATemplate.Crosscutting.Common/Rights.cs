@@ -73,7 +73,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
         public static class Roles
         {
             /// <summary>
-            /// The right to access to the list of airports (options only).
+            /// The right to access to the list of roles (options only).
             /// </summary>
             public const string Options = "Roles_Options";
 
@@ -89,7 +89,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
         public static class Permissions
         {
             /// <summary>
-            /// The right to access to the list of airports (options only).
+            /// The right to access to the list of permissions (options only).
             /// </summary>
             public const string Options = "Permissions_Options";
         }

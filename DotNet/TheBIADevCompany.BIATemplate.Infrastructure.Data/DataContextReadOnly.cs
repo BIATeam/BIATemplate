@@ -7,10 +7,6 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using BIA.Net.Core.Infrastructure.Data;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
 
     /// <summary>
     /// The database context.

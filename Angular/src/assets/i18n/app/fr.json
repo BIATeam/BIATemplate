@@ -4,7 +4,8 @@
     "sites": "Sites",
     "teams": "Equipes",
     "users": "Utilisateurs",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "maintenance-teams": "Equipes de maintenance"
   },
   "member": {
     "add": "Ajouter membre",

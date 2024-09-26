@@ -4,10 +4,15 @@
 
 namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
 {
+    using System.Threading.Tasks;
+#if BIA_FRONT_FEATURE
     using Audit.EntityFramework;
+#endif
     using BIA.Net.Core.Infrastructure.Data;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+
+#if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Domain.Audit.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
@@ -15,13 +20,21 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
+#endif
 
     /// <summary>
     /// The database context.
     /// </summary>
+#if BIA_FRONT_FEATURE
     [AuditDbContext(Mode = AuditOptionMode.OptIn, IncludeEntityObjects = false, AuditEventType = "{database}_{context}")]
+#endif
     public class DataContext : BiaDataContext
     {
+        /// <summary>
+        /// The current logger.
+        /// </summary>
+        private readonly ILogger<BiaDataContext> logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DataContext"/> class.
         /// </summary>
@@ -30,7 +43,11 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         public DataContext(DbContextOptions<DataContext> options, ILogger<DataContext> logger)
             : base(options, logger)
         {
+            this.logger = logger;
+            this.logger.LogDebug("----------------Create Context--------------");
         }
+
+#if BIA_FRONT_FEATURE
 
         /// <summary>
         /// Gets or sets the Plane DBSet.
@@ -101,12 +118,24 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         /// Gets or sets the notification type DBSet.
         /// </summary>
         public DbSet<NotificationTypeTranslation> NotificationTypeTranslations { get; set; }
+#endif
+
+        /// <summary>
+        /// Releases the allocated resources for this context.
+        /// </summary>
+        /// <returns>Task.</returns>
+        public override ValueTask DisposeAsync()
+        {
+            this.logger.LogDebug("----------------Dispose Context--------------");
+            return base.DisposeAsync();
+        }
 
         /// <inheritdoc cref="DbContext.OnModelCreating"/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // modelBuilder.HasDefaultSchema("dbo")
             base.OnModelCreating(modelBuilder);
+#if BIA_FRONT_FEATURE
 
             TranslationModelBuilder.CreateModel(modelBuilder);
             SiteModelBuilder.CreateSiteModel(modelBuilder);
@@ -114,6 +143,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
             ViewModelBuilder.CreateModel(modelBuilder);
             NotificationModelBuilder.CreateModel(modelBuilder);
             AuditModelBuilder.CreateModel(modelBuilder);
+#endif
             this.OnEndModelCreating(modelBuilder);
         }
     }

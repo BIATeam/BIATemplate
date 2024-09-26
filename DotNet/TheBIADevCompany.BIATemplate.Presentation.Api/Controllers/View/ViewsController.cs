@@ -5,21 +5,15 @@
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.View
 {
     using System;
-    using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using BIA.Net.Core.Common.Exceptions;
-    using BIA.Net.Core.Domain.Dto.User;
-    using BIA.Net.Presentation.Api.Controllers.Base;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Application.View;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
-    using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.Dto.View;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Base;
 
     /// <summary>
