@@ -110,6 +110,9 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
             modelBuilder.Entity<TeamType>().Property(r => r.Name).IsRequired().HasMaxLength(32);
             modelBuilder.Entity<TeamType>().HasData(new TeamType { Id = (int)TeamTypeId.Root, Name = "Root" });
             modelBuilder.Entity<TeamType>().HasData(new TeamType { Id = (int)TeamTypeId.Site, Name = "Site" });
+
+            // BIAToolKit - Begin TeamTypeModelBuilder
+            // BIAToolKit - End TeamTypeModelBuilder
         }
 
         /// <summary>
@@ -125,6 +128,9 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)RoleId.BackAdmin, Code = "Back_Admin", Label = "Background task administrator" });
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)RoleId.BackReadOnly, Code = "Back_Read_Only", Label = "Visualization of background tasks" });
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)RoleId.SiteAdmin, Code = "Site_Admin", Label = "Site administrator" });
+
+            // BIAToolKit - Begin RoleModelBuilder
+            // BIAToolKit - End RoleModelBuilder
         }
 
         /// <summary>
@@ -144,6 +150,9 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
                     rt.HasData(new { TeamTypesId = (int)TeamTypeId.Root, RolesId = (int)RoleId.BackReadOnly });
 
                     rt.HasData(new { TeamTypesId = (int)TeamTypeId.Site, RolesId = (int)RoleId.SiteAdmin });
+
+                    // BIAToolKit - Begin TeamTypeRoleModelBuilder
+                    // BIAToolKit - End TeamTypeRoleModelBuilder
                 });
         }
 

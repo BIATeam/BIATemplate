@@ -9,9 +9,12 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
     using System.Linq;
     using BIA.Net.Core.Infrastructure.Data;
     using BIA.Net.Core.Test.Data;
+#if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
     using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
+
+#endif
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
 
     /// <summary>
@@ -30,6 +33,7 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
         {
             // Do nothing. Used to create the DbContext through IoC.
         }
+#if BIA_FRONT_FEATURE
 
         #region Sites methods
 
@@ -126,12 +130,15 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
         }
 
         #endregion Users methods
+#endif
         #region AbstractMockEntityFrameworkInMemory methods
 
         /// <inheritdoc cref="AbstractMockEntityFramework{TDbContext}.InitDefaultData" />
         public override void InitDefaultData()
         {
+#if BIA_FRONT_FEATURE
             this.InitDefaultSites();
+#endif
         }
 
         #endregion AbstractMockEntityFrameworkInMemory methods

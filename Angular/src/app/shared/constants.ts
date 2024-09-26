@@ -46,9 +46,13 @@ export enum TeamTypeId {
   All = 0,
   Root = 1,
   Site = 2,
+  // BIAToolKit - Begin TeamTypeIdConstants
+  // BIAToolKit - End TeamTypeIdConstants
 }
 
-const TeamTypeRightPrefixe: { key: TeamTypeId; value: string }[] = [
+const TeamTypeRightPrefix: { key: TeamTypeId; value: string }[] = [
   { key: TeamTypeId.Site, value: 'Site' },
+  // BIAToolKit - Begin TeamTypeRightPrefixConstants
+  // BIAToolKit - End TeamTypeRightPrefixConstants
 ];
-export { TeamTypeRightPrefixe };
+export { TeamTypeRightPrefix };

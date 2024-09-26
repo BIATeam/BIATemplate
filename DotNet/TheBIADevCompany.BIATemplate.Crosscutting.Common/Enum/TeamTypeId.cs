@@ -25,5 +25,8 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum
         /// Value for site.
         /// </summary>
         Site = 2,
+
+        // BIAToolKit - Begin TeamTypeId
+        // BIAToolKit - End TeamTypeId
     }
 }

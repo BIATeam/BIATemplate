@@ -10,7 +10,6 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
     using System.Security.Principal;
     using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Domain.Authentication;
-    using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Domain.Service;
     using BIA.Net.Core.Presentation.Common.Features;
     using BIA.Net.Core.WorkerService.Features;
@@ -20,7 +19,9 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using TheBIADevCompany.BIATemplate.Crosscutting.Ioc;
+#if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features;
+#endif
 
     /// <summary>
     /// The startup class.
@@ -55,7 +56,9 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
         /// <param name="host">The host.</param>
         public static void Configure(IHost host)
         {
+#if BIA_FRONT_FEATURE
             CommonFeaturesExtensions.UseBiaCommonFeatures<AuditFeature>(host.Services);
+#endif
         }
 
         /// <summary>
@@ -80,13 +83,11 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
             services.AddBiaCommonFeatures(this.biaNetSection.CommonFeatures, this.configuration);
             services.AddBiaWorkerFeatures(
                 this.biaNetSection.WorkerFeatures,
-                this.configuration,
-                new List<DatabaseHandlerRepository>()
-                    {
-                        // Add here all the Handler repository.
-                    });
+                this.configuration);
 
             // End BIA Standard service
+#if BIA_FRONT_FEATURE
+#endif
 
             // Configure IoC for classes not in the API project.
             IocContainer.ConfigureContainer(services, this.configuration, false);

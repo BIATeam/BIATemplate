@@ -27,7 +27,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
         }
 
         /// <summary>
-        /// The user context langage and culture.
+        /// The user context language and culture.
         /// </summary>
         private UserContext UserContext { get; set; }
 

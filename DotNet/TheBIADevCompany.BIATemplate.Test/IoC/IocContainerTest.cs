@@ -3,14 +3,15 @@
 // </copyright>
 namespace TheBIADevCompany.BIATemplate.Test.IoC
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
     using BIA.Net.Core.Test.Data;
     using BIA.Net.Core.Test.IoC;
     using Microsoft.Extensions.DependencyInjection;
     using TheBIADevCompany.BIATemplate.Crosscutting.Ioc;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
-    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site;
-    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User;
-    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.View;
     using TheBIADevCompany.BIATemplate.Test.Data;
 
     /// <summary>
@@ -35,21 +36,26 @@ namespace TheBIADevCompany.BIATemplate.Test.IoC
 
             services.AddTransient<IMockEntityFramework<DataContext, DataContextReadOnly>, MockEntityFrameworkInMemory>();
 
-            ConfigureControllerContainer(services);
+            RegisterControllersFromAssembly(services, "TheBIADevCompany.BIATemplate.Presentation.Api");
         }
 
         /// <summary>
-        /// Configure dependency injection for all controllers.
+        /// Registers the controllers from assembly.
         /// </summary>
-        /// <param name="services">The collection of services to update.</param>
-        private static void ConfigureControllerContainer(IServiceCollection services)
+        /// <param name="collection">The collection.</param>
+        /// <param name="assemblyName">Name of the assembly.</param>
+        private static void RegisterControllersFromAssembly(
+            IServiceCollection collection,
+            string assemblyName)
         {
-            // Application Layer
-            services.AddTransient<SitesController, SitesController>();
-            services.AddTransient<MembersController, MembersController>();
-            services.AddTransient<RolesController, RolesController>();
-            services.AddTransient<UsersController, UsersController>();
-            services.AddTransient<ViewsController, ViewsController>();
+            Assembly classAssembly = Assembly.Load(assemblyName);
+
+            IEnumerable<Type> classTypes = classAssembly.GetTypes().Where(type => type.IsClass && !type.IsAbstract && type.Name.EndsWith("Controller"));
+
+            foreach (Type classType in classTypes)
+            {
+                collection.AddTransient(classType, classType);
+            }
         }
     }
 }

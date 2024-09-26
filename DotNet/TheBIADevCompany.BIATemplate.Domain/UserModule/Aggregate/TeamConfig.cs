@@ -24,6 +24,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
                 RightPrefix = "Site",
                 AdminRoleIds = new int[] { (int)RoleId.SiteAdmin },
             },
+
+            // BIAToolKit - Begin TeamConfig
+            // BIAToolKit - End TeamConfig
         }.ToImmutable();
     }
 }

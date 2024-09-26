@@ -11,6 +11,8 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
     using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
+    // BIAToolKit - Begin TeamMapperUsing
+    // BIAToolKit - End TeamMapperUsing
 
     /// <summary>
     /// The mapper used for site.
@@ -27,7 +29,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
         }
 
         /// <summary>
-        /// The user context langage and culture.
+        /// The user context language and culture.
         /// </summary>
         private UserContext UserContext { get; set; }
 
@@ -64,6 +66,38 @@ namespace TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate
                 }).ToList(),
 
                 // Map the parent properties if usefull in project:
+                ParentTeamId = GetParentTeamId(entity),
+                ParentTeamTitle = GetParentTeamTitle(entity),
+            };
+        }
+
+        /// <summary>
+        /// Retrieve the parent team id.
+        /// </summary>
+        /// <param name="team">Child <see cref="Team"/>.</param>
+        /// <returns>Parent Team id as <see cref="int"/>.</returns>
+        private static int GetParentTeamId(Team team)
+        {
+            return team switch
+            {
+                // BIAToolKit - Begin TeamMapperParentTeamId
+                // BIAToolKit - End TeamMapperParentTeamId
+                _ => 0
+            };
+        }
+
+        /// <summary>
+        /// Retrieve the parent team title.
+        /// </summary>
+        /// <param name="team">Child <see cref="Team"/>.</param>
+        /// <returns>Parent Team title as <see cref="string"/>.</returns>
+        private static string GetParentTeamTitle(Team team)
+        {
+            return team switch
+            {
+                // BIAToolKit - Begin TeamMapperParentTeamTitle
+                // BIAToolKit - End TeamMapperParentTeamTitle
+                _ => string.Empty
             };
         }
     }

@@ -39,6 +39,7 @@ namespace TheBIADevCompany.BIATemplate.DeployDB
                 .ConfigureServices((hostingContext, services) =>
                 {
                     IConfiguration configuration = hostingContext.Configuration;
+
                     services.AddDbContext<DataContext>(options =>
                     {
                         options.UseSqlServer(configuration.GetConnectionString("BIATemplateDatabase"));
@@ -54,11 +55,13 @@ namespace TheBIADevCompany.BIATemplate.DeployDB
                     services.AddHangfire(config =>
                     {
                         config.UseSqlServerStorage(configuration.GetConnectionString("BIATemplateDatabase"));
-                        string projectName = configuration["Project:Name"];
 
                         // Initialize here the recuring jobs
+#if BIA_FRONT_FEATURE
+                        string projectName = configuration["Project:Name"];
                         RecurringJob.AddOrUpdate<WakeUpTask>($"{projectName}.{typeof(WakeUpTask).Name}", t => t.Run(), configuration["Tasks:WakeUp:CRON"]);
                         RecurringJob.AddOrUpdate<SynchronizeUserTask>($"{projectName}.{typeof(SynchronizeUserTask).Name}", t => t.Run(), configuration["Tasks:SynchronizeUser:CRON"]);
+#endif
                     });
                 })
                 .ConfigureLogging((hostingContext, logging) =>

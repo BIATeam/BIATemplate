@@ -28,5 +28,8 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum
         /// The site admin role identifier.
         /// </summary>
         SiteAdmin = 1,
+
+        // BIAToolKit - Begin RoleId
+        // BIAToolKit - End RoleId
     }
 }

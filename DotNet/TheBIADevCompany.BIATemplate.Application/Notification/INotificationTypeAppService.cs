@@ -1,8 +1,8 @@
-// <copyright file="INotificationTypeDomainService.cs" company="TheBIADevCompany">
+// <copyright file="INotificationTypeAppService.cs" company="TheBIADevCompany">
 //     Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
-namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
+namespace TheBIADevCompany.BIATemplate.Application.Notification
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.NotificationModule.Service
     /// <summary>
     /// The interface defining the application service for notification type.
     /// </summary>
-    public interface INotificationTypeDomainService
+    public interface INotificationTypeAppService
     {
         /// <summary>
         /// Return options.
