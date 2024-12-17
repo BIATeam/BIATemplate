@@ -7,7 +7,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories.QueryCus
     using System.Linq;
     using BIA.Net.Core.Domain.RepoContract.QueryCustomizer;
     using Microsoft.EntityFrameworkCore;
-    using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.Notification.Entities;
     using TheBIADevCompany.BIATemplate.Domain.RepoContract;
 
     /// <summary>

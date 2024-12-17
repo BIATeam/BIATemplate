@@ -19,18 +19,19 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
     using BIA.Net.Core.Infrastructure.Service.Repositories;
     using BIA.Net.Core.Ioc;
     using BIA.Net.Core.IocContainer;
+    using BIA.Net.Core.Presentation.Common.Features.HubForClients;
     using Hangfire;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Application.User;
+    using TheBIADevCompany.BIATemplate.Domain.User.Models;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
+    using TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories;
 #if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Domain.RepoContract;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features;
 #endif
-    using TheBIADevCompany.BIATemplate.Application.User;
-    using TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories;
 
     /// <summary>
     /// The IoC Container.
@@ -57,7 +58,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
 
             BiaIocContainer.ConfigureContainer(collection, configuration, isUnitTest);
 
-            ConfigureInfrastructureServiceContainer(collection, biaNetSection);
+            ConfigureInfrastructureServiceContainer(collection, biaNetSection, isUnitTest);
             ConfigureDomainContainer(collection);
             ConfigureApplicationContainer(collection, isApi);
 
@@ -134,7 +135,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
                 options.EnableSensitiveDataLogging();
                 options.AddInterceptors(new AuditSaveChangesInterceptor());
             });
-            collection.AddDbContext<IQueryableUnitOfWorkReadOnly, DataContextReadOnly>(
+            collection.AddDbContext<IQueryableUnitOfWorkNoTracking, DataContextNoTracking>(
                 options =>
                 {
                     if (connectionString != null)
@@ -152,20 +153,31 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
                 assemblyName: "TheBIADevCompany.BIATemplate.Infrastructure.Data",
                 interfaceAssemblyName: "TheBIADevCompany.BIATemplate.Domain",
                 serviceLifetime: ServiceLifetime.Transient);
+
+            collection.AddScoped<DataContextFactory>();
 #if BIA_FRONT_FEATURE
-            collection.AddSingleton<AuditFeature>();
+            collection.AddSingleton<IAuditFeature, AuditFeature>();
+            collection.AddSingleton<BIA.Net.Core.Application.Services.IAuditFeatureService, BIA.Net.Core.Application.Services.AuditFeatureService>();
 #endif
         }
 
 #pragma warning disable S1172 // Unused method parameters should be removed
-        private static void ConfigureInfrastructureServiceContainer(IServiceCollection collection, BiaNetSection biaNetSection)
+        private static void ConfigureInfrastructureServiceContainer(IServiceCollection collection, BiaNetSection biaNetSection, bool isUnitTest = false)
 #pragma warning restore S1172 // Unused method parameters should be removed
         {
             collection.AddSingleton<IUserDirectoryRepository<UserFromDirectory>, LdapRepository>();
 #if BIA_FRONT_FEATURE
             collection.AddHttpClient<IIdentityProviderRepository, IdentityProviderRepository>().ConfigurePrimaryHttpMessageHandler(() => BiaIocContainer.CreateHttpClientHandler(biaNetSection, false));
             collection.AddTransient<IMailRepository, MailRepository>();
-            collection.AddTransient<IClientForHubRepository, SignalRClientForHubRepository>();
+
+            if (isUnitTest || !string.IsNullOrEmpty(biaNetSection.CommonFeatures.ClientForHub?.SignalRUrl))
+            {
+                collection.AddTransient<IClientForHubRepository, ExternalClientForSignalRRepository>();
+            }
+            else
+            {
+                collection.AddTransient<IClientForHubRepository, InternalClientForSignalRRepository<HubForClients>>();
+            }
 
             collection.AddHttpClient<IIdentityProviderRepository, IdentityProviderRepository>().ConfigurePrimaryHttpMessageHandler(() => BiaIocContainer.CreateHttpClientHandler(biaNetSection, false));
 #endif

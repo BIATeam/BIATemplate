@@ -4,10 +4,11 @@
     #dt
     [autoLayout]="true"
     [reorderableColumns]="reorderableColumns"
+    [resizableColumns]="isResizableColumn"
     [columns]="displayedColumns"
     [value]="elements"
-    [paginator]="paginator"
-    [rows]="pageSize"
+    [paginator]="!virtualScroll && paginator"
+    [rows]="virtualScroll ? virtualScrollPageSize : pageSize"
     (onFilter)="onFilter()"
     [totalRecords]="totalRecord"
     [lazy]="true"
@@ -20,17 +21,15 @@
     [sortOrder]="sortOrderValue"
     (onStateSave)="onStateSave($event)"
     (selectionChange)="onSelectionChange()"
-    [styleClass]="
-      (table?.multiSortMeta?.length ?? 0) > 1
-        ? 'p-datatable-striped multiSort'
-        : 'p-datatable-striped singleSort'
-    "
+    [styleClass]="'p-datatable-striped'"
     sortMode="multiple"
     [scrollHeight]="scrollHeightValue"
     [scrollable]="isScrollable"
     editMode="row"
     dataKey="id"
-    [(selection)]="selectedElements">
+    [(selection)]="selectedElements"
+    [virtualScroll]="virtualScroll"
+    [virtualScrollItemSize]="rowHeight">
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th
@@ -48,6 +47,7 @@
             *ngIf="col?.isSortable === true"
             [pSortableColumn]="col.field"
             pReorderableColumn
+            pResizableColumn
             [style.min-width]="col.minWidth"
             [alignFrozen]="col.alignFrozen"
             pFrozenColumn
@@ -68,6 +68,7 @@
           <th
             *ngIf="col?.isSortable !== true"
             pReorderableColumn
+            pResizableColumn
             [style.min-width]="col.minWidth"
             [alignFrozen]="col.alignFrozen"
             pFrozenColumn
@@ -97,11 +98,16 @@
           *ngFor="let col of columns"
           [ngSwitch]="col.field"
           pReorderableColumn
+          pResizableColumn
           [style.min-width]="col.minWidth"
           [alignFrozen]="col.alignFrozen"
           pFrozenColumn
           [frozen]="col.isFrozen">
-          <bia-table-filter [field]="col" [table]="dt"> </bia-table-filter>
+          <bia-table-filter
+            [field]="col"
+            [table]="dt"
+            [options]="getOptionDto(col.field)">
+          </bia-table-filter>
         </th>
       </tr>
     </ng-template>
@@ -114,6 +120,7 @@
       <!-- SELECTABLE IF NOT FOOTER -->
       <tr
         class="bia-selectable-row"
+        [ngClass]="{ 'p-even-row': ri % 2 !== 0 }"
         [pSelectableRow]="rowData?.id !== 0 ? rowData : null"
         [pEditableRow]="rowData"
         (focusout)="onFocusout()"
@@ -214,6 +221,32 @@
         </td>
       </tr>
     </ng-template>
+    <ng-template
+      pTemplate="loadingbody"
+      let-columns="columns"
+      let-ri="rowIndex">
+      <tr
+        [style]="'height: ' + rowHeight + 'px'"
+        [ngClass]="{ 'p-even-row': ri % 2 !== 0 }">
+        <td
+          *ngIf="canSelectElement === true"
+          [style.width]="widthSelect"
+          [alignFrozen]="alignFrozenSelect"
+          pFrozenColumn
+          [frozen]="isSelectFrozen">
+          <p-skeleton
+            [ngStyle]="{
+              width: '60%',
+            }" />
+        </td>
+        <td *ngFor="let col of columns; let even = even">
+          <p-skeleton
+            [ngStyle]="{
+              width: even ? '40%' : '60%',
+            }" />
+        </td>
+      </tr>
+    </ng-template>
     <ng-template pTemplate="footer" let-columns>
       <tr
         *ngIf="canAdd === true"
@@ -286,6 +319,25 @@
           <!-- </p-cellEditor> -->
         </td>
       </tr>
+    </ng-template>
+    <ng-template pTemplate="summary" let-columns>
+      @if (virtualScroll) {
+        <bia-table-footer-controller
+          [length]="totalRecord"
+          [pageSize]="pageSize"
+          [canChangePageSize]="false"
+          (pageSizeChange)="
+            onPageSizeValueChange($event)
+          "></bia-table-footer-controller>
+      }
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <bia-table-footer-controller
+        [length]="totalRecord"
+        [pageSize]="pageSize"
+        (pageSizeChange)="
+          onPageSizeValueChange($event)
+        "></bia-table-footer-controller>
     </ng-template>
     <!-- EMPTY MESSAGE -->
     <ng-template pTemplate="emptymessage" let-columns>

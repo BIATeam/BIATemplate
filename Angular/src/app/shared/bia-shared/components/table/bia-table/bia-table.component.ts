@@ -16,7 +16,10 @@ import { PrimeTemplate, TableState } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Observable, of, timer } from 'rxjs';
 import { AuthService } from 'src/app/core/bia-core/services/auth.service';
-import { TABLE_FILTER_GLOBAL } from 'src/app/shared/constants';
+import {
+  DEFAULT_PAGE_SIZE,
+  TABLE_FILTER_GLOBAL,
+} from 'src/app/shared/constants';
 import {
   BiaFieldConfig,
   BiaFieldsConfig,
@@ -25,6 +28,7 @@ import {
 import { BiaTableState } from '../../../model/bia-table-state';
 import { KeyValuePair } from '../../../model/key-value-pair';
 import { TableHelperService } from '../../../services/table-helper.service';
+import { DictOptionDto } from './dict-option-dto';
 
 const objectsEqual = (o1: any, o2: any) =>
   Object.keys(o1).length === Object.keys(o2).length &&
@@ -41,16 +45,21 @@ const arraysEqual = (a1: any, a2: any) =>
   templateUrl: './bia-table.component.html',
   styleUrls: ['./bia-table.component.scss'],
 })
-export class BiaTableComponent implements OnChanges, AfterContentInit {
+export class BiaTableComponent<TDto extends { id: number }>
+  implements OnChanges, AfterContentInit
+{
   @Input() pageSize: number;
   @Input() totalRecord: number;
   @Input() paginator = true;
-  @Input() elements: any[];
+  @Input() pageSizeOptions: number[] = [10, 25, 50, 100];
+  @Input() virtualScroll = false;
+  @Input() elements: TDto[];
   @Input() columnToDisplays: KeyValuePair[];
   @Input() reorderableColumns = true;
   @Input() sortFieldValue = '';
   @Input() sortOrderValue = 1;
   @Input() showColSearch = false;
+  @Output() showColSearchChange = new EventEmitter<boolean>();
   @Input() globalSearchValue = '';
   @Input() canClickRow = true;
   @Input() canSelectElement = true;
@@ -59,19 +68,23 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
   @Input() viewPreference: string;
   @Input() actionColumnLabel = 'bia.actions';
   @Input() showLoadingAfter = 100;
-  @Input() scrollHeightValue = 'calc( 100vh - 450px)';
+  @Input() scrollHeightValue = 'calc( 100vh - 460px)';
   @Input() isScrollable = true;
-  @Input() frozeSelectColumn = false;
+  @Input() isResizableColumn = false;
+  @Input() frozeSelectColumn = true;
   @Input() canSelectMultipleElement = true;
+  @Input() rowHeight = 33.56;
+  @Input() virtualScrollPageSize = 100;
+  @Input() dictOptionDtos: DictOptionDto[] = [];
 
   protected isSelectFrozen = false;
   protected widthSelect: string;
   protected alignFrozenSelect = 'left';
-  protected _configuration: BiaFieldsConfig;
-  get configuration(): BiaFieldsConfig {
+  protected _configuration: BiaFieldsConfig<TDto>;
+  get configuration(): BiaFieldsConfig<TDto> {
     return this._configuration;
   }
-  @Input() set configuration(value: BiaFieldsConfig) {
+  @Input() set configuration(value: BiaFieldsConfig<TDto>) {
     this._configuration = value;
     this.manageSelectFrozen(value);
   }
@@ -82,6 +95,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
   @Output() loadLazy = new EventEmitter<TableLazyLoadEvent>();
   @Output() selectedElementsChanged = new EventEmitter<any[]>();
   @Output() stateSave = new EventEmitter<string>();
+  @Output() pageSizeChange = new EventEmitter<number>();
 
   @ViewChild('dt', { static: false }) table: Table | undefined;
 
@@ -89,15 +103,15 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
   // specificInputTemplate: TemplateRef<any>;
   specificOutputTemplate: TemplateRef<any>;
 
-  protected _selectedElements: any[] = [];
-  get selectedElements(): any[] {
+  protected _selectedElements: TDto[] = [];
+  get selectedElements(): TDto[] {
     return this._selectedElements;
   }
-  set selectedElements(value: any[]) {
+  set selectedElements(value: TDto[]) {
     this._selectedElements = value;
   }
 
-  displayedColumns: BiaFieldConfig[];
+  displayedColumns: BiaFieldConfig<TDto>[];
   showLoading$: Observable<any>;
 
   protected defaultSortField: string;
@@ -132,6 +146,12 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
     this.onSearchGlobalChange(changes);
     this.onViewPreferenceChange(changes);
     this.onAdvancedFilterChange(changes);
+    this.onIsResizableColumnChange(changes);
+  }
+
+  clearFilters() {
+    this.table?.clear();
+    this.globalSearchValue = '';
   }
 
   protected onElementsChange(changes: SimpleChanges) {
@@ -182,9 +202,24 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
       if (changes.columnToDisplays.isFirstChange()) {
         this.initDefaultSort();
         this.defaultPageSize = this.pageSize;
-        this.defaultColumns = this.displayedColumns.map(x => x.field);
+        this.defaultColumns = this.displayedColumns.map(x =>
+          x.field.toString()
+        );
       }
       this.updateDisplayedColumns(true);
+    }
+  }
+
+  protected onIsResizableColumnChange(changes: SimpleChanges) {
+    if (
+      changes.isResizableColumn &&
+      changes.isResizableColumn.currentValue !== true
+    ) {
+      if (this.table) {
+        this.table.columnWidthsState = '';
+      }
+
+      this.restoreColumnWidthsTable();
     }
   }
 
@@ -194,7 +229,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
       this.displayedColumns &&
       this.displayedColumns.length > 0
     ) {
-      this.sortFieldValue = this.displayedColumns[0].field;
+      this.sortFieldValue = this.displayedColumns[0].field.toString();
     }
     this.defaultSortField = this.sortFieldValue;
     this.defaultSortOrder = this.sortOrderValue;
@@ -202,7 +237,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
 
   protected updateDisplayedColumns(saveTableState: boolean) {
     //setTimeout(() =>{
-    const columns: BiaFieldConfig[] = this.getColumns();
+    const columns: BiaFieldConfig<TDto>[] = this.getColumns();
     let displayedColumns;
     if (this.columnToDisplays) {
       displayedColumns = columns.filter(
@@ -262,9 +297,9 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
     }
   }
 
-  protected getColumns(): BiaFieldConfig[] {
+  protected getColumns(): BiaFieldConfig<TDto>[] {
     const tableState: BiaTableState | null = this.getTableState();
-    let columns: BiaFieldConfig[] = [];
+    let columns: BiaFieldConfig<TDto>[] = [];
     let columnOrder: string[] | undefined = [];
     if (tableState && tableState.columnOrder) {
       columnOrder = tableState.columnOrder;
@@ -275,7 +310,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
     if (columnOrder && columnOrder?.length > 0) {
       // The primeTableColumns are sorted by columnOrder.
       columnOrder.forEach(colName => {
-        const column: BiaFieldConfig = this.configuration.columns.filter(
+        const column: BiaFieldConfig<TDto> = this.configuration.columns.filter(
           col => col.field === colName
         )[0];
         columns.push(column);
@@ -284,7 +319,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
       // A hide then show column does not appear in sorted fields,
       // We start by finding them (missingColumns)
       const missingColumns = this.configuration.columns.filter(
-        col => columnOrder?.indexOf(col.field) === -1
+        col => columnOrder?.indexOf(col.field.toString()) === -1
       );
 
       missingColumns.forEach(missingColumn => {
@@ -299,9 +334,14 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
     return columns;
   }
 
+  onPageSizeValueChange(pageSize: number) {
+    this.pageSizeChange.emit(Number(pageSize));
+  }
+
   protected onPageSizeChange(changes: SimpleChanges) {
     if (changes.pageSize && this.table) {
       this.table.onPageChange({ first: 0, rows: Number(this.pageSize) });
+      this.pageSizeChange.emit(Number(this.pageSize));
     }
   }
 
@@ -322,6 +362,12 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
     ) {
       const viewPreference: BiaTableState = JSON.parse(
         changes.viewPreference.currentValue
+      );
+
+      setTimeout(() =>
+        this.pageSizeChange.emit(
+          viewPreference.rows ? viewPreference.rows : DEFAULT_PAGE_SIZE
+        )
       );
 
       // compatibility switch sort multiple to single
@@ -396,7 +442,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
           if (col.isSearchable === true && col.type !== PropType.Boolean) {
             this.table?.filter(
               value,
-              TABLE_FILTER_GLOBAL + col.field,
+              TABLE_FILTER_GLOBAL + col.field.toString(),
               col.filterMode
             );
           }
@@ -416,9 +462,15 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
 
   onLoadLazy(event: TableLazyLoadEvent) {
     this.saveTableState();
+    if (event.rows === 0 && this.virtualScroll) {
+      event.rows = this.virtualScrollPageSize;
+    }
     const tableLazyLoadCopy: TableLazyLoadEvent =
       TableHelperService.copyTableLazyLoadEvent(event);
     setTimeout(() => this.loadLazy.emit(tableLazyLoadCopy), 0);
+    if (event.forceUpdate) {
+      event.forceUpdate();
+    }
   }
 
   onSelectionChange() {
@@ -464,22 +516,48 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
         this.updateDisplayedColumns(false);
         this.table.restoreState();
 
+        if (this.table.resizableColumns) {
+          this.restoreColumnWidthsTable();
+        }
+
         if (this.table.sortMode === 'multiple') {
           this.table.sortMultiple();
         } else {
           this.table.sortSingle();
         }
 
-        this.showColSearch = false;
+        setTimeout(() => {
+          this.showColSearch = false;
+          this.showColSearchChange.emit(false);
+        });
         if (this.table.hasFilter()) {
           for (const key in this.table.filters) {
             if (!key.startsWith(TABLE_FILTER_GLOBAL)) {
-              this.showColSearch = true;
+              setTimeout(() => {
+                this.showColSearch = true;
+                this.showColSearchChange.emit(true);
+              });
               break;
             }
           }
         }
       }
+    }
+  }
+
+  /**
+   * This method is used to restore column widths in a PrimeNG table
+   * and to reset the column widths if the columnWidthsState is not defined.
+   */
+  protected restoreColumnWidthsTable() {
+    if (this.table) {
+      // The restoreColumnWidths method of PrimeNG does not restore the default size.
+      // Therefore, we handle it here.
+      if (this.table.styleElement) {
+        this.table.styleElement.textContent = '';
+      }
+
+      this.table.restoreColumnWidths();
     }
   }
 
@@ -501,7 +579,7 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
    * If in the configuration, we have at least one frozen column, we freeze the select column.
    * @param biaFieldsConfig
    */
-  protected manageSelectFrozen(biaFieldsConfig: BiaFieldsConfig) {
+  protected manageSelectFrozen(biaFieldsConfig: BiaFieldsConfig<TDto>) {
     if (!this.frozeSelectColumn && biaFieldsConfig) {
       if (biaFieldsConfig?.columns?.some(x => x.isFrozen === true) === true) {
         this.isSelectFrozen = true;
@@ -548,5 +626,9 @@ export class BiaTableComponent implements OnChanges, AfterContentInit {
     }
 
     return value;
+  }
+
+  public getOptionDto(key: string) {
+    return this.dictOptionDtos.filter(x => x.key === key)[0]?.value;
   }
 }

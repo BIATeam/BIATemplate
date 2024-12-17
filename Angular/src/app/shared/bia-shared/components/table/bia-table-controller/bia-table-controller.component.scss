@@ -1,5 +1,7 @@
+@import '../../../../../../scss/bia/bia-variables';
+
 :host {
-  display: inline-block;
+  display: block;
   position: relative;
   left: -35px;
   width: calc(100% + 70px);
@@ -21,6 +23,10 @@
       padding: 0.125rem !important;
     }
   }
+
+  .bia-btn-del-filter {
+    color: $biaRed !important;
+  }
 }
 
 .bia-table-controller-container {
@@ -31,6 +37,7 @@
   flex-wrap: wrap;
   justify-content: space-between;
 }
+
 .bia-column-filter-icon {
   margin-top: 5px;
 }

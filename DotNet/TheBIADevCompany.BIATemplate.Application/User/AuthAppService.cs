@@ -20,8 +20,9 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Service;
+    using TheBIADevCompany.BIATemplate.Domain.User;
+    using TheBIADevCompany.BIATemplate.Domain.User.Models;
+    using TheBIADevCompany.BIATemplate.Domain.User.Services;
 
     /// <summary>
     /// Auth App Service.
@@ -482,7 +483,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
 
                         if (userFromDirectory != null)
                         {
-                            User user = await this.userAppService.AddUserFromUserDirectoryAsync(identityKey, userFromDirectory);
+                            Domain.User.Entities.User user = await this.userAppService.AddUserFromUserDirectoryAsync(identityKey, userFromDirectory);
                             userInfo = this.userAppService.CreateUserInfo(user);
                         }
                     }

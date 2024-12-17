@@ -8,6 +8,7 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Security.Principal;
+    using BIA.Net.Core.Application.Services;
     using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Domain.Authentication;
     using BIA.Net.Core.Domain.Service;
@@ -20,7 +21,6 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
     using Microsoft.Extensions.Hosting;
     using TheBIADevCompany.BIATemplate.Crosscutting.Ioc;
 #if BIA_FRONT_FEATURE
-    using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features;
 #endif
 
     /// <summary>
@@ -57,7 +57,7 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
         public static void Configure(IHost host)
         {
 #if BIA_FRONT_FEATURE
-            CommonFeaturesExtensions.UseBiaCommonFeatures<AuditFeature>(host.Services);
+            host.Services.GetRequiredService<IAuditFeatureService>().EnableAuditFeatures();
 #endif
         }
 
@@ -67,18 +67,6 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
         /// <param name="services">The collection of services.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            // Used to get a unique identifier for each HTTP request and track it.
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services.AddTransient<IPrincipal>(
-                provider =>
-                {
-                    var claims = new List<Claim> { new Claim(ClaimTypes.Name, Environment.UserName) };
-                    var userIdentity = new ClaimsIdentity(claims, "NonEmptyAuthType");
-                    return new BiaClaimsPrincipal(new ClaimsPrincipal(userIdentity));
-                });
-            services.AddTransient<UserContext>(provider => new UserContext("en-GB", this.biaNetSection.Cultures));
-
             // Begin BIA Standard service
             services.AddBiaCommonFeatures(this.biaNetSection.CommonFeatures, this.configuration);
             services.AddBiaWorkerFeatures(

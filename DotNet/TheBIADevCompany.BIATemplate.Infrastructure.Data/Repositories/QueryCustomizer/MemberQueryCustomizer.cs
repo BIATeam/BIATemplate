@@ -7,7 +7,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories.QueryCus
     using BIA.Net.Core.Domain.RepoContract.QueryCustomizer;
     using Microsoft.EntityFrameworkCore;
     using TheBIADevCompany.BIATemplate.Domain.RepoContract;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 
     /// <summary>
     /// Class use to customize the EF request on Member entity.

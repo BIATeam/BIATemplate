@@ -9,6 +9,7 @@ namespace TheBIADevCompany.BIATemplate.Test.IoC
     using System.Reflection;
     using BIA.Net.Core.Test.Data;
     using BIA.Net.Core.Test.IoC;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using TheBIADevCompany.BIATemplate.Crosscutting.Ioc;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
@@ -31,10 +32,13 @@ namespace TheBIADevCompany.BIATemplate.Test.IoC
         /// <param name="services">The collection of services to update.</param>
         public static void ConfigureContainerTest(IServiceCollection services)
         {
-            IocContainer.ConfigureContainer(services, null, true, true);
-            BIAIocContainerTest.ConfigureContainerTest<DataContext, DataContextReadOnly>(services);
+            IConfiguration configuration = BuildConfiguration();
+            services.AddSingleton(configuration);
 
-            services.AddTransient<IMockEntityFramework<DataContext, DataContextReadOnly>, MockEntityFrameworkInMemory>();
+            IocContainer.ConfigureContainer(services, null, true, true);
+            BIAIocContainerTest.ConfigureContainerTest<DataContext, DataContextNoTracking>(services);
+
+            services.AddTransient<IMockEntityFramework<DataContext, DataContextNoTracking>, MockEntityFrameworkInMemory>();
 
             RegisterControllersFromAssembly(services, "TheBIADevCompany.BIATemplate.Presentation.Api");
         }
@@ -56,6 +60,16 @@ namespace TheBIADevCompany.BIATemplate.Test.IoC
             {
                 collection.AddTransient(classType, classType);
             }
+        }
+
+        /// <summary>
+        /// Builds the configuration.
+        /// </summary>
+        /// <returns>The configuration.</returns>
+        private static IConfiguration BuildConfiguration()
+        {
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            return configurationBuilder.Build();
         }
     }
 }

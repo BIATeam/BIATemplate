@@ -6,8 +6,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 {
     using Microsoft.EntityFrameworkCore;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-    using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.Notification.Entities;
 
     /// <summary>
     /// Class used to update the model builder for notification domain.

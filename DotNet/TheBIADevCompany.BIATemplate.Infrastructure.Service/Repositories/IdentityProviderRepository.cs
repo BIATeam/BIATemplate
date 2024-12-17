@@ -18,7 +18,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using TheBIADevCompany.BIATemplate.Domain.RepoContract;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.User.Models;
     using TheBIADevCompany.BIATemplate.Infrastructure.Service.Dto.Keycloak;
     using TheBIADevCompany.BIATemplate.Infrastructure.Service.Dto.Keycloak.SearchUserResponse;
 
@@ -135,7 +135,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories
 
         private UserFromDirectory ConvertToUserDirectory(SearchUserResponseDto searchUserResponseDto)
         {
-            if (searchUserResponseDto != null)
+            if (searchUserResponseDto != null && searchUserResponseDto.Attribute != null)
             {
                 string sid = null;
 

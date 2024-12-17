@@ -6,7 +6,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.RepoContract
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.User.Models;
 
     /// <summary>
     /// Interface IdentityProviderRepository.

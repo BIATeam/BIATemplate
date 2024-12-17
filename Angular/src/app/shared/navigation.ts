@@ -6,16 +6,19 @@ export const NAVIGATION: BiaNavigation[] = [
     labelKey: 'app.users',
     permissions: [Permission.User_List_Access],
     path: ['/users'],
+    icon: 'pi pi-users',
   },
   {
     labelKey: 'app.sites',
     permissions: [Permission.Site_List_Access],
     path: ['/sites'],
+    icon: 'pi pi-home',
   },
   /// BIAToolKit - Begin Navigation
   /// BIAToolKit - End Navigation
   {
     labelKey: 'bia.administration',
+    icon: 'pi pi-wrench',
     permissions: [
       Permission.Background_Task_Admin,
       Permission.Background_Task_Read_Only,

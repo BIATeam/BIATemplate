@@ -11,6 +11,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System.Security.Principal;
     using System.Text;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Application.Services;
     using BIA.Net.Core.Common;
     using BIA.Net.Core.Domain.Authentication;
     using BIA.Net.Core.Domain.Dto;
@@ -20,7 +21,9 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.User.Mappers;
+    using TheBIADevCompany.BIATemplate.Domain.User.Specifications;
 
     /// <summary>
     /// The application service used for member.
