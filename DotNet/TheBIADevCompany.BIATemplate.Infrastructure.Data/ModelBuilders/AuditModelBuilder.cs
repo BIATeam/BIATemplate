@@ -5,8 +5,8 @@
 namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 {
     using Microsoft.EntityFrameworkCore;
-    using TheBIADevCompany.BIATemplate.Domain.Audit.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.Audit.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 
     /// <summary>
     /// Class used to update the model builder for user domain.

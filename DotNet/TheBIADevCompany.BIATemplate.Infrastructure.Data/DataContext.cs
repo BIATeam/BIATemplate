@@ -10,15 +10,15 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
 #endif
     using BIA.Net.Core.Infrastructure.Data;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-
 #if BIA_FRONT_FEATURE
-    using TheBIADevCompany.BIATemplate.Domain.Audit.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.NotificationModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.TranslationModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.Audit.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.Notification.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.Site.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.Translation.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.View.Entities;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
 #endif
 
@@ -40,15 +40,15 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public DataContext(DbContextOptions<DataContext> options, ILogger<DataContext> logger)
-            : base(options, logger)
+        /// <param name="configuration">The configuration.</param>
+        public DataContext(DbContextOptions<DataContext> options, ILogger<DataContext> logger, IConfiguration configuration)
+            : base(options, logger, configuration)
         {
             this.logger = logger;
             this.logger.LogDebug("----------------Create Context--------------");
         }
 
 #if BIA_FRONT_FEATURE
-
         /// <summary>
         /// Gets or sets the Plane DBSet.
         /// </summary>

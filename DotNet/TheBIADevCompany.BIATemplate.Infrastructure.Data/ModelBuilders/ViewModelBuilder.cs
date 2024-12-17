@@ -5,7 +5,7 @@
 namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 {
     using Microsoft.EntityFrameworkCore;
-    using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.View.Entities;
 
     /// <summary>
     /// Class used to update the model builder for view domain.

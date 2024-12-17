@@ -7,17 +7,19 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Application.Services;
     using BIA.Net.Core.Domain.Dto.Option;
     using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.User.Mappers;
 
     /// <summary>
     /// The application service used for role.
     /// </summary>
-    public class RoleAppService : FilteredServiceBase<Role, int>, IRoleAppService
+    public class RoleAppService : OperationalDomainServiceBase<Role, int>, IRoleAppService
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RoleAppService"/> class.

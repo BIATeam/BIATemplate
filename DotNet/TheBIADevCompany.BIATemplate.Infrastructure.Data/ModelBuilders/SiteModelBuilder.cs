@@ -6,7 +6,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 {
     using Microsoft.EntityFrameworkCore;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-    using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.Site.Entities;
 
     /// <summary>
     /// Class used to update the model builder for site domain.

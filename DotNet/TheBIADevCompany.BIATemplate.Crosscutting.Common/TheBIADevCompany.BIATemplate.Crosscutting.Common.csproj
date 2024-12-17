@@ -6,9 +6,9 @@
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BIA.Net.Core.Common" Version="3.10.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
+    <PackageReference Include="BIA.Net.Core.Common" Version="4.0.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.*" />
+    <PackageReference Include="System.Security.Principal.Windows" Version="5.0.*" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>$(DefineConstants);BIA_BACK_TO_BACK_AUTH;BIA_FRONT_FEATURE</DefineConstants>
@@ -26,6 +26,10 @@
     <Compile Remove="**\*Plane*.cs" />
     <Compile Remove="**\*Worker*.cs" />
     <Compile Remove="**\*HangfiresController*.cs" />
+    <Compile Remove="**\*Part*.cs" />
+    <Compile Remove="**\*Country*.cs" />
+    <Compile Remove="**\*Document*.cs" />
+    <Compile Remove="**\*Analysis*.cs" />
     <!--BIATEMPLATE-->
     <Compile Remove="**\*Audit*.cs" />
     <Compile Remove="**\*Error*.cs" />

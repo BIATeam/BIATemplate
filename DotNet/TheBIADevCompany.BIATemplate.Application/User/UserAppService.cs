@@ -10,6 +10,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System.Security.Principal;
     using System.Text;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Application.Services;
     using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Common.Exceptions;
     using BIA.Net.Core.Domain.Authentication;
@@ -25,13 +26,17 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.RepoContract;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Service;
+    using TheBIADevCompany.BIATemplate.Domain.User;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.User.Mappers;
+    using TheBIADevCompany.BIATemplate.Domain.User.Models;
+    using TheBIADevCompany.BIATemplate.Domain.User.Services;
+    using TheBIADevCompany.BIATemplate.Domain.User.Specifications;
 
     /// <summary>
     /// The application service used for user.
     /// </summary>
-    public class UserAppService : FilteredServiceBase<User, int>, IUserAppService
+    public class UserAppService : CrudAppServiceBase<UserDto, User, int, PagingFilterFormatDto, UserMapper>, IUserAppService
     {
         /// <summary>
         /// The user synchronize domain service.
@@ -234,7 +239,18 @@ namespace TheBIADevCompany.BIATemplate.Application.User
                     try
                     {
                         var foundUser = (await this.Repository.GetAllEntityAsync(filter: this.userIdentityKeyDomainService.CheckDatabaseIdentityKey(this.userIdentityKeyDomainService.GetDirectoryIdentityKey(userFormDirectoryDto)))).FirstOrDefault();
-                        UserFromDirectory userFormDirectory = await this.userDirectoryHelper.ResolveUser(userFormDirectoryDto);
+
+                        UserFromDirectory userFormDirectory = null;
+
+                        if (this.configuration?.Authentication?.Keycloak?.IsActive == true)
+                        {
+                            userFormDirectory = await this.identityProviderRepository.FindUserAsync(userFormDirectoryDto.IdentityKey);
+                        }
+                        else
+                        {
+                            userFormDirectory = await this.userDirectoryHelper.ResolveUser(userFormDirectoryDto);
+                        }
+
                         if (userFormDirectory != null)
                         {
                             var addedUser = this.userSynchronizeDomainService.AddOrActiveUserFromDirectory(userFormDirectory, foundUser);
@@ -315,6 +331,12 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         public async Task SynchronizeWithADAsync(bool fullSynchro = false)
         {
             await this.userSynchronizeDomainService.SynchronizeFromADGroupAsync(fullSynchro);
+        }
+
+        /// <inheritdoc cref="IUserAppService.SynchronizeWithIdpAsync"/>
+        public async Task SynchronizeWithIdpAsync()
+        {
+            await this.userSynchronizeDomainService.SynchronizeFromIdpAsync();
         }
 
         /// <inheritdoc cref="IUserAppService.UpdateLastLoginDateAndActivate"/>

@@ -11,11 +11,12 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { Observable, Subscription } from 'rxjs';
-import { filter, skip } from 'rxjs/operators';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { filter, skip, take, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/bia-core/services/auth.service';
 import { BiaOnlineOfflineService } from 'src/app/core/bia-core/services/bia-online-offline.service';
 import { BiaTranslationService } from 'src/app/core/bia-core/services/bia-translation.service';
+import { BiaLayoutService } from 'src/app/shared/bia-shared/components/layout/services/layout.service';
 import { BiaTableControllerComponent } from 'src/app/shared/bia-shared/components/table/bia-table-controller/bia-table-controller.component';
 import { BiaTableComponent } from 'src/app/shared/bia-shared/components/table/bia-table/bia-table.component';
 import { loadAllView } from 'src/app/shared/bia-shared/features/view/store/views-actions';
@@ -40,16 +41,26 @@ import { CrudItemService } from '../../services/crud-item.service';
 export class CrudItemsIndexComponent<CrudItem extends BaseDto>
   implements OnInit, OnDestroy
 {
-  public crudConfiguration: CrudConfig;
+  public crudConfiguration: CrudConfig<CrudItem>;
   useRefreshAtLanguageChange = false;
 
   @HostBinding('class') classes = 'bia-flex';
   @ViewChild(BiaTableComponent, { static: false })
-  biaTableComponent: BiaTableComponent;
+  biaTableComponent: BiaTableComponent<CrudItem>;
   @ViewChild(BiaTableControllerComponent, { static: false })
   biaTableControllerComponent: BiaTableControllerComponent;
   @ViewChild(CrudItemTableComponent, { static: false })
   crudItemTableComponent: CrudItemTableComponent<CrudItem>;
+
+  _showTableController = true;
+
+  get showTableController(): boolean {
+    return this._showTableController;
+  }
+  set showTableController(value: boolean) {
+    this._showTableController = value;
+  }
+
   public get crudItemListComponent() {
     if (!this.crudConfiguration.useCalcMode) {
       return this.biaTableComponent;
@@ -64,6 +75,8 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
   pageSize = this.defaultPageSize;
   totalRecords: number;
   crudItems$: Observable<CrudItem[]>;
+  lastLazyLoadEvent$: Observable<TableLazyLoadEvent>;
+  virtualCrudItems: CrudItem[];
   selectedCrudItems: CrudItem[] = [];
   totalCount$: Observable<number>;
   loading$: Observable<boolean>;
@@ -71,6 +84,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
   canDelete = false;
   canAdd = false;
   canSave = false;
+  canSelect = false;
   columns: KeyValuePair[];
   displayedColumns: KeyValuePair[];
   reorderableColumns = true;
@@ -90,6 +104,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
   protected biaTranslationService: BiaTranslationService;
   protected authService: AuthService;
   protected tableHelperService: TableHelperService;
+  protected layoutService: BiaLayoutService;
 
   constructor(
     protected injector: Injector,
@@ -106,6 +121,20 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
     this.authService = this.injector.get<AuthService>(AuthService);
     this.tableHelperService =
       this.injector.get<TableHelperService>(TableHelperService);
+    this.layoutService = this.injector.get<BiaLayoutService>(BiaLayoutService);
+  }
+
+  toggleTableControllerVisibility() {
+    this.showTableController = !this.showTableController;
+  }
+
+  getFillScrollHeightValue(offset?: string) {
+    return this.tableHelperService.getFillScrollHeightValue(
+      this.layoutService,
+      this.crudConfiguration.useCompactMode ?? false,
+      this.showTableController ?? true,
+      offset
+    );
   }
 
   useViewChange(e: boolean) {
@@ -127,6 +156,20 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
     this.crudConfiguration.usePopup = e;
     this.usePopupConfig(true);
   }
+
+  useCompactModeChange(e: boolean) {
+    this.crudConfiguration.useCompactMode = e;
+  }
+
+  useVirtualScrollChange(e: boolean) {
+    this.crudConfiguration.useVirtualScroll = e;
+    this.initVirtualScroll();
+  }
+
+  useResizableColumnChange(e: boolean) {
+    this.crudConfiguration.useResizableColumn = e;
+  }
+
   protected useViewConfig(manualChange: boolean) {
     this.tableStateKey = this.crudConfiguration.useView
       ? this.crudConfiguration.tableStateKey
@@ -183,7 +226,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
       this.onLoadLazy(this.crudItemListComponent.getLazyLoadMetadata());
     } else {
       if (manualChange) {
-        this.crudItemService.signalRService.destroy();
+        this.crudItemService.signalRService.destroy(this.crudItemService);
       }
     }
   }
@@ -206,6 +249,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
     this.crudItemService.clearAll();
     this.crudItems$ = this.crudItemService.crudItems$;
     this.totalCount$ = this.crudItemService.totalCount$;
+    this.lastLazyLoadEvent$ = this.crudItemService.lastLazyLoadEvent$;
     this.loading$ = this.crudItemService.loadingGetAll$;
     this.onDisplay();
 
@@ -219,6 +263,8 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
           })
       );
     }
+
+    this.initVirtualScroll();
 
     if (this.crudConfiguration.useOfflineMode) {
       if (BiaOnlineOfflineService.isModeEnabled) {
@@ -234,6 +280,42 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
             })
         );
       }
+    }
+  }
+
+  protected initVirtualScroll() {
+    if (this.crudConfiguration.useVirtualScroll) {
+      this.sub.add(
+        combineLatest([this.crudItems$, this.totalCount$]).subscribe(data => {
+          this.lastLazyLoadEvent$
+            .pipe(
+              take(1),
+              tap(lastLazyLoadEvent => {
+                if (lastLazyLoadEvent.first !== undefined) {
+                  if (
+                    data[1] > 0 &&
+                    (!this.virtualCrudItems ||
+                      data[1] !== this.virtualCrudItems.length)
+                  ) {
+                    this.virtualCrudItems = Array.from({ length: data[1] });
+                  }
+
+                  if (
+                    this.virtualCrudItems &&
+                    this.virtualCrudItems.length > 0
+                  ) {
+                    this.virtualCrudItems.splice(
+                      lastLazyLoadEvent.first ?? 0,
+                      lastLazyLoadEvent.rows ?? 0,
+                      ...data[0]
+                    );
+                  }
+                }
+              })
+            )
+            .subscribe();
+        })
+      );
     }
   }
 
@@ -254,7 +336,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
 
   onHide() {
     if (this.crudConfiguration.useSignalR) {
-      this.crudItemService.signalRService.destroy();
+      this.crudItemService.signalRService.destroy(this.crudItemService);
     }
   }
 
@@ -370,19 +452,23 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
       const columnIdExists = allColumns.some(column => column.field === 'id');
 
       if (columnIdExists !== true) {
-        allColumns.unshift(new BiaFieldConfig('id', 'bia.id'));
+        allColumns.unshift(new BiaFieldConfig<CrudItem>('id', 'bia.id'));
       }
 
       allColumns?.map(
-        (x: BiaFieldConfig) =>
-          (columns[x.field] = this.translateService.instant(x.header))
+        (x: BiaFieldConfig<CrudItem>) =>
+          (columns[x.field.toString()] = this.translateService.instant(
+            x.header
+          ))
       );
     } else {
       this.crudItemListComponent
         .getPrimeNgTable()
         ?.columns?.map(
-          (x: BiaFieldConfig) =>
-            (columns[x.field] = this.translateService.instant(x.header))
+          (x: BiaFieldConfig<CrudItem>) =>
+            (columns[x.field.toString()] = this.translateService.instant(
+              x.header
+            ))
         );
     }
 
@@ -460,5 +546,23 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
 
   onOpenFilter() {
     this.showAdvancedFilter = true;
+  }
+
+  get defaultRowHeight(): number {
+    if (this.crudConfiguration.useCompactMode) {
+      return this.layoutService.config().scale * 1.679 + 2;
+    } else {
+      return this.layoutService.config().scale * 2.257 + 2;
+    }
+  }
+
+  onClearFilters() {
+    const table = this.crudItemListComponent.getPrimeNgTable();
+    if (table) {
+      Object.keys(table.filters).forEach(key =>
+        this.tableHelperService.clearFilterMetaData(table.filters[key])
+      );
+      table.onLazyLoad.emit(table.createLazyLoadMetadata());
+    }
   }
 }

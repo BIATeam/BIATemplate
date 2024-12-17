@@ -10,10 +10,9 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
     using BIA.Net.Core.Infrastructure.Data;
     using BIA.Net.Core.Test.Data;
 #if BIA_FRONT_FEATURE
-    using TheBIADevCompany.BIATemplate.Domain.SiteModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
-    using TheBIADevCompany.BIATemplate.Domain.ViewModule.Aggregate;
-
+    using TheBIADevCompany.BIATemplate.Domain.Site.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.View.Entities;
 #endif
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
 
@@ -21,14 +20,14 @@ namespace TheBIADevCompany.BIATemplate.Test.Data
     /// Manage the mock of the DB context as an "in memory" database.
     /// </summary>
     /// <seealso cref="AbstractMockEntityFramework{TDbContext}"/>
-    public class MockEntityFrameworkInMemory : AbstractMockEntityFramework<DataContext, DataContextReadOnly>
+    public class MockEntityFrameworkInMemory : AbstractMockEntityFramework<DataContext, DataContextNoTracking>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MockEntityFrameworkInMemory"/> class.
         /// </summary>
         /// <param name="dbContext">The DB context.</param>
         /// <param name="dbContextReadOnly">The DB context readonly.</param>
-        public MockEntityFrameworkInMemory(IQueryableUnitOfWork dbContext, IQueryableUnitOfWorkReadOnly dbContextReadOnly)
+        public MockEntityFrameworkInMemory(IQueryableUnitOfWork dbContext, IQueryableUnitOfWorkNoTracking dbContextReadOnly)
             : base(dbContext, dbContextReadOnly)
         {
             // Do nothing. Used to create the DbContext through IoC.

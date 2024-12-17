@@ -3,6 +3,7 @@
 // </copyright>
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
 {
+    using System;
     using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Domain.Dto.Option;
     using BIA.Net.Presentation.Api.Controllers.Base;
@@ -10,6 +11,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
+    using TheBIADevCompany.BIATemplate.Crosscutting.Common;
 
     /// <summary>
     /// Controller to provide setting define in back to the front.
@@ -33,11 +35,12 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
                 Environment = configuration.Value.Environment,
                 Cultures = configuration.Value.Cultures,
                 MonitoringUrl = configuration.Value.ApiFeatures?.DelegateJobToWorker?.MonitoringUrl,
+                ProfileConfiguration = configuration.Value.ProfileConfiguration,
             };
         }
 
         /// <summary>
-        /// Ping to test response.
+        /// Get application settings.
         /// </summary>
         /// <returns>The Application settings.</returns>
         [HttpGet]
@@ -46,6 +49,18 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
         public IActionResult Get()
         {
             return this.Ok(this.appSettings);
+        }
+
+        /// <summary>
+        /// Gets the environment.
+        /// </summary>
+        /// <returns>The Environment.</returns>
+        [HttpGet("environment")]
+        [AllowAnonymous]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        public IActionResult GetEnvironment()
+        {
+            return this.Ok(Environment.GetEnvironmentVariable(Constants.Application.Environment));
         }
     }
 }

@@ -10,14 +10,64 @@
         "TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\Plane\\PlanesController.cs",
         "TheBIADevCompany.BIATemplate.Application\\Plane\\PlaneAppService.cs",
         "TheBIADevCompany.BIATemplate.Application\\Plane\\IPlaneAppService.cs",
-        "TheBIADevCompany.BIATemplate.Domain\\PlaneModule\\Aggregate\\PlaneMapper.cs",
-        "TheBIADevCompany.BIATemplate.Domain\\PlaneModule\\Aggregate\\Plane.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\Plane\\Mappers\\PlaneMapper.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\Plane\\Entities\\Plane.cs",
         "TheBIADevCompany.BIATemplate.Domain.Dto\\Plane\\PlaneDto.cs"
       ],
       "Exclude": []
     },
     "Children": [],
     "Options": [],
+    "Parents": [
+      {
+        "Name": "Plane",
+        "NamePlural": "Planes",
+        "DomainName": "Plane",
+        "IsPrincipal": "true",
+        "AdaptPaths": [
+          {
+            "RootPath": "TheBIADevCompany.BIATemplate.Application\\",
+            "InitialDeepLevel": 0,
+
+            "MoveFiles": [
+              {
+                "FromRelativePath": "Plane\\",
+                "ToRelativePathNoParent": "{DomainName}\\"
+              }
+            ],
+
+            "ReplaceInFiles": [
+              {
+                "RegexMatch": "^namespace\\s+(?:[A-Za-z0-9_]+\\.)+Application.([A-Za-z0-9_]+)$",
+                "NoParentValue": "{DomainName}"
+              }
+            ]
+          },
+          {
+            "RootPath": "TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\",
+            "InitialDeepLevel": 0,
+
+            "MoveFiles": [
+              {
+                "FromRelativePath": "Plane\\",
+                "ToRelativePathNoParent": "{DomainName}\\"
+              }
+            ],
+
+            "ReplaceInFiles": [
+              {
+                "RegexMatch": "^namespace\\s+(?:[A-Za-z0-9_]+\\.)+Controllers.([A-Za-z0-9_]+)$",
+                "NoParentValue": "{DomainName}"
+              },
+              {
+                "RegexMatch": ".*using TheBIADevCompany.BIATemplate.Application.([A-Za-z0-9_]+);",
+                "NoParentValue": "{DomainName}"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "Partial": [
       "TheBIADevCompany.BIATemplate.Presentation.Api\\bianetconfig.json",
       "TheBIADevCompany.BIATemplate.Crosscutting.Ioc\\IocContainer.cs",
@@ -35,9 +85,9 @@
         "TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\Plane\\EnginesController.cs",
         "TheBIADevCompany.BIATemplate.Application\\Plane\\EngineAppService.cs",
         "TheBIADevCompany.BIATemplate.Application\\Plane\\IEngineAppService.cs",
-        "TheBIADevCompany.BIATemplate.Domain\\PlaneModule\\Aggregate\\EngineMapper.cs",
-        "TheBIADevCompany.BIATemplate.Domain\\PlaneModule\\Aggregate\\Engine.cs",
-        "TheBIADevCompany.BIATemplate.Domain\\PlaneModule\\Aggregate\\EngineSpecification.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\Plane\\Mappers\\EngineMapper.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\Plane\\Entities\\Engine.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\Plane\\Specifications\\EngineSpecification.cs",
         "TheBIADevCompany.BIATemplate.Domain.Dto\\Plane\\EngineDto.cs"
       ],
       "Exclude": []
@@ -79,8 +129,8 @@
 
             "MoveFiles": [
               {
-                "FromRelativePath": "PlaneModule\\Aggregate\\EngineSpecification.cs",
-                "ToRelativePathWithParent": "{ParentDomainName}Module\\Aggregate\\{NewCrudNamePascalSingular}Specification.cs"
+                "FromRelativePath": "Plane\\Specifications\\EngineSpecification.cs",
+                "ToRelativePathWithParent": "{ParentDomainName}\\Specifications\\{NewCrudNamePascalSingular}Specification.cs"
               }
             ]
           }
@@ -96,22 +146,66 @@
   {
     "Feature": "Option",
     "Type": "Option",
-    "FeatureName": "Airport",
-    "FeatureNamePlural": "Airports",
+    "FeatureName": "Country",
+    "FeatureNamePlural": "Countries",
     "ZipName": "option.zip",
     "Contains": {
       "Include": [
-        "TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\Plane\\AirportsController.cs",
-        "TheBIADevCompany.BIATemplate.Application\\Plane\\AirportAppService.cs",
-        "TheBIADevCompany.BIATemplate.Application\\Plane\\IAirportAppService.cs"
+        "TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\AircraftMaintenanceCompany\\CountryOptionsController.cs",
+        "TheBIADevCompany.BIATemplate.Application\\AircraftMaintenanceCompany\\CountryOptionAppService.cs",
+        "TheBIADevCompany.BIATemplate.Application\\AircraftMaintenanceCompany\\ICountryOptionAppService.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\AircraftMaintenanceCompany\\Mappers\\CountryOptionMapper.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\AircraftMaintenanceCompany\\Entities\\Country.cs"
       ],
       "Exclude": []
     },
     "Children": [],
+    "Parents": [
+      {
+        "Name": "AircraftMaintenanceCompany",
+        "NamePlural": "AircraftMaintenanceCompanies",
+        "DomainName": "AircraftMaintenanceCompany",
+        "IsPrincipal": "true",
+        "AdaptPaths": [
+          {
+            "RootPath": "TheBIADevCompany.BIATemplate.Application\\",
+            "InitialDeepLevel": 0,
+
+            "MoveFiles": [
+              {
+                "FromRelativePath": "AircraftMaintenanceCompany\\",
+                "ToRelativePathWithParent": "{DomainName}\\"
+              }
+            ]
+          },
+          {
+            "RootPath": "TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\",
+            "InitialDeepLevel": 0,
+
+            "MoveFiles": [
+              {
+                "FromRelativePath": "AircraftMaintenanceCompany\\",
+                "ToRelativePathWithParent": "{DomainName}\\"
+              }
+            ]
+          },
+          {
+            "RootPath": "TheBIADevCompany.BIATemplate.Domain\\",
+            "InitialDeepLevel": 0,
+
+            "MoveFiles": [
+              {
+                "FromRelativePath": "AircraftMaintenanceCompany\\Mappers",
+                "ToRelativePathWithParent": "{DomainName}\\Mappers"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "Options": [],
     "Partial": [
       "TheBIADevCompany.BIATemplate.Presentation.Api\\bianetconfig.json",
-      "TheBIADevCompany.BIATemplate.Crosscutting.Ioc\\IocContainer.cs",
       "TheBIADevCompany.BIATemplate.Crosscutting.Common\\Rights.cs"
     ]
   },
@@ -126,8 +220,8 @@
         "TheBIADevCompany.BIATemplate.Presentation.Api\\Controllers\\AircraftMaintenanceCompany\\MaintenanceTeamsController.cs",
         "TheBIADevCompany.BIATemplate.Application\\AircraftMaintenanceCompany\\MaintenanceTeamAppService.cs",
         "TheBIADevCompany.BIATemplate.Application\\AircraftMaintenanceCompany\\IMaintenanceTeamAppService.cs",
-        "TheBIADevCompany.BIATemplate.Domain\\AircraftMaintenanceCompany\\Aggregate\\MaintenanceTeamMapper.cs",
-        "TheBIADevCompany.BIATemplate.Domain\\AircraftMaintenanceCompany\\Aggregate\\MaintenanceTeam.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\AircraftMaintenanceCompany\\Mappers\\MaintenanceTeamMapper.cs",
+        "TheBIADevCompany.BIATemplate.Domain\\AircraftMaintenanceCompany\\Entities\\MaintenanceTeam.cs",
         "TheBIADevCompany.BIATemplate.Domain.Dto\\AircraftMaintenanceCompany\\MaintenanceTeamDto.cs"
       ],
       "Exclude": []
@@ -174,8 +268,8 @@
       "TheBIADevCompany.BIATemplate.Crosscutting.Common\\Enum\\RoleId.cs",
       "TheBIADevCompany.BIATemplate.Infrastructure.Data\\ModelBuilders\\UserModelBuilder.cs",
       "TheBIADevCompany.BIATemplate.Presentation.Api\\bianetconfig.json",
-      "TheBIADevCompany.BIATemplate.Domain\\UserModule\\Aggregate\\TeamConfig.cs",
-      "TheBIADevCompany.BIATemplate.Domain\\UserModule\\Aggregate\\TeamMapper.cs",
+      "TheBIADevCompany.BIATemplate.Domain\\User\\TeamConfig.cs",
+      "TheBIADevCompany.BIATemplate.Domain\\User\\Mappers\\TeamMapper.cs",
       "TheBIADevCompany.BIATemplate.Presentation.API\\Controllers\\User\\AuthController.cs"
     ]
   }

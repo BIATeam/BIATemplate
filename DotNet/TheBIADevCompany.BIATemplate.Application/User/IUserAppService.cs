@@ -6,17 +6,19 @@ namespace TheBIADevCompany.BIATemplate.Application.User
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Application.Services;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.Option;
     using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
+    using TheBIADevCompany.BIATemplate.Domain.User.Models;
 
     /// <summary>
     /// The interface defining the application service for user.
     /// </summary>
-    public interface IUserAppService : IFilteredServiceBase<User, int>
+    public interface IUserAppService : ICrudAppServiceBase<UserDto, User, int, PagingFilterFormatDto>
     {
         /// <summary>
         /// Gets all option that I can see.
@@ -92,6 +94,12 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <param name="fullSynchro">If true resynchronize existing user.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task SynchronizeWithADAsync(bool fullSynchro = false);
+
+        /// <summary>
+        /// Synchronize users with Idp.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task SynchronizeWithIdpAsync();
 
         /// <summary>
         /// Updates the last login date.

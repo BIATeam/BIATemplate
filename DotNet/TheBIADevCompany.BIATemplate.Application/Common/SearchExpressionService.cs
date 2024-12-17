@@ -10,7 +10,7 @@ namespace TheBIADevCompany.BIATemplate.Application.Common
     using BIA.Net.Core.Common;
     using BIA.Net.Core.Domain.Authentication;
     using BIA.Net.Core.Domain.Dto.User;
-    using TheBIADevCompany.BIATemplate.Domain.UserModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 
     /// <summary>
     /// The search expression service.

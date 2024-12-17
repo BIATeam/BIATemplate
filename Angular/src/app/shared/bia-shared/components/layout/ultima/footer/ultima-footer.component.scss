@@ -1,0 +1,41 @@
+// @import '../../../scss/typography';
+
+:host {
+  // Warning any change to this area will affect custom footer
+  z-index: 1;
+  display: flex;
+  // ----
+  .copyright {
+    padding-left: 16px;
+  }
+  position: relative;
+}
+
+.layout-footer {
+  height: var(--footer-height);
+}
+
+// .copyright {
+//   @include bia-typography-level-to-styles($raleway-typography, caption);
+// }
+
+.copyright {
+  font-family: 'oswald-light';
+}
+
+.logos {
+  height: 100%;
+
+  & > img {
+    max-height: 100%;
+    padding: 0.5rem;
+  }
+}
+
+.footer-overlay {
+  position: fixed;
+  height: var(--footer-height);
+  right: 0;
+  bottom: calc(var(--footer-height) * -1);
+  width: 100%;
+}

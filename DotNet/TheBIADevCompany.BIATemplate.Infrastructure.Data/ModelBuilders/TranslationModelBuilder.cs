@@ -4,10 +4,10 @@
 
 namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 {
-    using BIA.Net.Core.Domain.TranslationModule.Aggregate;
+    using BIA.Net.Core.Domain.Translation.Entities;
     using Microsoft.EntityFrameworkCore;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-    using TheBIADevCompany.BIATemplate.Domain.TranslationModule.Aggregate;
+    using TheBIADevCompany.BIATemplate.Domain.Translation.Entities;
     using static TheBIADevCompany.BIATemplate.Crosscutting.Common.Constants;
 
     /// <summary>
