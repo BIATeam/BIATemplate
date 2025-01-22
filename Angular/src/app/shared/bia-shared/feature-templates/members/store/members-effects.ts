@@ -16,6 +16,7 @@ import { AppState } from 'src/app/store/state';
 import { memberCRUDConfiguration } from '../member.constants';
 import { Member } from '../model/member';
 import { MemberDas } from '../services/member-das.service';
+import { MemberService } from '../services/member.service';
 import { FeatureMembersStore } from './member.state';
 import { FeatureMembersActions } from './members-actions';
 
@@ -83,6 +84,7 @@ export class MembersEffects {
           .pipe(
             map(() => {
               this.biaMessageService.showAddSuccess();
+              this.memberService.parentService?.refreshList();
               if (memberCRUDConfiguration.useSignalR) {
                 return biaSuccessWaitRefreshSignalR();
               } else {
@@ -121,6 +123,7 @@ export class MembersEffects {
           .pipe(
             map(() => {
               this.biaMessageService.showAddSuccess();
+              this.memberService.parentService?.refreshList();
               if (memberCRUDConfiguration.useSignalR) {
                 return biaSuccessWaitRefreshSignalR();
               } else {
@@ -153,6 +156,44 @@ export class MembersEffects {
           .put({
             item: member,
             id: member.id,
+            offlineMode: memberCRUDConfiguration.useOfflineMode,
+          })
+          .pipe(
+            map(() => {
+              this.biaMessageService.showUpdateSuccess();
+              this.memberService.parentService?.refreshList();
+              if (memberCRUDConfiguration.useSignalR) {
+                return biaSuccessWaitRefreshSignalR();
+              } else {
+                return FeatureMembersActions.loadAllByPost({
+                  event: event,
+                });
+              }
+            }),
+            catchError(err => {
+              this.biaMessageService.showErrorHttpResponse(err);
+              return of(FeatureMembersActions.failure({ error: err }));
+            })
+          );
+      })
+    )
+  );
+
+  save$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(FeatureMembersActions.save),
+      map(x => x?.members),
+      concatMap(members =>
+        of(members).pipe(
+          withLatestFrom(
+            this.store.select(FeatureMembersStore.getLastLazyLoadEvent)
+          )
+        )
+      ),
+      switchMap(([members, event]) => {
+        return this.memberDas
+          .save({
+            items: members,
             offlineMode: memberCRUDConfiguration.useOfflineMode,
           })
           .pipe(
@@ -195,6 +236,7 @@ export class MembersEffects {
           .pipe(
             map(() => {
               this.biaMessageService.showDeleteSuccess();
+              this.memberService.parentService?.refreshList();
               if (memberCRUDConfiguration.useSignalR) {
                 return biaSuccessWaitRefreshSignalR();
               } else {
@@ -232,6 +274,7 @@ export class MembersEffects {
           .pipe(
             map(() => {
               this.biaMessageService.showDeleteSuccess();
+              this.memberService.parentService?.refreshList();
               if (memberCRUDConfiguration.useSignalR) {
                 return biaSuccessWaitRefreshSignalR();
               } else {
@@ -252,6 +295,7 @@ export class MembersEffects {
   constructor(
     protected actions$: Actions,
     protected memberDas: MemberDas,
+    protected memberService: MemberService,
     protected biaMessageService: BiaMessageService,
     protected store: Store<AppState>
   ) {}

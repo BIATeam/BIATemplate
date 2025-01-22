@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -11,7 +12,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { FileUpload } from 'primeng/fileupload';
-import { DateHelperService } from 'src/app/core/bia-core/services/date-helper.service';
 import { AppSettings } from 'src/app/domains/bia-domains/app-settings/model/app-settings';
 import {
   BiaFieldConfig,
@@ -21,14 +21,19 @@ import {
 import { KeyValuePair } from 'src/app/shared/bia-shared/model/key-value-pair';
 import { clone } from 'src/app/shared/bia-shared/utils';
 import { CrudConfig } from '../../model/crud-config';
-import { BulkParam } from '../../services/crud-item-bulk.service';
+import { ImportParam } from '../../services/crud-item-import.service';
+
+interface FormatExample {
+  format: string;
+  example: string;
+}
 
 @Component({
-  selector: 'bia-crud-item-bulk-form',
-  templateUrl: './crud-item-bulk-form.component.html',
-  styleUrls: ['./crud-item-bulk-form.component.scss'],
+  selector: 'bia-crud-item-import-form',
+  templateUrl: './crud-item-import-form.component.html',
+  styleUrls: ['./crud-item-import-form.component.scss'],
 })
-export class CrudItemBulkFormComponent<TDto extends { id: number }> {
+export class CrudItemImportFormComponent<TDto extends { id: number }> {
   @ViewChild('fileUpload') fileUpload: FileUpload;
 
   fillFormDone = false;
@@ -37,8 +42,8 @@ export class CrudItemBulkFormComponent<TDto extends { id: number }> {
   insertChecked = false;
   loading = false;
   hasDate = false;
-  dateFormats: string[];
-  timeFormats: string[];
+  dateFormats: FormatExample[];
+  timeFormats: FormatExample[];
   form: UntypedFormGroup;
 
   displayedColumns: KeyValuePair[];
@@ -57,12 +62,12 @@ export class CrudItemBulkFormComponent<TDto extends { id: number }> {
     this.initTableParam();
   }
 
-  protected _bulkData: any;
-  get bulkData(): any {
-    return this._bulkData;
+  protected _importData: any;
+  get importData(): any {
+    return this._importData;
   }
-  @Input() set bulkData(value: any) {
-    this._bulkData = value;
+  @Input() set importData(value: any) {
+    this._importData = value;
     if (this.fileUpload) {
       this.fileUpload.clear();
     }
@@ -78,12 +83,12 @@ export class CrudItemBulkFormComponent<TDto extends { id: number }> {
     this.initDdlFormatDate();
   }
 
-  protected _bulkParam: BulkParam = <BulkParam>{};
-  get bulkParam(): BulkParam {
-    return this._bulkParam;
+  protected _importParam: ImportParam = <ImportParam>{};
+  get importParam(): ImportParam {
+    return this._importParam;
   }
-  @Input() set bulkParam(value: BulkParam) {
-    this._bulkParam = value;
+  @Input() set importParam(value: ImportParam) {
+    this._importParam = value;
     this.fillForm();
   }
 
@@ -92,26 +97,29 @@ export class CrudItemBulkFormComponent<TDto extends { id: number }> {
   @Input() canAdd = false;
   @Output() save = new EventEmitter<any[]>();
   @Output() cancel = new EventEmitter<void>();
-  @Output() fileSelected = new EventEmitter<any>();
-  @Output() changeBulkParam = new EventEmitter<BulkParam>();
+  @Output() fileSelected = new EventEmitter<File>();
+  @Output() changeImportParam = new EventEmitter<ImportParam>();
 
-  constructor(public formBuilder: UntypedFormBuilder) {
+  constructor(
+    public formBuilder: UntypedFormBuilder,
+    public datepipe: DatePipe
+  ) {
     this.initForm();
   }
 
   protected initForm() {
     this.form = this.formBuilder.group({
-      useCurrentView: [this.bulkParam.useCurrentView, Validators.required],
-      dateFormat: [this.bulkParam.dateFormat, Validators.required],
-      timeFormat: [this.bulkParam.timeFormat, Validators.required],
+      useCurrentView: [this.importParam.useCurrentView, Validators.required],
+      dateFormat: [this.importParam.dateFormat, Validators.required],
+      timeFormat: [this.importParam.timeFormat, Validators.required],
     });
   }
 
   fillForm() {
-    if (this.bulkParam && this.fillFormDone !== true) {
+    if (this.importParam && this.fillFormDone !== true) {
       this.form.reset();
-      if (this.bulkParam) {
-        this.form.patchValue({ ...this.bulkParam });
+      if (this.importParam) {
+        this.form.patchValue({ ...this.importParam });
       }
       this.fillFormDone = true;
     }
@@ -119,14 +127,29 @@ export class CrudItemBulkFormComponent<TDto extends { id: number }> {
 
   initDdlFormatDate() {
     if (this.appSettings && this.appSettings.cultures.length > 0) {
-      this.appSettings.cultures.map(x => x.dateFormat);
-      this.dateFormats = [
-        DateHelperService.dateFormatIso8601,
-        ...new Set(this.appSettings.cultures.map(x => x.dateFormat)), // new Set => Distinct()
+      const dateFormatSets = [
+        ...new Set(this.appSettings.cultures.map(x => x.dateFormat)),
       ];
-      this.timeFormats = [
+
+      const timeFormatSets = [
         ...new Set(this.appSettings.cultures.map(x => x.timeFormat)),
       ];
+
+      const exampleDate = new Date(2025, 11, 31, 9, 45);
+
+      this.dateFormats = dateFormatSets.map(dateFormatSet => {
+        return <FormatExample>{
+          format: dateFormatSet,
+          example: this.datepipe.transform(exampleDate, dateFormatSet),
+        };
+      });
+
+      this.timeFormats = timeFormatSets.map(timeFormatSet => {
+        return <FormatExample>{
+          format: timeFormatSet,
+          example: this.datepipe.transform(exampleDate, timeFormatSet),
+        };
+      });
     }
   }
 
@@ -173,9 +196,8 @@ export class CrudItemBulkFormComponent<TDto extends { id: number }> {
     }
   }
 
-  onFileSelected(event: any) {
-    this.loading = true;
-    this.fileSelected.next(event);
+  onFileSelected() {
+    this._importData = null;
   }
 
   onCancel() {
@@ -186,15 +208,15 @@ export class CrudItemBulkFormComponent<TDto extends { id: number }> {
     let toSaves: any[] = [];
 
     if (this.deleteChecked === true) {
-      toSaves = toSaves.concat(this.bulkData.toDeletes);
+      toSaves = toSaves.concat(this.importData.toDeletes);
     }
 
     if (this.insertChecked === true) {
-      toSaves = toSaves.concat(this.bulkData.toInserts);
+      toSaves = toSaves.concat(this.importData.toInserts);
     }
 
     if (this.updateChecked === true) {
-      toSaves = toSaves.concat(this.bulkData.toUpdates);
+      toSaves = toSaves.concat(this.importData.toUpdates);
     }
 
     if (toSaves.length > 0) {
@@ -202,31 +224,39 @@ export class CrudItemBulkFormComponent<TDto extends { id: number }> {
     }
   }
 
+  onApply() {
+    const file: File = this.fileUpload.files[0];
+    if (file) {
+      this.loading = true;
+      this.fileSelected.next(file);
+    }
+  }
+
   canUseDelete(): boolean {
     return (
       this.canDelete === true &&
-      this.crudConfiguration.bulkMode?.useDelete === true
+      this.crudConfiguration.importMode?.useDelete === true
     );
   }
 
   canUseInsert(): boolean {
     return (
       this.canAdd === true &&
-      this.crudConfiguration.bulkMode?.useInsert === true
+      this.crudConfiguration.importMode?.useInsert === true
     );
   }
 
   canUseUpdate(): boolean {
     return (
       this.canEdit === true &&
-      this.crudConfiguration.bulkMode?.useUpdate === true
+      this.crudConfiguration.importMode?.useUpdate === true
     );
   }
 
   onSubmit() {
     if (this.form.valid) {
-      this._bulkParam = <BulkParam>this.form.value;
-      this.changeBulkParam.next(this._bulkParam);
+      this._importParam = <ImportParam>this.form.value;
+      this.changeImportParam.next(this._importParam);
     }
   }
 }

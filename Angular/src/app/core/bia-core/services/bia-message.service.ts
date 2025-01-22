@@ -1,11 +1,11 @@
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import {
   Notification,
   NotificationType,
 } from 'src/app/domains/bia-domains/notification/model/notification';
-import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 
 const MESSAGE_LIFE_DEFAULT = 3000;
 const NOTIFICATION_LIFE_DEFAULT = 10000;
@@ -54,7 +54,7 @@ export class BiaMessageService {
 
   showErrorHttpResponse(err: HttpErrorResponse) {
     if (err.status == HttpStatusCode.UnprocessableEntity) {
-      this.showErrorDetail(err.error, undefined);
+      this.showErrorDetail(err.error);
     } else {
       this.showError();
     }
@@ -93,7 +93,11 @@ export class BiaMessageService {
     });
   }
 
-  showErrorDetail(detailValue: string, life = undefined) {
+  showErrorDetail(
+    detailValue: string,
+    sticky = true,
+    life: number = MESSAGE_LIFE_DEFAULT * 2
+  ) {
     const summaryValue = this.translateService.instant('bia.error');
     this.messageService.add({
       key: 'bia',
@@ -101,7 +105,7 @@ export class BiaMessageService {
       summary: summaryValue,
       detail: detailValue,
       life: life,
-      sticky: true,
+      sticky: sticky,
     });
   }
 

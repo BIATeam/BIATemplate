@@ -11,7 +11,7 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { combineLatest, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, combineLatest } from 'rxjs';
 import { filter, skip, take, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/bia-core/services/auth.service';
 import { BiaOnlineOfflineService } from 'src/app/core/bia-core/services/bia-online-offline.service';
@@ -51,6 +51,7 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
   biaTableControllerComponent: BiaTableControllerComponent;
   @ViewChild(CrudItemTableComponent, { static: false })
   crudItemTableComponent: CrudItemTableComponent<CrudItem>;
+  protected parentDisplayItemName$: Observable<string>;
 
   _showTableController = true;
 
@@ -144,7 +145,6 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
 
   useCalcModeChange(e: boolean) {
     this.crudConfiguration.useCalcMode = e;
-    this.useCalcModeConfig();
   }
 
   useSignalRChange(e: boolean) {
@@ -189,20 +189,6 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
     }
   }
 
-  isLoadAllOptionsSubsribe = false;
-  protected useCalcModeConfig() {
-    if (this.crudConfiguration.useCalcMode && !this.isLoadAllOptionsSubsribe) {
-      this.isLoadAllOptionsSubsribe = true;
-      this.sub.add(
-        this.biaTranslationService.currentCulture$.subscribe(() => {
-          this.crudItemService.optionsService.loadAllOptions(
-            this.crudConfiguration.optionFilter
-          );
-        })
-      );
-    }
-  }
-
   protected usePopupConfig(manualChange: boolean) {
     if (manualChange) {
       this.applyDynamicComponent(this.activatedRoute.routeConfig?.children);
@@ -238,6 +224,15 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
     this.sub = new Subscription();
 
     this.initTableConfiguration();
+
+    this.sub.add(
+      this.biaTranslationService.currentCulture$.subscribe(() => {
+        this.crudItemService.optionsService.loadAllOptions(
+          this.crudConfiguration.optionFilter
+        );
+      })
+    );
+
     this.sub.add(
       this.authService.authInfo$.subscribe((authInfo: AuthInfo) => {
         if (authInfo && authInfo.token !== '') {
@@ -329,7 +324,6 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
   onDisplay() {
     this.checkhasAdvancedFilter();
     this.useViewConfig(false);
-    this.useCalcModeConfig();
     this.useSignalRConfig(false);
     this.usePopupConfig(false);
   }
@@ -346,8 +340,8 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
     }
   }
 
-  onBulk() {
-    this.router.navigate(['bulk'], { relativeTo: this.activatedRoute });
+  onImport() {
+    this.router.navigate(['import'], { relativeTo: this.activatedRoute });
   }
 
   onClickRow(crudItemId: any) {
@@ -495,7 +489,9 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
     this.columns = this.crudConfiguration.fieldsConfig.columns.map(
       col => <KeyValuePair>{ key: col.field, value: col.header }
     );
-    this.displayedColumns = [...this.columns];
+    this.displayedColumns = this.crudConfiguration.fieldsConfig.columns
+      .filter(col => !col.isHideByDefault)
+      .map(col => <KeyValuePair>{ key: col.field, value: col.header });
     this.sortFieldValue = this.columns[0].key;
 
     this.defaultViewPref = <BiaTableState>{
@@ -504,9 +500,9 @@ export class CrudItemsIndexComponent<CrudItem extends BaseDto>
       sortField: this.sortFieldValue,
       sortOrder: 1,
       filters: {},
-      columnOrder: this.crudConfiguration.fieldsConfig.columns.map(
-        x => x.field
-      ),
+      columnOrder: this.crudConfiguration.fieldsConfig.columns
+        .filter(col => !col.isHideByDefault)
+        .map(x => x.field),
       advancedFilter: undefined,
     };
   }

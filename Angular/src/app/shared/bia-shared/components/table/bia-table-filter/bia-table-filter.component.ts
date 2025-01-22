@@ -109,10 +109,12 @@ export class BiaTableFilterComponent<CrudItem>
   }
 
   setSimpleFilter(event: any, col: BiaFieldConfig<CrudItem>) {
-    if (col.type === PropType.ManyToMany) {
-      const separator = ',';
+    const separator = ',';
+    if (
+      col.type === PropType.ManyToMany &&
+      event?.value?.toString().indexOf(separator) > -1
+    ) {
       if (
-        event?.value?.trim().length > 0 &&
         event?.value?.slice(-1) !== ' ' &&
         event?.value?.slice(-1) !== separator
       ) {
@@ -219,5 +221,11 @@ export class BiaTableFilterComponent<CrudItem>
 
   setFilterConstraint(filterConstraint: FilterMetadata, value: OptionDto[]) {
     filterConstraint.value = value.map(x => x.display);
+  }
+
+  onMultiSelectChange(filterConstraint: any) {
+    if (!filterConstraint.value || filterConstraint.value.length === 0) {
+      filterConstraint.value = null;
+    }
   }
 }

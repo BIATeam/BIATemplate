@@ -41,10 +41,23 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
                 {
                     { "Id", member => member.Id },
                     {
-                        "Roles", member => member.MemberRoles.Select(x =>
-                        x.Role.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? x.Role.Label).OrderBy(x => x)
+                        "Roles",
+                        member => member.MemberRoles
+                        .SelectMany(
+                            memberRole => memberRole.Role.RoleTranslations
+                            .Where(roleTranslation => roleTranslation.Language.Code == this.UserContext.Language)
+                            .Select(roleTranslation => roleTranslation.Label))
+                        .Union(
+                            member.MemberRoles
+                            .Where(memberRole => !memberRole.Role.RoleTranslations.Any(rt => rt.Language.Code == this.UserContext.Language))
+                            .Select(memberRole => memberRole.Role.Label))
+                        .OrderBy(x => x)
                     },
                     { "User", member => member.User.LastName + " " + member.User.FirstName + " (" + member.User.Login + ")" },
+                    { "FirstName", member => member.User.FirstName },
+                    { "LastName", member => member.User.LastName },
+                    { "Login", member => member.User.Login },
+                    { "IsActive", member => member.User.IsActive },
                 };
             }
         }
@@ -66,6 +79,10 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
                     Id = entity.User.Id,
                     Display = entity.User.Display() + (entity.User.IsActive ? string.Empty : " **Disabled**"),
                 },
+                FirstName = entity.User.FirstName,
+                LastName = entity.User.LastName,
+                Login = entity.User.Login,
+                IsActive = entity.User.IsActive,
                 Roles = entity.MemberRoles.Select(x => new OptionDto { Id = x.RoleId, Display = x.Role.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? x.Role.Label }),
             };
         }
@@ -106,10 +123,103 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
             }
         }
 
+        /// <inheritdoc/>
+        public override Func<MemberDto, object[]> DtoToRecord(List<string> headerNames = null)
+        {
+            return x =>
+            {
+                List<object> records = new List<object>();
+
+                if (headerNames?.Any() == true)
+                {
+                    foreach (string headerName in headerNames)
+                    {
+                        if (string.Equals(headerName, HeaderName.Id, StringComparison.OrdinalIgnoreCase))
+                        {
+                            records.Add(CSVNumber(x.Id));
+                        }
+
+                        if (string.Equals(headerName, HeaderName.User, StringComparison.OrdinalIgnoreCase))
+                        {
+                            records.Add(CSVString(x.User?.Display));
+                        }
+
+                        if (string.Equals(headerName, HeaderName.LastName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            records.Add(CSVString(x.LastName));
+                        }
+
+                        if (string.Equals(headerName, HeaderName.FirstName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            records.Add(CSVString(x.FirstName));
+                        }
+
+                        if (string.Equals(headerName, HeaderName.Login, StringComparison.OrdinalIgnoreCase))
+                        {
+                            records.Add(CSVString(x.Login));
+                        }
+
+                        if (string.Equals(headerName, HeaderName.IsActive, StringComparison.OrdinalIgnoreCase))
+                        {
+                            records.Add(CSVBool(x.IsActive));
+                        }
+
+                        if (string.Equals(headerName, HeaderName.Roles, StringComparison.OrdinalIgnoreCase))
+                        {
+                            records.Add(CSVList(x.Roles));
+                        }
+                    }
+                }
+
+                return records.ToArray();
+            };
+        }
+
         /// <inheritdoc cref="BaseMapper{TDto,TEntity}.IncludesForUpdate"/>
         public override Expression<Func<Member, object>>[] IncludesForUpdate()
         {
             return new Expression<Func<Member, object>>[] { member => member.MemberRoles };
+        }
+
+        /// <summary>
+        /// Header Name.
+        /// </summary>
+        public struct HeaderName
+        {
+            /// <summary>
+            /// Header Name Id.
+            /// </summary>
+            public const string Id = "id";
+
+            /// <summary>
+            /// Header Name User.
+            /// </summary>
+            public const string User = "user";
+
+            /// <summary>
+            /// Header Name LastName.
+            /// </summary>
+            public const string LastName = "lastName";
+
+            /// <summary>
+            /// Header Name FirstName.
+            /// </summary>
+            public const string FirstName = "firstName";
+
+            /// <summary>
+            /// Header Name Login.
+            /// </summary>
+            public const string Login = "login";
+
+            /// <summary>
+            /// Header Name IsActive.
+            /// </summary>
+            public const string IsActive = "isActive";
+
+            /// <summary>
+            /// Header Name Roles.
+            /// </summary>
+            public const string Roles = "roles";
         }
     }
 }

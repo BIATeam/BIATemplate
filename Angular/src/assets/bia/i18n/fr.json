@@ -11,7 +11,7 @@
     "backgroundTaskAdmin": "Administrer les taches",
     "backgroundTaskReadOnly": "Voir les taches",
     "backgroundtasks": "Tâches d'arrière-plan",
-    "bulk": "En Masse",
+    "browse": "Parcourir",
     "cancel": "Annuler",
     "close": "Fermer",
     "confirm": "Confirmer",
@@ -22,6 +22,7 @@
     "defineDefault": "Définir par défaut",
     "delete": "Supprimer",
     "deleteFilters": "Effacer les filtres",
+    "detail": "Détail",
     "display": "Afficher :",
     "edit": "Modifier",
     "editProfileImage": "Modifier votre photo de profil",
@@ -36,6 +37,7 @@
     "fullscreen": "Plein écran",
     "greetings": "Bonjour",
     "help": "Aide",
+    "hideController": "Masquer la barre d'options",
     "id": "id",
     "ignore": "Ignorer",
     "import": "Importer",
@@ -70,6 +72,7 @@
     "search": "Rechercher",
     "select": "Sélectionner",
     "settings": "Paramètres",
+    "showController": "Afficher la barre d'options",
     "showHideFilters": "Afficher/Masquer les filtres",
     "success": "Succès",
     "synchronize": "Synchroniser",
@@ -137,7 +140,7 @@
     "updateElementSuccess": "Élément mis à jour avec succès",
     "userAlreadyAssociatedSite": "Cet utilisateur est déjà associé à ce site"
   },
-  "bulk": {
+  "import": {
     "dateFormat": "Format Date",
     "timeFormat": "Format Heure",
     "useCurrentView": "Baser le traitement de l'import sur le filtre courant"
