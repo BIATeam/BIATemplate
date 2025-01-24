@@ -9,6 +9,8 @@
   },
   "member": {
     "add": "Ajouter membre",
+    "import": "Importer membres",
+    "isActive": "Actif",
     "listOf": "Liste des membres",
     "manage": "Gérer membre",
     "roles": "Roles",
@@ -67,6 +69,7 @@
       "deprecated:": "translation will be done in database in next version",
       "title": "Succès envoi de notification",
       "description": "Description à customiser dans les traductions i18n pour chaque feature"
-    }
+    },
+    "edit": "Editer notification"
   }
 }

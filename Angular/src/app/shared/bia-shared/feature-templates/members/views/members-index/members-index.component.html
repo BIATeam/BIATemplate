@@ -2,11 +2,15 @@
   <div [ngClass]="{ 'table-compact': crudConfiguration.useCompactMode }">
     <bia-table-header
       [headerTitle]="'member.listOf' | translate"
+      [parentDisplayName]="(parentDisplayItemName$ | async) ?? ''"
       [canAdd]="canAdd && !crudConfiguration.useCalcMode"
       [canDelete]="canDelete"
+      [canImport]="canSave && crudConfiguration.useImport"
       [canExportCSV]="true"
       (create)="onCreate()"
       (exportCSV)="onExportCSV('member.listOf')"
+      (fullExportCSV)="onExportCSV('member.listOf', true)"
+      (import)="onImport()"
       (delete)="onDelete()"
       [selectedElements]="selectedCrudItems"
       [showTableControllerButton]="crudConfiguration.useCompactMode ?? false"
@@ -46,6 +50,9 @@
     <bia-table
       *ngIf="!crudConfiguration.useCalcMode"
       [elements]="(crudItems$ | async) ?? []"
+      [dictOptionDtos]="
+        (memberService.optionsService.dictOptionDtos$ | async) ?? []
+      "
       [totalRecord]="(totalCount$ | async) ?? 0"
       [columnToDisplays]="displayedColumns"
       [pageSize]="pageSize"

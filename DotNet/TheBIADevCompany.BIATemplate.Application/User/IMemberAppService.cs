@@ -25,6 +25,13 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         Task<(IEnumerable<MemberDto> Members, int Total)> GetRangeByTeamAsync(PagingFilterFormatDto filters);
 
         /// <summary>
+        /// Add several members or add only right if user already in list.
+        /// </summary>
+        /// <param name="membersDto">The members DTO.</param>
+        /// <returns>The result of the creation.</returns>
+        Task<IEnumerable<MemberDto>> AddUsers(MembersDto membersDto);
+
+        /// <summary>
         /// Sets the default site.
         /// </summary>
         /// <param name="teamId">The team identifier.</param>
@@ -43,8 +50,8 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <summary>
         /// Generates CSV content.
         /// </summary>
-        /// <param name="filters">Represents the columns and their traductions.</param>
+        /// <param name="filters">Represents the columns and their translations.</param>
         /// <returns>A <see cref="Task"/> holding the buffered data to return in a file.</returns>
-        Task<byte[]> ExportCSV(PagingFilterFormatDto filters);
+        Task<byte[]> GetCsvAsync(PagingFilterFormatDto filters);
     }
 }

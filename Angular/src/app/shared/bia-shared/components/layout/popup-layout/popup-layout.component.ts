@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  Component,
   ComponentRef,
   HostBinding,
   OnDestroy,
@@ -7,7 +8,6 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BiaInjectorService } from 'src/app/core/bia-core/services/bia-injector.service';
 
@@ -51,6 +51,7 @@ export class PopupLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
       );
     }, 0);
   }
+
   ngOnDestroy() {
     if (this.dynamicComponent !== undefined) {
       this.dynamicComponent.destroy();

@@ -1,0 +1,201 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "angular: start",
+      "type": "npm",
+      "script": "start",
+      "options": {
+        "cwd": "${workspaceFolder}/Angular"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "bundle generation complete"
+          }
+        }
+      }
+    },
+    {
+      "label": "angular: test",
+      "type": "npm",
+      "script": "test",
+      "options": {
+        "cwd": "${workspaceFolder}/Angular"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "bundle generation complete"
+          }
+        }
+      }
+    },
+    {
+      "label": "dotnet: build debug api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/DotNet/TheBIADevCompany.BIATemplate.Presentation.Api/TheBIADevCompany.BIATemplate.Presentation.Api.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: build debug worker",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/DotNet/TheBIADevCompany.BIATemplate.WorkerService/TheBIADevCompany.BIATemplate.WorkerService.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: build debug deploy db",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/DotNet/TheBIADevCompany.BIATemplate.DeployDB/TheBIADevCompany.BIATemplate.DeployDB.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: build release api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/DotNet/TheBIADevCompany.BIATemplate.Presentation.Api/TheBIADevCompany.BIATemplate.Presentation.Api.csproj",
+        "-c",
+        "Release"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: build release worker",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/DotNet/TheBIADevCompany.BIATemplate.WorkerService/TheBIADevCompany.BIATemplate.WorkerService.csproj",
+        "-c",
+        "Release"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: build release deploy db",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/DotNet/TheBIADevCompany.BIATemplate.DeployDB/TheBIADevCompany.BIATemplate.DeployDB.csproj",
+        "-c",
+        "Release"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Database Add migration",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "ef",
+        "migrations",
+        "add",
+        "${input:migrationName}",
+        "--project",
+        "DotNet\\TheBIADevCompany.BIATemplate.Infrastructure.Data",
+        "-s",
+        "DotNet\\TheBIADevCompany.BIATemplate.Presentation.Api",
+        "-c",
+        "DataContext"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Database Udpate",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "-s",
+        "DotNet\\TheBIADevCompany.BIATemplate.Presentation.Api",
+        "-c",
+        "DataContext"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Database Rollback",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "${input:migrationTarget}",
+        "-s",
+        "DotNet\\TheBIADevCompany.BIATemplate.Presentation.Api",
+        "-c",
+        "DataContext"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Database Remove last migration",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "ef",
+        "migrations",
+        "remove",
+        "--project",
+        "DotNet\\TheBIADevCompany.BIATemplate.Infrastructure.Data",
+        "-s",
+        "DotNet\\TheBIADevCompany.BIATemplate.Presentation.Api",
+        "-c",
+        "DataContext"
+      ],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "migrationName",
+      "description": "Migration Name:",
+      "default": "Initial",
+      "type": "promptString"
+    },
+    {
+      "id": "migrationTarget",
+      "description": "Migration Target:",
+      "default": "",
+      "type": "promptString"
+    }
+  ]
+}

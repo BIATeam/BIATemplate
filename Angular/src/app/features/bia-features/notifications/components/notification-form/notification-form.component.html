@@ -42,6 +42,7 @@
               <button
                 pButton
                 type="button"
+                icon="pi pi-plus"
                 label="{{ 'bia.translation.addAll' | translate }}"
                 (click)="addAllTranslation()"
                 [disabled]="!missingTranslation"></button>
@@ -99,6 +100,7 @@
                 <button
                   pButton
                   type="button"
+                  icon="pi pi-trash"
                   label="{{ 'bia.translation.delete' | translate }}"
                   (click)="removeTranslation(i)"></button>
               </div>
@@ -135,6 +137,7 @@
                 class="ui-button-secondary"
                 pButton
                 type="button"
+                icon="pi pi-plus"
                 label="{{ 'bia.translation.add' | translate }}"
                 (click)="addTranslation()"
                 [disabled]="!selectionLanguage"></button>
@@ -213,28 +216,24 @@
                 <ng-container formArrayName="notifiedTeams">
                   <tr [formGroupName]="rowIndex">
                     <td>
-                      <p-cellEditor>
-                        <p-dropdown
-                          [options]="teamOptions"
-                          placeholder="&nbsp;"
-                          formControlName="team"
-                          optionLabel="display"
-                          datakey="id"
-                          [style]="{ width: '100%' }"
-                          [showClear]="true"
-                          appendTo="body"></p-dropdown>
-                      </p-cellEditor>
+                      <p-dropdown
+                        [options]="teamOptions"
+                        placeholder="&nbsp;"
+                        formControlName="team"
+                        optionLabel="display"
+                        datakey="id"
+                        [style]="{ width: '100%' }"
+                        [showClear]="true"
+                        appendTo="body"></p-dropdown>
                     </td>
                     <td>
-                      <p-cellEditor>
-                        <p-multiSelect
-                          [options]="roleOptions"
-                          formControlName="roles"
-                          optionLabel="display"
-                          datakey="id"
-                          [style]="{ width: '100%' }"
-                          appendTo="body"></p-multiSelect>
-                      </p-cellEditor>
+                      <p-multiSelect
+                        [options]="roleOptions"
+                        formControlName="roles"
+                        optionLabel="display"
+                        datakey="id"
+                        [style]="{ width: '100%' }"
+                        appendTo="body"></p-multiSelect>
                     </td>
                     <td>
                       <i
@@ -280,11 +279,6 @@
       </div>
       <div class="flex flex-row justify-content-center">
         <div class="flex-1" style="max-width: 90%">
-          <!-- <span class="p-float-label">
-            <textarea formControlName="jData" type="text" pInputText maxlength="64" style ="width:100%" rows="5" pInputTextarea>
-            </textarea>
-            <label>{{ 'notification.jData' | translate }}</label>
-          </span> -->
           <span
             style="left: 5px; top: -20px; font-size: 12px; color: #00839b"
             >{{ 'notification.jData' | translate }}</span
@@ -306,14 +300,16 @@
   <div class="flex flex-row gap-1 justify-content-end">
     <button
       pButton
-      label="{{ 'bia.save' | translate }}"
-      type="submit"
-      [disabled]="!form.valid"></button>
-    <button
-      pButton
+      icon="pi pi-times"
       label="{{ 'bia.cancel' | translate }}"
       type="button"
       class="p-button-outlined"
       (click)="onCancel()"></button>
+    <button
+      pButton
+      icon="pi pi-check"
+      label="{{ 'bia.save' | translate }}"
+      type="submit"
+      [disabled]="!form.valid"></button>
   </div>
 </form>

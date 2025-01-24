@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import * as Papa from 'papaparse';
 import { Observable, combineLatest, from, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { BiaTranslationService } from 'src/app/core/bia-core/services/bia-translation.service';
 import { DateHelperService } from 'src/app/core/bia-core/services/date-helper.service';
 import { CrudItemService } from 'src/app/shared/bia-shared/feature-templates/crud-items/services/crud-item.service';
 import { BaseDto } from 'src/app/shared/bia-shared/model/base-dto';
@@ -13,44 +14,47 @@ import { BiaFieldConfig, PropType } from '../../../model/bia-field-config';
 import { clone, isEmpty } from '../../../utils';
 import { CrudConfig } from '../model/crud-config';
 
-export interface BulkParam {
+export interface ImportParam {
   useCurrentView: boolean;
   dateFormat: string;
   timeFormat: string;
 }
 
-interface TmpBulkDataError<T extends BaseDto> {
+interface TmpImportDataError<T extends BaseDto> {
   obj: T;
   errors: string[];
 }
 
-export interface BulkDataError extends BaseDto {
+export interface ImportDataError extends BaseDto {
   sErrors: string | null;
 }
 
-export interface BulkData<T extends BaseDto> {
+export interface ImportData<T extends BaseDto> {
   toDeletes: T[];
   toInserts: T[];
   toUpdates: T[];
-  errorToSaves: BulkDataError[];
+  errorToSaves: ImportDataError[];
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class CrudItemBulkService<T extends BaseDto> {
+export class CrudItemImportService<T extends BaseDto> {
   protected form: BiaFormComponent<T>;
-  protected bulkData: BulkData<T>;
-  protected tmpBulkDataErrors: TmpBulkDataError<T>[] = [];
+  protected importData: ImportData<T>;
+  protected tmpImportDataErrors: TmpImportDataError<T>[] = [];
   protected crudItemService: CrudItemService<T>;
   protected crudConfig: CrudConfig<T>;
-  public bulkParam = <BulkParam>{
+  public importParam = <ImportParam>{
     useCurrentView: false,
-    dateFormat: DateHelperService.dateFormatIso8601,
-    timeFormat: 'HH:mm',
   };
 
-  constructor(protected translateService: TranslateService) {}
+  constructor(
+    protected translateService: TranslateService,
+    protected biaTranslationService: BiaTranslationService
+  ) {
+    this.initImportParam();
+  }
 
   public init(
     form: BiaFormComponent<T>,
@@ -62,12 +66,19 @@ export class CrudItemBulkService<T extends BaseDto> {
     this.form = form;
   }
 
-  public uploadCsv(files: FileList): Observable<BulkData<T>> {
-    this.initBulkData();
-    const file = files.item(0);
-
+  public uploadCsv(file: File): Observable<ImportData<T>> {
+    this.initImportData();
     return from(this.readFileAsText(file)).pipe(
       switchMap(csv => this.parseCSV(csv))
+    );
+  }
+
+  protected initImportParam() {
+    this.biaTranslationService.currentCultureDateFormat$.subscribe(
+      dateFormat => {
+        this.importParam.dateFormat = dateFormat.dateFormat;
+        this.importParam.timeFormat = dateFormat.timeFormat;
+      }
     );
   }
 
@@ -87,7 +98,7 @@ export class CrudItemBulkService<T extends BaseDto> {
     });
   }
 
-  protected parseCSV(csv: string): Observable<BulkData<T>> {
+  protected parseCSV(csv: string): Observable<ImportData<T>> {
     const cleanedCSVData = this.cleanCSVFormat(csv);
     const columnMapping = this.getColumnMapping();
 
@@ -103,19 +114,24 @@ export class CrudItemBulkService<T extends BaseDto> {
     let allObjs$: Observable<T[]>;
 
     if (
-      this.crudConfig.bulkMode?.useDelete === true ||
-      this.crudConfig.bulkMode?.useUpdate === true
+      this.crudConfig.importMode?.useDelete === true ||
+      this.crudConfig.importMode?.useUpdate === true
     ) {
       allObjs$ = this.crudItemService.lastLazyLoadEvent$.pipe(
         map(event => {
-          if (this.bulkParam.useCurrentView === true) {
-            const customEvent = { ...event };
-            customEvent.first = 0;
-            customEvent.rows = 0;
-            return customEvent;
-          } else {
-            return {};
+          const customEvent = { ...event };
+          customEvent.first = 0;
+          customEvent.rows = 0;
+
+          if (this.importParam.useCurrentView !== true) {
+            customEvent.filters = {};
+            customEvent.globalFilter = null;
+            if ('advancedFilter' in customEvent) {
+              customEvent.advancedFilter = null;
+            }
           }
+
+          return customEvent;
         }),
         switchMap(event =>
           this.crudItemService.dasService
@@ -127,7 +143,7 @@ export class CrudItemBulkService<T extends BaseDto> {
       allObjs$ = of([]);
     }
 
-    return this.fillBulkData(resultData$, allObjs$);
+    return this.fillImportData(resultData$, allObjs$);
   }
 
   protected getColumnMapping() {
@@ -220,10 +236,17 @@ export class CrudItemBulkService<T extends BaseDto> {
       if (isEmpty(dateString)) {
         return;
       }
+
+      const containsDash = dateString.indexOf('-') > 0;
+      const dateFormat = containsDash
+        ? 'yyyy-MM-dd'
+        : this.importParam.dateFormat;
+      const timeFormat = containsDash ? 'HH:mm' : this.importParam.timeFormat;
+
       const date: Date = DateHelperService.parseDate(
         dateString,
-        this.bulkParam.dateFormat,
-        this.bulkParam.timeFormat
+        dateFormat,
+        timeFormat
       );
       if (DateHelperService.isValidDate(date)) {
         csvObj[column.field] = <any>date;
@@ -330,28 +353,28 @@ export class CrudItemBulkService<T extends BaseDto> {
     }
   }
 
-  protected fillBulkData(
+  protected fillImportData(
     csvObjs$: Observable<T[]>,
     oldObjs$: Observable<T[]>
-  ): Observable<BulkData<T>> {
+  ): Observable<ImportData<T>> {
     return combineLatest([csvObjs$, oldObjs$]).pipe(
       map(([csvObjs, oldObjs]) => {
         // Remove objects in error.
         csvObjs = csvObjs.filter(
-          x => !this.tmpBulkDataErrors.map(y => y.obj).includes(x)
+          x => !this.tmpImportDataErrors.map(y => y.obj).includes(x)
         );
 
         if (
-          this.crudConfig.bulkMode?.useDelete === true ||
-          this.crudConfig.bulkMode?.useUpdate === true
+          this.crudConfig.importMode?.useDelete === true ||
+          this.crudConfig.importMode?.useUpdate === true
         ) {
           oldObjs = oldObjs.filter(
-            x => !this.tmpBulkDataErrors.map(y => y.obj.id).includes(x.id)
+            x => !this.tmpImportDataErrors.map(y => y.obj.id).includes(x.id)
           );
 
           for (const oldObj of oldObjs) {
             // TO DELETE
-            if (this.crudConfig.bulkMode?.useDelete === true) {
+            if (this.crudConfig.importMode?.useDelete === true) {
               const found = csvObjs.some(csvObj => csvObj.id === oldObj.id);
               if (!found) {
                 this.fillToDeletes(oldObj);
@@ -359,7 +382,7 @@ export class CrudItemBulkService<T extends BaseDto> {
             }
 
             // TO UPDATE
-            if (this.crudConfig.bulkMode?.useUpdate === true) {
+            if (this.crudConfig.importMode?.useUpdate === true) {
               const csvObj = csvObjs.find(csvObj => csvObj.id === oldObj.id);
               if (oldObj && csvObj) {
                 this.fillToUpdates(oldObj, csvObj);
@@ -369,7 +392,7 @@ export class CrudItemBulkService<T extends BaseDto> {
         }
 
         // TO INSERTS
-        if (this.crudConfig.bulkMode?.useInsert === true) {
+        if (this.crudConfig.importMode?.useInsert === true) {
           for (const csvObj of csvObjs) {
             if (isEmpty(csvObj.id) === true || csvObj.id === 0) {
               this.fillToInserts(csvObj);
@@ -377,15 +400,17 @@ export class CrudItemBulkService<T extends BaseDto> {
           }
         }
 
-        this.bulkData.errorToSaves = this.fillsErrors(this.tmpBulkDataErrors);
-        return this.bulkData;
+        this.importData.errorToSaves = this.fillsErrors(
+          this.tmpImportDataErrors
+        );
+        return this.importData;
       })
     );
   }
 
   protected fillToDeletes(oldObj: T) {
     oldObj.dtoState = DtoState.Deleted;
-    this.bulkData.toDeletes.push(oldObj);
+    this.importData.toDeletes.push(oldObj);
   }
 
   protected fillToUpdates(oldObj: T, csvObj: T) {
@@ -415,7 +440,7 @@ export class CrudItemBulkService<T extends BaseDto> {
       this.addErrorsToSave(csvObj, checkObject.errorMessages);
     } else if (JSON.stringify(oldObj) !== JSON.stringify(newObj)) {
       checkObject.element.dtoState = DtoState.Modified;
-      this.bulkData.toUpdates.push(checkObject.element);
+      this.importData.toUpdates.push(checkObject.element);
     }
   }
 
@@ -427,13 +452,13 @@ export class CrudItemBulkService<T extends BaseDto> {
       this.addErrorsToSave(csvObj, checkObject.errorMessages);
     } else {
       checkObject.element.dtoState = DtoState.Added;
-      this.bulkData.toInserts.push(checkObject.element);
+      this.importData.toInserts.push(checkObject.element);
     }
   }
 
-  protected initBulkData() {
-    this.tmpBulkDataErrors = [];
-    this.bulkData = <BulkData<T>>{
+  protected initImportData() {
+    this.tmpImportDataErrors = [];
+    this.importData = <ImportData<T>>{
       toDeletes: [],
       toInserts: [],
       toUpdates: [],
@@ -442,13 +467,13 @@ export class CrudItemBulkService<T extends BaseDto> {
   }
 
   protected addErrorToSave(obj: T, errorMessage: string) {
-    const existingErrorToSave = this.tmpBulkDataErrors.find(
+    const existingErrorToSave = this.tmpImportDataErrors.find(
       entry => entry.obj === obj
     );
     if (existingErrorToSave) {
       existingErrorToSave.errors.push(errorMessage);
     } else {
-      this.tmpBulkDataErrors.push({
+      this.tmpImportDataErrors.push({
         obj: obj,
         errors: [errorMessage],
       });
@@ -456,13 +481,13 @@ export class CrudItemBulkService<T extends BaseDto> {
   }
 
   protected addErrorsToSave(obj: T, errorMessages: string[]) {
-    const existingErrorToSave = this.tmpBulkDataErrors.find(
+    const existingErrorToSave = this.tmpImportDataErrors.find(
       entry => entry.obj === obj
     );
     if (existingErrorToSave) {
       existingErrorToSave.errors.concat(errorMessages);
     } else {
-      this.tmpBulkDataErrors.push({
+      this.tmpImportDataErrors.push({
         obj: obj,
         errors: errorMessages,
       });
@@ -470,10 +495,10 @@ export class CrudItemBulkService<T extends BaseDto> {
   }
 
   protected fillsErrors(
-    tmpBulkDataErrors: TmpBulkDataError<T>[]
-  ): BulkDataError[] {
-    return tmpBulkDataErrors.map(tmp => {
-      return <BulkDataError>{
+    tmpImportDataErrors: TmpImportDataError<T>[]
+  ): ImportDataError[] {
+    return tmpImportDataErrors.map(tmp => {
+      return <ImportDataError>{
         ...tmp.obj,
         sErrors: tmp.errors.join(', '),
       };

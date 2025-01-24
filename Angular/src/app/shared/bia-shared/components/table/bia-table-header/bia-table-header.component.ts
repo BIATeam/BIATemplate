@@ -9,6 +9,7 @@ import {
   OnChanges,
   Output,
   QueryList,
+  SimpleChanges,
   TemplateRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -29,10 +30,11 @@ export class BiaTableHeaderComponent implements OnChanges, AfterContentInit {
   @Input() canAdd = true;
   @Input() canDelete = true;
   @Input() canEdit = true;
-  @Input() canBulk = false;
+  @Input() canImport = false;
   @Input() canBack = false;
   @Input() canExportCSV = false;
   @Input() headerTitle: string;
+  @Input() parentDisplayName: string;
   @Input() selectedElements: any[];
   @Input() showTableControllerButton = false;
   @Input() tableControllerVisible = false;
@@ -41,7 +43,7 @@ export class BiaTableHeaderComponent implements OnChanges, AfterContentInit {
   @Output() openFilter = new EventEmitter<void>();
   @Output() exportCSV = new EventEmitter<void>();
   @Output() fullExportCSV = new EventEmitter<void>();
-  @Output() bulk = new EventEmitter<void>();
+  @Output() import = new EventEmitter<void>();
   @Output() toggleTableControllerVisibility = new EventEmitter<void>();
 
   @ContentChildren(PrimeTemplate) templates: QueryList<any>;
@@ -50,6 +52,7 @@ export class BiaTableHeaderComponent implements OnChanges, AfterContentInit {
   customControlTemplate: TemplateRef<any>;
 
   nbSelectedElements = 0;
+  headerTitleComplete = '';
 
   constructor(
     protected location: Location,
@@ -74,12 +77,23 @@ export class BiaTableHeaderComponent implements OnChanges, AfterContentInit {
     });
   }
 
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     if (this.selectedElements) {
       this.nbSelectedElements = this.selectedElements.length;
     } else {
       this.nbSelectedElements = 0;
     }
+
+    if (changes.parentDisplayName || changes.headerTitle) {
+      this.updateHeaderTitle();
+    }
+  }
+
+  protected updateHeaderTitle() {
+    this.headerTitleComplete =
+      this.parentDisplayName?.length > 0
+        ? `${this.parentDisplayName} - ${this.headerTitle}`
+        : this.headerTitle;
   }
 
   onBack() {
@@ -109,9 +123,9 @@ export class BiaTableHeaderComponent implements OnChanges, AfterContentInit {
     }
   }
 
-  displayBulkButton(): boolean {
+  displayImportButton(): boolean {
     return (
-      this.canBulk === true &&
+      this.canImport === true &&
       (this.canDelete === true || this.canAdd === true || this.canEdit === true)
     );
   }

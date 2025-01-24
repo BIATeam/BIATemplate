@@ -1,15 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SiteMembersIndexComponent } from './views/site-members-index/site-members-index.component';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { SiteMemberNewComponent } from './views/site-member-new/site-member-new.component';
-import { SiteMemberEditComponent } from './views/site-member-edit/site-member-edit.component';
-import { Permission } from 'src/app/shared/permission';
 import { PermissionGuard } from 'src/app/core/bia-core/guards/permission.guard';
-import { SiteMemberItemComponent } from './views/site-member-item/site-member-item.component';
-import { PopupLayoutComponent } from 'src/app/shared/bia-shared/components/layout/popup-layout/popup-layout.component';
 import { FullPageLayoutComponent } from 'src/app/shared/bia-shared/components/layout/fullpage-layout/fullpage-layout.component';
+import { PopupLayoutComponent } from 'src/app/shared/bia-shared/components/layout/popup-layout/popup-layout.component';
+import { memberCRUDConfiguration } from 'src/app/shared/bia-shared/feature-templates/members/member.constants';
 import { MemberModule } from 'src/app/shared/bia-shared/feature-templates/members/member.module';
+import { MemberImportComponent } from 'src/app/shared/bia-shared/feature-templates/members/views/member-import/member-import.component';
+import { Permission } from 'src/app/shared/permission';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { SiteMemberEditComponent } from './views/site-member-edit/site-member-edit.component';
+import { SiteMemberItemComponent } from './views/site-member-item/site-member-item.component';
+import { SiteMemberNewComponent } from './views/site-member-new/site-member-new.component';
+import { SiteMembersIndexComponent } from './views/site-members-index/site-members-index.component';
 
 const ROUTES: Routes = [
   {
@@ -34,6 +36,29 @@ const ROUTES: Routes = [
         },
         component: PopupLayoutComponent,
         // component: FullPageLayoutComponent,
+        canActivate: [PermissionGuard],
+      },
+      {
+        path: 'import',
+        data: {
+          breadcrumb: 'member.import',
+          canNavigate: false,
+          style: {
+            minWidth: '80vw',
+            maxWidth: '80vw',
+            maxHeight: '80vh',
+          },
+          permission: Permission.Site_Member_Save,
+          title: 'member.import',
+          injectComponent: MemberImportComponent,
+          dynamicComponent: () =>
+            memberCRUDConfiguration.usePopup
+              ? PopupLayoutComponent
+              : FullPageLayoutComponent,
+        },
+        component: memberCRUDConfiguration.usePopup
+          ? PopupLayoutComponent
+          : FullPageLayoutComponent,
         canActivate: [PermissionGuard],
       },
       {
