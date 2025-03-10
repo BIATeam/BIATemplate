@@ -122,7 +122,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
 
         private static void ConfigureInfrastructureDataContainer(IServiceCollection collection, IConfiguration configuration)
         {
-            string connectionString = configuration.GetConnectionString("BIATemplateDatabase");
+            string connectionString = configuration.GetConnectionString("ProjectDatabase");
 
             // Infrastructure Data Layer
             collection.AddDbContext<IQueryableUnitOfWork, DataContext>(options =>

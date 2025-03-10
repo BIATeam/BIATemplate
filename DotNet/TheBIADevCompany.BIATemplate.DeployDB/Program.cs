@@ -6,6 +6,8 @@ namespace TheBIADevCompany.BIATemplate.DeployDB
 {
     using System;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Application.Archive;
+    using BIA.Net.Core.Application.Clean;
     using Hangfire;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -43,7 +45,7 @@ namespace TheBIADevCompany.BIATemplate.DeployDB
 
                     services.AddDbContext<DataContext>(options =>
                     {
-                        options.UseSqlServer(configuration.GetConnectionString("BIATemplateDatabase"));
+                        options.UseSqlServer(configuration.GetConnectionString("ProjectDatabase"));
                     });
                     services.AddHostedService<DeployDBService>();
 
@@ -55,7 +57,7 @@ namespace TheBIADevCompany.BIATemplate.DeployDB
                     });
                     services.AddHangfire(config =>
                     {
-                        config.UseSqlServerStorage(configuration.GetConnectionString("BIATemplateDatabase"));
+                        config.UseSqlServerStorage(configuration.GetConnectionString("ProjectDatabase"));
 
                         // Initialize here the recuring jobs
 #if BIA_FRONT_FEATURE
