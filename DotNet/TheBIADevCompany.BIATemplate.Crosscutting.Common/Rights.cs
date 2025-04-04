@@ -328,5 +328,8 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
 
         // BIAToolKit - Begin Rights
         // BIAToolKit - End Rights
+
+        // BIAToolKit - Begin RightsForOption
+        // BIAToolKit - End RightsForOption
     }
 }
