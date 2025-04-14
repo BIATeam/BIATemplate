@@ -54,7 +54,6 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.User
                     // this config is required to simulate default site with swagger.
                     // it should correspond to the Front config (allEnvironments.Teams)
                     new TeamConfigDto { TeamTypeId = (int)TeamTypeId.Site, RoleMode = RoleMode.AllRoles, InHeader = true },
-
                     // BIAToolKit - Begin AuthController
                     // BIAToolKit - End AuthController
                 },
