@@ -10,8 +10,8 @@ export enum Permission {
   Notification_Read = 'Notification_Read',
   Notification_Update = 'Notification_Update',
 
-  /// BIAToolKit - Begin Permission
-  /// BIAToolKit - End Permission
+  // BIAToolKit - Begin Permission
+  // BIAToolKit - End Permission
   Roles_List = 'Roles_List',
   Site_Create = 'Site_Create',
   Site_Delete = 'Site_Delete',
@@ -45,4 +45,6 @@ export enum Permission {
   View_SetDefaultUserView = 'View_Set_Default_UserView',
   View_SetDefaultTeamViewSuffix = '_View_Set_Default_TeamView',
   View_AssignToTeamSuffix = '_View_Assign_To_Team',
+
+  Impersonation_Connection_Rights = 'Impersonation_Connection_Rights',
 }

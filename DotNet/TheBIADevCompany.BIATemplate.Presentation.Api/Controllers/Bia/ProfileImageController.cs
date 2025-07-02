@@ -1,5 +1,5 @@
-// <copyright file="ProfileImageController.cs" company="BIA">
-//     Copyright (c) BIA.Net. All rights reserved.
+// <copyright file="ProfileImageController.cs" company="TheBIADevCompany">
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
 {

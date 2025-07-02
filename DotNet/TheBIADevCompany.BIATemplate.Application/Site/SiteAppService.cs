@@ -1,5 +1,5 @@
 // <copyright file="SiteAppService.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Application.Site
@@ -17,13 +17,16 @@ namespace TheBIADevCompany.BIATemplate.Application.Site
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Domain.Service;
     using BIA.Net.Core.Domain.Specification;
+    using BIA.Net.Core.Domain.User.Specifications;
+    using TheBIADevCompany.BIATemplate.Application.Bia.User;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.Dto.Site;
     using TheBIADevCompany.BIATemplate.Domain.Site.Entities;
     using TheBIADevCompany.BIATemplate.Domain.Site.Mappers;
-    using TheBIADevCompany.BIATemplate.Domain.User.Specifications;
+    using TheBIADevCompany.BIATemplate.Domain.User;
+    using TheBIADevCompany.BIATemplate.Domain.User.Mappers;
 
     /// <summary>
     /// The application service used for site.
@@ -40,7 +43,7 @@ namespace TheBIADevCompany.BIATemplate.Application.Site
         {
             this.FiltersContext.Add(
                 AccessMode.Read,
-                TeamAppService.ReadSpecification<Site>(TeamTypeId.Site, principal));
+                TeamAppService.ReadSpecification<Site>(TeamTypeId.Site, principal, TeamConfig.Config));
 
             this.FiltersContext.Add(
                 AccessMode.Update,

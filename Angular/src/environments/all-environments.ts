@@ -16,6 +16,7 @@ export const allEnvironments = {
       teamTypeId: TeamTypeId.Site,
       roleMode: RoleMode.AllRoles,
       inHeader: true,
+      label: 'site.headerLabel',
     },
     // BIAToolKit - Begin AllEnvironment
     // BIAToolKit - End AllEnvironment

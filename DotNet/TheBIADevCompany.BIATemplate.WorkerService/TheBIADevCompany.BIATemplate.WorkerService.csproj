@@ -11,11 +11,12 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BIA.Net.Core.WorkerService" Version="4.1.1" />
+    <PackageReference Include="BIA.Net.Core.WorkerService" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="[8.0.*,9.0.0)" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
-    <PackageReference Include="NLog.Extensions.Hosting" Version="5.4.*" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="5.4.*" />
+    <PackageReference Include="NLog.Extensions.Hosting" Version="5.5.*" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="5.5.*" />
+    <PackageReference Include="Bonura.NLog.HangfireLayouts" Version="1.1.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="[8.0.*,9.0.0)" />
   </ItemGroup>
   <ItemGroup>
@@ -59,9 +60,12 @@
     <Compile Remove="**\*Aircraft*.cs" />
     <Compile Remove="**\*Airport*.cs" />
     <Compile Remove="**\*BiaDemo*.cs" />
+    <Compile Remove="**\*BiaRemote*.cs" />
+    <Compile Remove="**\*RemoteBiaApi*.cs" />
     <Compile Remove="**\*Engine*.cs" />
     <Compile Remove="**\*Example*.cs" />
     <Compile Remove="**\*Plane*.cs" />
+    <Compile Remove="**\*MaintenanceContract*.cs" />
     <Compile Remove="**\*Worker*.cs" />
     <Compile Remove="**\*HangfiresController*.cs" />
     <Compile Remove="**\*Part*.cs" />
@@ -69,7 +73,6 @@
     <Compile Remove="**\*Document*.cs" />
     <Compile Remove="**\*Analysis*.cs" />
     <!--BIATEMPLATE-->
-    <Compile Remove="**\*Audit*.cs" />
     <Compile Remove="**\*Error*.cs" />
     <Compile Remove="**\*IdentityProvider*.cs" />
     <Compile Remove="**\*LogsController*.cs" />

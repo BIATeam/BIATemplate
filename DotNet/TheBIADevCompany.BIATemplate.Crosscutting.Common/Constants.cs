@@ -1,5 +1,5 @@
 // <copyright file="Constants.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
@@ -27,7 +27,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// <summary>
             /// The framework version.
             /// </summary>
-            public const string FrameworkVersion = "4.1.1";
+            public const string FrameworkVersion = "5.0.0";
 
             /// <summary>
             /// The environment.
@@ -44,32 +44,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// The default theme.
             /// </summary>
             public const string Theme = "Light";
-        }
-
-        /// <summary>
-        /// Role.
-        /// </summary>
-        public static class Role
-        {
-            /// <summary>
-            /// The admin role code.
-            /// </summary>
-            public const string Admin = "Admin";
-
-            /// <summary>
-            /// The user role code.
-            /// </summary>
-            public const string User = "User";
-
-            /// <summary>
-            /// The right to access to the list of members.
-            /// </summary>
-            public const string TeamMemberSuffix = "_Member";
-
-            /// <summary>
-            /// The right to access to the list of members.
-            /// </summary>
-            public const string TeamMemberOfOneSuffix = "_MemberOfOne";
         }
 
         /// <summary>
@@ -91,11 +65,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// The spanish language Id.
             /// </summary>
             public const int Spanish = 3;
-
-            /// <summary>
-            /// The german language Id.
-            /// </summary>
-            public const int German = 4;
         }
     }
 }

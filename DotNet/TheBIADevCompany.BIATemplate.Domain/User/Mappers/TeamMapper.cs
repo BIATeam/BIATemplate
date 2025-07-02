@@ -1,5 +1,5 @@
 // <copyright file="TeamMapper.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
@@ -7,11 +7,12 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
     using System;
     using System.Linq;
     using System.Linq.Expressions;
-    using BIA.Net.Core.Domain;
+    using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.User;
+    using BIA.Net.Core.Domain.Mapper;
     using BIA.Net.Core.Domain.Service;
+    using BIA.Net.Core.Domain.User.Entities;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 
     // BIAToolKit - Begin TeamMapperUsing
     // BIAToolKit - End TeamMapperUsing
@@ -19,29 +20,24 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
     /// <summary>
     /// The mapper used for site.
     /// </summary>
-    public class TeamMapper : BaseMapper<TeamDto, Team, int>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="TeamMapper"/> class.
+    /// </remarks>
+    /// <param name="userContext">the user context.</param>
+    public class TeamMapper(UserContext userContext) : BaseMapper<BaseDtoVersionedTeam, BaseEntityTeam, int>, ITeamMapper
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamMapper"/> class.
-        /// </summary>
-        /// <param name="userContext">the user context.</param>
-        public TeamMapper(UserContext userContext)
-        {
-            this.UserContext = userContext;
-        }
-
         /// <summary>
         /// The user context language and culture.
         /// </summary>
-        private UserContext UserContext { get; set; }
+        private UserContext UserContext { get; set; } = userContext;
 
         /// <summary>
         /// Create a site DTO from a entity.
         /// </summary>
         /// <returns>The site DTO.</returns>
-        public override Expression<Func<Team, TeamDto>> EntityToDto()
+        public override Expression<Func<BaseEntityTeam, BaseDtoVersionedTeam>> EntityToDto()
         {
-            return entity => new TeamDto { Id = entity.Id, Title = entity.Title, TeamTypeId = entity.TeamTypeId };
+            return entity => new BaseDtoVersionedTeam { Id = entity.Id, Title = entity.Title, TeamTypeId = entity.TeamTypeId };
         }
 
         /// <summary>
@@ -51,14 +47,14 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
         /// <returns>
         /// The site DTO.
         /// </returns>
-        public Expression<Func<Team, TeamDto>> EntityToDto(int userId)
+        public Expression<Func<BaseEntityTeam, BaseDtoVersionedTeam>> EntityToDto(int userId)
         {
-            return entity => new TeamDto
+            return entity => new BaseDtoVersionedTeam
             {
                 Id = entity.Id,
                 Title = entity.Title,
                 TeamTypeId = entity.TeamTypeId,
-                IsDefault = entity.Members.Any(member => member.UserId == userId && member.IsDefault),
+                IsDefault = entity.UserDefaultTeams.Any(x => x.UserId == userId && x.TeamId == entity.Id),
                 Roles = entity.Members.FirstOrDefault(member => member.UserId == userId).MemberRoles.Select(mem => new RoleDto
                 {
                     Id = mem.RoleId,
@@ -76,9 +72,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
         /// <summary>
         /// Retrieve the parent team id.
         /// </summary>
-        /// <param name="team">Child <see cref="Team"/>.</param>
+        /// <param name="team">Child <see cref="BaseEntityTeam"/>.</param>
         /// <returns>Parent Team id as <see cref="int"/>.</returns>
-        private static int GetParentTeamId(Team team)
+        private static int GetParentTeamId(BaseEntityTeam team)
         {
             return team switch
             {
@@ -91,9 +87,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
         /// <summary>
         /// Retrieve the parent team title.
         /// </summary>
-        /// <param name="team">Child <see cref="Team"/>.</param>
+        /// <param name="team">Child <see cref="BaseEntityTeam"/>.</param>
         /// <returns>Parent Team title as <see cref="string"/>.</returns>
-        private static string GetParentTeamTitle(Team team)
+        private static string GetParentTeamTitle(BaseEntityTeam team)
         {
             return team switch
             {

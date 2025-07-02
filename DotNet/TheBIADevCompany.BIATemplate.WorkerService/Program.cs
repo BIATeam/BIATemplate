@@ -1,5 +1,5 @@
 // <copyright file="Program.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.WorkerService
@@ -60,7 +60,8 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
                 .UseWindowsService()
                 .Build();
 
-                Startup.Configure(host);
+                var config = host.Services.GetRequiredService<IConfiguration>();
+                Startup.Configure(host, config);
 
                 await host.RunAsync();
             }

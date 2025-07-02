@@ -1,5 +1,5 @@
-// <copyright file="AppSettingsController.cs" company="BIA">
-//     Copyright (c) BIA. All rights reserved.
+// <copyright file="AppSettingsController.cs" company="TheBIADevCompany">
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
 {
@@ -36,6 +36,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
                 Cultures = configuration.Value.Cultures,
                 MonitoringUrl = configuration.Value.ApiFeatures?.DelegateJobToWorker?.MonitoringUrl,
                 ProfileConfiguration = configuration.Value.ProfileConfiguration,
+                IframeConfiguration = configuration.Value.IframeConfiguration,
             };
         }
 

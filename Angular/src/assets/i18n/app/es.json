@@ -5,7 +5,8 @@
     "teams": "Equipos",
     "users": "Usuarios",
     "notifications": "Notificaciones",
-    "maintenance-teams": "Mantenimiento equipos"
+    "maintenanceTeams": "Mantenimiento equipos",
+    "maintenanceContracts": "Contratos de mantenimiento"
   },
   "member": {
     "add": "Añadir miembro",
@@ -14,7 +15,8 @@
     "listOf": "Lista de miembros",
     "manage": "Gestionar miembro",
     "roles": "Roles",
-    "user": "Usuario"
+    "user": "Usuario",
+    "teams": "Equipos"
   },
   "msg": {
     "hideFilters": "Ocultar filtros",
@@ -26,7 +28,8 @@
     "admins": "Administradores",
     "edit": "Editar sitios",
     "listOf": "Lista de sitios",
-    "title": "Title"
+    "title": "Title",
+    "headerLabel": "Sitios"
   },
   "translation": {
     "defaultLanguage": "Defecto (Inglés)"

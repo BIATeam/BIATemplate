@@ -14,9 +14,7 @@
     <Compile Remove="Migrations\20200908084410_AddVersionedTable.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Audit.EntityFramework.Core" Version="27.5.*" />
-    <PackageReference Include="Audit.NET.SqlServer" Version="27.5.*" />
-    <PackageReference Include="BIA.Net.Core.Infrastructure.Data" Version="4.1.1" />
+    <PackageReference Include="BIA.Net.Core.Infrastructure.Data" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="[8.0.*,9.0.0)" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="[8.0.*,9.0.0)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[8.0.*,9.0.0)" />
@@ -46,9 +44,12 @@
     <Compile Remove="**\*Aircraft*.cs" />
     <Compile Remove="**\*Airport*.cs" />
     <Compile Remove="**\*BiaDemo*.cs" />
+    <Compile Remove="**\*BiaRemote*.cs" />
+    <Compile Remove="**\*RemoteBiaApi*.cs" />
     <Compile Remove="**\*Engine*.cs" />
     <Compile Remove="**\*Example*.cs" />
     <Compile Remove="**\*Plane*.cs" />
+    <Compile Remove="**\*MaintenanceContract*.cs" />
     <Compile Remove="**\*Worker*.cs" />
     <Compile Remove="**\*HangfiresController*.cs" />
     <Compile Remove="**\*Part*.cs" />
@@ -56,7 +57,6 @@
     <Compile Remove="**\*Document*.cs" />
     <Compile Remove="**\*Analysis*.cs" />
     <!--BIATEMPLATE-->
-    <Compile Remove="**\*Audit*.cs" />
     <Compile Remove="**\*Error*.cs" />
     <Compile Remove="**\*IdentityProvider*.cs" />
     <Compile Remove="**\*LogsController*.cs" />

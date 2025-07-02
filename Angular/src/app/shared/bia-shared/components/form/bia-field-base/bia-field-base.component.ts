@@ -32,10 +32,10 @@ export class BiaFieldBaseComponent<CrudItem> implements OnInit, OnDestroy {
   }
 
   protected initFieldConfiguration() {
-    if (this.field.type == PropType.Number) {
+    if (this.field.type === PropType.Number) {
       this.sub.add(
         this.biaTranslationService.currentCulture$.subscribe(culture => {
-          if (culture != null) {
+          if (culture) {
             if (this.field instanceof BiaFieldConfig) {
               const field = this.field.clone();
               field.displayFormat ||= new BiaFieldNumberFormat();
@@ -49,19 +49,23 @@ export class BiaFieldBaseComponent<CrudItem> implements OnInit, OnDestroy {
       );
     }
     if (
-      this.field.type == PropType.DateTime ||
-      this.field.type == PropType.Date ||
-      this.field.type == PropType.Time ||
-      this.field.type == PropType.TimeOnly ||
-      this.field.type == PropType.TimeSecOnly
+      this.field.type === PropType.DateTime ||
+      this.field.type === PropType.Date ||
+      this.field.type === PropType.Time ||
+      this.field.type === PropType.TimeOnly ||
+      this.field.type === PropType.TimeSecOnly
     ) {
       this.sub.add(
         this.biaTranslationService.currentCultureDateFormat$.subscribe(
           dateFormat => {
             if (this.field instanceof BiaFieldConfig) {
               const field = this.field.clone();
-              field.displayFormat ||= new BiaFieldDateFormat();
-              if (field.displayFormat instanceof BiaFieldDateFormat) {
+              if (
+                !(field.displayFormat instanceof BiaFieldDateFormat) ||
+                !field.customDisplayFormat
+              ) {
+                field.customDisplayFormat = false;
+                field.displayFormat = new BiaFieldDateFormat();
                 switch (field.type) {
                   case PropType.DateTime:
                     field.displayFormat.autoPrimeDateFormat =

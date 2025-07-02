@@ -93,8 +93,8 @@ export class TableHelperService {
       obj === null ||
       obj === undefined ||
       (this.isNullUndefEmptyStr(obj.value) &&
-        obj.matchMode != 'empty' &&
-        obj.matchMode != 'notEmpty')
+        obj.matchMode !== 'empty' &&
+        obj.matchMode !== 'notEmpty')
     );
   }
 
@@ -128,31 +128,27 @@ export class TableHelperService {
       layoutService,
       offset
     );
-    // table header height = 2.14rem
+    // table header height = 2.24rem
 
     // Non compact mode :
     // table header margin = 1.25rem
-    // controller height is approximately ~= 2.5rem + 31px
-    // paginator = 4.05rem
+    // controller height = 4.5rem
+    // paginator = 3.75rem
 
     // Compact mode :
     // table header margin = -0.25rem
-    // controller height is approximately ~= 2.75rem + 5px
-    // paginator = 3.3rem
+    // controller height = 3.25rem
+    // paginator = 2.6rem
 
-    if (layoutService._config.classicStyle) {
-      height += ' - 200px';
-    } else {
-      height += ' - 31px - 9.94rem';
-    }
+    height += ' - 11.74rem';
     if (compactMode) {
-      height += ' + 2rem + 26px';
+      height += ' + 3.75rem';
 
       if (!showTableController) {
-        height += ' + 2.75rem + 5px';
+        height += ' + 3.25rem';
       }
     } else if (!showTableController) {
-      height += ' + 2.5rem + 31px';
+      height += ' + 4.5rem';
     }
 
     return `calc(${height})`;

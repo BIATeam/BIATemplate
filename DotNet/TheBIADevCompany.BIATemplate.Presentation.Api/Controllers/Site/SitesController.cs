@@ -1,5 +1,5 @@
 // <copyright file="SitesController.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site
@@ -9,6 +9,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site
     using System.Linq;
     using System.Threading.Tasks;
     using BIA.Net.Core.Common;
+    using BIA.Net.Core.Common.Enum;
     using BIA.Net.Core.Common.Exceptions;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Presentation.Api.Controllers.Base;
@@ -130,6 +131,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = Rights.Sites.Update)]
         public async Task<IActionResult> Update(int id, [FromBody] SiteDto dto)
@@ -151,6 +153,10 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Site
             catch (ElementNotFoundException)
             {
                 return this.NotFound();
+            }
+            catch (OutdateException)
+            {
+                return this.Conflict();
             }
         }
 

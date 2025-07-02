@@ -6,8 +6,8 @@ import { map, switchMap } from 'rxjs/operators';
 import { BiaTranslationService } from 'src/app/core/bia-core/services/bia-translation.service';
 import { DateHelperService } from 'src/app/core/bia-core/services/date-helper.service';
 import { CrudItemService } from 'src/app/shared/bia-shared/feature-templates/crud-items/services/crud-item.service';
-import { BaseDto } from 'src/app/shared/bia-shared/model/base-dto';
 import { DtoState } from 'src/app/shared/bia-shared/model/dto-state.enum';
+import { BaseDto } from 'src/app/shared/bia-shared/model/dto/base-dto';
 import { BiaFormComponent } from '../../../components/form/bia-form/bia-form.component';
 import { DictOptionDto } from '../../../components/table/bia-table/dict-option-dto';
 import { BiaFieldConfig, PropType } from '../../../model/bia-field-config';
@@ -106,7 +106,14 @@ export class CrudItemImportService<T extends BaseDto> {
       skipEmptyLines: 'greedy',
       header: true,
       dynamicTyping: true,
-      transformHeader: header => columnMapping[header],
+      transformHeader: header => {
+        const propName = columnMapping[header];
+        if (propName === undefined) {
+          return header;
+        } else {
+          return propName;
+        }
+      },
     });
 
     const resultData$ = this.parseCSVBia(result.data);
@@ -147,27 +154,26 @@ export class CrudItemImportService<T extends BaseDto> {
   }
 
   protected getColumnMapping() {
-    return this.crudConfig.fieldsConfig.columns.reduce(
-      (map: { [key: string]: string }, obj) => {
+    return this.crudConfig.fieldsConfig.columns
+      .filter(c => c.isVisibleInTable)
+      .reduce((map: { [key: string]: string }, obj) => {
         map[this.translateService.instant(obj.header)] = obj.field.toString();
         return map;
-      },
-      {}
-    );
+      }, {});
   }
 
   protected parseCSVBia(csvObjs: T[]): Observable<T[]> {
     return this.crudItemService.optionsService.dictOptionDtos$.pipe(
       map((dictOptionDtos: DictOptionDto[]) => {
         csvObjs.forEach(csvObj => {
-          this.crudConfig.fieldsConfig.columns.forEach(column => {
+          this.crudConfig.fieldsConfig.columns.map(column => {
             if (
               column.isEditable ||
               column.isOnlyInitializable ||
               column.isOnlyUpdatable
             ) {
               const csvValue: any = csvObj[column.field];
-              if (csvValue != null) {
+              if (csvValue !== undefined && csvValue !== null) {
                 if (column.type === PropType.String) {
                   this.parseCSVString(csvObj, column);
                 } else if (
@@ -324,9 +330,11 @@ export class CrudItemImportService<T extends BaseDto> {
     const csvValue = csvObj[column.field]?.toString().trim();
 
     if (isEmpty(csvValue)) {
-      csvObj[column.field] = <any>false;
-    } else if (csvValue?.toUpperCase() === 'X') {
+      csvObj[column.field] = <any>null;
+    } else if (csvValue?.toUpperCase() === 'TRUE') {
       csvObj[column.field] = <any>true;
+    } else if (csvValue?.toUpperCase() === 'FALSE') {
+      csvObj[column.field] = <any>false;
     } else {
       this.addErrorToSave(
         csvObj,
@@ -482,10 +490,7 @@ export class CrudItemImportService<T extends BaseDto> {
       ) {
         Object.assign(newObj, { [prop]: csvObj[prop] });
 
-        if (
-          (isEmpty(newObj[prop]) || newObj[prop] === false) &&
-          (isEmpty(oldObj[prop]) || oldObj[prop] === false)
-        ) {
+        if (isEmpty(newObj[prop]) && isEmpty(oldObj[prop])) {
           // Example: if newObj[prop] = null and oldObj[prop] = [] (Array empty)
           // For our comparison, it is the same thing so we enter one of the values
           // to facilitate comparison with JSON.stringify
