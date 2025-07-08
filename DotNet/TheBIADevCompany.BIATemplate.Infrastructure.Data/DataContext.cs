@@ -14,16 +14,15 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using BIA.Net.Core.Domain.View.Entities;
 #endif
     using BIA.Net.Core.Infrastructure.Data;
-    using BIA.Net.Core.Infrastructure.Data.ModelBuilders.Bia;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 #if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Domain.Site.Entities;
     using TheBIADevCompany.BIATemplate.Domain.User.Entities;
-    using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
-    using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders.Bia;
 #endif
+    using BIA.Net.Core.Infrastructure.Data.ModelBuilders;
+    using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
 
     /// <summary>
     /// The database context.

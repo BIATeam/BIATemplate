@@ -14,7 +14,6 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia.View
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using TheBIADevCompany.BIATemplate.Application.Bia.User;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;

@@ -19,7 +19,6 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia.User
     using BIA.Net.Core.Domain.Dto.User;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using TheBIADevCompany.BIATemplate.Application.Bia.User;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Error;
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;

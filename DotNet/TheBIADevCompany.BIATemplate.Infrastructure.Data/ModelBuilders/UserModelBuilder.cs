@@ -2,11 +2,11 @@
 // Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
-namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders.Bia
+namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 {
     using BIA.Net.Core.Common.Enum;
     using BIA.Net.Core.Domain.User.Entities;
-    using BIA.Net.Core.Infrastructure.Data.ModelBuilders.Bia;
+    using BIA.Net.Core.Infrastructure.Data.ModelBuilders;
     using Microsoft.EntityFrameworkCore;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.User.Entities;
@@ -67,7 +67,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders.Bia
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)BiaRoleId.Admin, Code = "Admin", Label = "Administrator" });
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)BiaRoleId.BackAdmin, Code = "Back_Admin", Label = "Background task administrator" });
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)BiaRoleId.BackReadOnly, Code = "Back_Read_Only", Label = "Visualization of background tasks" });
-            modelBuilder.Entity<Role>().HasData(new Role { Id = (int)RoleId.SiteAdmin, Code = "Site_Admin", Label = "Site administrator" });
+                modelBuilder.Entity<Role>().HasData(new Role { Id = (int)RoleId.SiteAdmin, Code = "Site_Admin", Label = "Site administrator" });
 
             // BIAToolKit - Begin RoleModelBuilder
             // BIAToolKit - End RoleModelBuilder

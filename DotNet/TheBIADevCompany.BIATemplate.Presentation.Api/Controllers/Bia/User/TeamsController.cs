@@ -15,11 +15,10 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia.User
     using BIA.Net.Core.Application.Services;
 #endif
     using BIA.Net.Core.Common.Exceptions;
-    using BIA.Net.Presentation.Api.Controllers.Base;
+    using BIA.Net.Core.Presentation.Api.Controller.Base;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using TheBIADevCompany.BIATemplate.Application.Bia.User;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
 

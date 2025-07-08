@@ -23,14 +23,12 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
     using BIA.Net.Core.Infrastructure.Data;
     using BIA.Net.Core.Infrastructure.Service.Repositories;
     using BIA.Net.Core.Ioc;
-    using BIA.Net.Core.IocContainer;
     using BIA.Net.Core.Presentation.Common.Features.HubForClients;
     using Hangfire;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 #if BIA_FRONT_FEATURE
-    using TheBIADevCompany.BIATemplate.Application.Bia.User;
 #endif
     using TheBIADevCompany.BIATemplate.Application.User;
 #if BIA_FRONT_FEATURE
@@ -43,7 +41,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
     using TheBIADevCompany.BIATemplate.Domain.User.Models;
 #endif
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
-    using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features.Bia;
+    using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features;
     using TheBIADevCompany.BIATemplate.Infrastructure.Service.Repositories;
 
     /// <summary>
