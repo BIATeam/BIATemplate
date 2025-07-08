@@ -1,5 +1,5 @@
-// <copyright file="CountryId.cs" company="BIA.Net">
-// Copyright (c) BIA.Net. All rights reserved.
+// <copyright file="CountryId.cs" company="TheBIADevCompany">
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum
 {

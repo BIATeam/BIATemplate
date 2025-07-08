@@ -1,17 +1,17 @@
 // <copyright file="Site.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Domain.Site.Entities
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
+    using BIA.Net.Core.Domain.User.Entities;
 
     /// <summary>
     /// The site entity.
     /// </summary>
-    public class Site : Team
+    public class Site : BaseEntityTeam
     {
         /// <summary>
         /// Add row version timestamp in table Site.

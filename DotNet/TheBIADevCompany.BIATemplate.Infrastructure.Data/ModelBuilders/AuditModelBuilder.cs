@@ -1,49 +1,28 @@
 // <copyright file="AuditModelBuilder.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 {
+    using System.Diagnostics;
+    using BIA.Net.Core.Infrastructure.Data.ModelBuilders;
     using Microsoft.EntityFrameworkCore;
-    using TheBIADevCompany.BIATemplate.Domain.Audit.Entities;
-    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 
     /// <summary>
     /// Class used to update the model builder for user domain.
     /// </summary>
-    public static class AuditModelBuilder
+    public class AuditModelBuilder : BaseAuditModelBuilder
     {
         /// <summary>
         /// Create the user model.
         /// </summary>
         /// <param name="modelBuilder">The model builder.</param>
-        public static void CreateModel(ModelBuilder modelBuilder)
+        public override void CreateModel(ModelBuilder modelBuilder)
         {
-            CreateUserAuditModel(modelBuilder);
-            CreateAuditModel(modelBuilder);
-        }
+            Debug.Assert(modelBuilder != null, "Line to avoid warning empty method");
+            base.CreateModel(modelBuilder);
 
-        /// <summary>
-        /// Create the model for users.
-        /// </summary>
-        /// <param name="modelBuilder">The model builder.</param>
-        private static void CreateAuditModel(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<AuditLog>().HasKey(u => new { u.Id });
-            modelBuilder.Entity<AuditLog>().Property(u => u.Table).IsRequired().HasMaxLength(50);
-        }
-
-        /// <summary>
-        /// Create the model for users.
-        /// </summary>
-        /// <param name="modelBuilder">The model builder.</param>
-        private static void CreateUserAuditModel(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<UserAudit>().HasKey(u => new { u.AuditId });
-            modelBuilder.Entity<UserAudit>().Property(u => u.FirstName).IsRequired().HasMaxLength(50);
-            modelBuilder.Entity<UserAudit>().Property(u => u.LastName).IsRequired().HasMaxLength(50);
-            modelBuilder.Entity<UserAudit>().Property(u => u.Login).IsRequired().HasMaxLength(50);
-            modelBuilder.Entity<UserAudit>().Property(u => u.Domain).IsRequired().HasDefaultValue("--");
+            // Add here the project specific audit model creation.
         }
     }
 }

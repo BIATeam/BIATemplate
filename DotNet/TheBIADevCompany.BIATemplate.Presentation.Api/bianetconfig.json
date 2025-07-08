@@ -126,6 +126,8 @@
     "Permissions": [
       // BIAToolKit - Begin Config
       // BIAToolKit - End Config
+      // BIAToolKit - Begin ConfigForOption
+      // BIAToolKit - End ConfigForOption
       // Home
       {
         "Name": "Home_Access",
@@ -193,11 +195,11 @@
       },
       // Team
       {
-        "Names": [ "Team_Access_All", "Team_Options" ],
+        "Names": [ "Team_Access_All" ],
         "Roles": [ "Admin" ]
       },
       {
-        "Names": [ "Team_List_Access" ],
+        "Names": [ "Team_List_Access", "Team_Options" ],
         "Roles": [ "User" ]
       },
       {
@@ -229,12 +231,17 @@
       //},
       // Notifications
       {
-        "Names": [ "Notification_List_Access", "Notification_Delete", "Notification_Read" ],
+        "Names": [ "Notification_List_Access", "Notification_Delete", "Notification_Read", "NotificationType_Options" ],
         "Roles": [ "Admin", "User" ]
       },
       {
-        "Names": [ "Notification_Update", "Notification_Create", "NotificationType_Options" ],
+        "Names": [ "Notification_Update", "Notification_Create" ],
         "Roles": [ "Admin" ]
+      },
+      // SupportAdmin
+      {
+        "Names": [ "Impersonation_Connection_Rights" ],
+        "Roles": [ "SupportAdmin" ]
       },
       {
         "Name": "Background_Task_Admin",

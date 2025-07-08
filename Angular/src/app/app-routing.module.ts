@@ -14,8 +14,8 @@ const routes: Routes = [
         path: '',
         component: PageLayoutComponent,
         children: [
-          /// BIAToolKit - Begin Routing
-          /// BIAToolKit - End Routing
+          // BIAToolKit - Begin Routing
+          // BIAToolKit - End Routing
           {
             path: 'sites',
             data: {
@@ -52,6 +52,8 @@ const routes: Routes = [
             data: {
               breadcrumb: 'bia.backgroundtasks',
               canNavigate: true,
+              noMargin: true,
+              noPadding: true,
             },
             loadChildren: () =>
               import(

@@ -1,5 +1,12 @@
 {
   "BiaNet": {
+    "DatabaseConfigurations": [
+      {
+        "Key": "ProjectDatabase",
+        "Provider": "SQLServer",
+        "ConnectionString": "data source=the-bia-dev-team-db-int.the-deploy-domain-name.bia\\SEPDMAPPINT;initial catalog=BIATemplate_INT;integrated security=True;MultipleActiveResultSets=True;Encrypt=False;App=BIATemplate"
+      }
+    ],
     "CommonFeatures": {
       "ClientForHub": {
         "SignalRUrl": "https://the-bia-dev-team-int.the-deploy-domain-name.bia/BIATemplate/WebApi/HubForClients"

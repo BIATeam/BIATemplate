@@ -1,5 +1,5 @@
 // <copyright file="LogsController.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
@@ -10,7 +10,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Base;
+    using TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia.Base;
 
     /// <summary>
     /// The API controller used to manage users.
