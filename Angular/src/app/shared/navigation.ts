@@ -14,8 +14,8 @@ export const NAVIGATION: BiaNavigation[] = [
     path: ['/sites'],
     icon: 'pi pi-home',
   },
-  /// BIAToolKit - Begin Navigation
-  /// BIAToolKit - End Navigation
+  // BIAToolKit - Begin Navigation
+  // BIAToolKit - End Navigation
   {
     labelKey: 'bia.administration',
     icon: 'pi pi-wrench',

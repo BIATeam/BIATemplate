@@ -1,5 +1,5 @@
 // <copyright file="Startup.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.WorkerService
@@ -8,6 +8,7 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
     using BIA.Net.Core.Application.Clean;
     using BIA.Net.Core.Application.Services;
     using BIA.Net.Core.Common.Configuration;
+    using BIA.Net.Core.Common.Configuration.Keycloak;
     using BIA.Net.Core.Presentation.Common.Features;
     using BIA.Net.Core.WorkerService.Features;
     using BIA.Net.Core.WorkerService.Features.DataBaseHandler;
@@ -49,11 +50,15 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="host">The host.</param>
-        public static void Configure(IHost host)
+        /// <param name="configuration">The configuration.</param>
+        public static void Configure(IHost host, IConfiguration configuration)
         {
-#if BIA_FRONT_FEATURE
-            host.Services.GetRequiredService<IAuditFeatureService>().EnableAuditFeatures();
-#endif
+            BiaNetSection biaNetSection = new BiaNetSection();
+            configuration.GetSection("BiaNet").Bind(biaNetSection);
+            if (biaNetSection.CommonFeatures?.AuditConfiguration?.IsActive == true)
+            {
+                host.Services.GetRequiredService<IAuditFeatureService>().EnableAuditFeatures();
+            }
         }
 
         /// <summary>

@@ -1,13 +1,13 @@
 // <copyright file="TeamConfig.cs" company="TheBIADevCompany">
-//     Copyright (c) TheBIADevCompany. All rights reserved.
+// Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 namespace TheBIADevCompany.BIATemplate.Domain.User
 {
     using System.Collections.Immutable;
     using BIA.Net.Core.Common;
     using BIA.Net.Core.Common.Helpers;
+    using BIA.Net.Core.Domain.User.Entities;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 
     /// <summary>
     /// Team prefixe.
@@ -17,9 +17,9 @@ namespace TheBIADevCompany.BIATemplate.Domain.User
         /// <summary>
         /// the private mapping.
         /// </summary>
-        public static readonly ImmutableList<BiaTeamConfig<Team>> Config = new ImmutableListBuilder<BiaTeamConfig<Team>>()
+        public static readonly ImmutableList<BiaTeamConfig<BaseEntityTeam>> Config = new ImmutableListBuilder<BiaTeamConfig<BaseEntityTeam>>()
         {
-            new BiaTeamConfig<Team>()
+            new BiaTeamConfig<BaseEntityTeam>()
             {
                 TeamTypeId = (int)TeamTypeId.Site,
                 RightPrefix = "Site",

@@ -8,7 +8,7 @@
       "DockerfileRunArguments": "--add-host=host.docker.internal:host-gateway",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Docker",
-        "ConnectionStrings__BIATemplateDatabase": "data source=host.docker.internal;initial catalog=BIATemplate;integrated security=False;User Id=SQLUser_BIATemplate_DEV_U;Password=SQLUser_BIATemplate_DEV_U;MultipleActiveResultSets=True;Encrypt=False;App=BIATemplate"
+        "ConnectionStrings__ProjectDatabase": "data source=host.docker.internal;initial catalog=BIATemplate;integrated security=False;User Id=SQLUser_BIATemplate_DEV_U;Password=SQLUser_BIATemplate_DEV_U;MultipleActiveResultSets=True;Encrypt=False;App=BIATemplate"
       }
     },
     "Podman": {
@@ -16,7 +16,7 @@
       "DockerfileRunArguments": "--network bia_network --name biatemplate_deploydb_container",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Podman",
-        "ConnectionStrings__BIATemplateDatabase": "data source=mssql_container,14330;initial catalog=BIATemplate;integrated security=False;User Id=SQLUser_BIA_DEV_U;Password=<YourStrong!Passw0rd2>;MultipleActiveResultSets=True;Encrypt=False;App=BIATemplate"
+        "ConnectionStrings__ProjectDatabase": "data source=mssql_container,14330;initial catalog=BIATemplate;integrated security=False;User Id=SQLUser_BIA_DEV_U;Password=<YourStrong!Passw0rd2>;MultipleActiveResultSets=True;Encrypt=False;App=BIATemplate"
       }
     }
   }
