@@ -4,6 +4,7 @@ export const allEnvironments = {
   appTitle: 'BIATemplate',
   companyName: 'TheBIADevCompany',
   enableNotifications: true,
+  enableWorkerService: false,
   urlAuth: '/api/Auth',
   urlLog: '/api/logs',
   urlEnv: '/api/Environment',
