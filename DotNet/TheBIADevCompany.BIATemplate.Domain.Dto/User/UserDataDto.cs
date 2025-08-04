@@ -1,5 +1,5 @@
-// <copyright file="UserDataDto.cs" company="BIA">
-// Copyright (c) BIA. All rights reserved.
+// <copyright file="UserDataDto.cs" company="TheBIADevCompany">
+//  Copyright (c) TheBIADevCompany. All rights reserved.
 // </copyright>
 
 namespace TheBIADevCompany.BIATemplate.Domain.Dto.User
