@@ -22,6 +22,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 #endif
     using BIA.Net.Core.Infrastructure.Data.ModelBuilders;
+    using TheBIADevCompany.BIATemplate.Domain.Notification.Entities;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
 
     /// <summary>

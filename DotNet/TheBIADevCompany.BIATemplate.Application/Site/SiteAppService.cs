@@ -6,26 +6,22 @@ namespace TheBIADevCompany.BIATemplate.Application.Site
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Linq.Expressions;
     using System.Security.Principal;
     using System.Threading.Tasks;
     using BIA.Net.Core.Application.Services;
-    using BIA.Net.Core.Domain.Authentication;
     using BIA.Net.Core.Domain.Dto.Base;
-    using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.RepoContract;
     using BIA.Net.Core.Domain.Service;
     using BIA.Net.Core.Domain.Specification;
     using BIA.Net.Core.Domain.User.Specifications;
     using TheBIADevCompany.BIATemplate.Application.User;
-    using TheBIADevCompany.BIATemplate.Crosscutting.Common;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
     using TheBIADevCompany.BIATemplate.Domain.Dto.Site;
+    using TheBIADevCompany.BIATemplate.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.Site.Entities;
     using TheBIADevCompany.BIATemplate.Domain.Site.Mappers;
     using TheBIADevCompany.BIATemplate.Domain.User;
-    using TheBIADevCompany.BIATemplate.Domain.User.Mappers;
 
     /// <summary>
     /// The application service used for site.
@@ -46,7 +42,7 @@ namespace TheBIADevCompany.BIATemplate.Application.Site
 
             this.FiltersContext.Add(
                 AccessMode.Update,
-                TeamAppService.UpdateSpecification<Site>(TeamTypeId.Site, principal));
+                TeamAppService.UpdateSpecification<Site, UserDataDto>(TeamTypeId.Site, principal));
         }
 
         /// <inheritdoc/>
