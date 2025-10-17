@@ -6,6 +6,7 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
 {
     using System;
     using System.Threading.Tasks;
+    using BIA.Net.Core.Common;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,8 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
             // NLog: setup the logger first to catch all errors
             try
             {
+                AppContext.SetSwitch(BiaConstants.AppContextSwitch.Npgsql.EnableLegacyTimestampBehavior, true);
+
                 IHostBuilder builder = Host.CreateDefaultBuilder(args);
                 Startup startup;
 
