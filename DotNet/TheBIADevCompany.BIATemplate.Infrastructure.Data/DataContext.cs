@@ -119,6 +119,11 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         /// Gets or sets the notification type DBSet.
         /// </summary>
         public DbSet<NotificationTypeTranslation> NotificationTypeTranslations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user team defaults.
+        /// </summary>
+        public DbSet<UserDefaultTeam> UserDefaultTeams { get; set; }
 #endif
 
         /// <summary>
