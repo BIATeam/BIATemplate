@@ -24,7 +24,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using BIA.Net.Core.Domain.Dto.Option;
     using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
-    using TheBIADevCompany.BIATemplate.Domain.Api.RolesForApp;
     using TheBIADevCompany.BIATemplate.Domain.Dto.Site;
     using TheBIADevCompany.BIATemplate.Domain.User;
     using TheBIADevCompany.BIATemplate.Domain.User.Entities;
