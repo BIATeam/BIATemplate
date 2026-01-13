@@ -4,19 +4,15 @@
 namespace TheBIADevCompany.BIATemplate.Application.User
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Security.Principal;
 #if BIA_FRONT_FEATURE
     using System.Threading.Tasks;
 #endif
     using BIA.Net.Core.Application.Authentication;
     using BIA.Net.Core.Application.User;
-    using BIA.Net.Core.Common;
     using BIA.Net.Core.Common.Configuration;
-    using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.RepoContract;
-    using BIA.Net.Core.Domain.User.Entities;
     using BIA.Net.Core.Domain.User.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -24,7 +20,11 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.User.Models;
 #if BIA_FRONT_FEATURE
+    using BIA.Net.Core.Domain.Dto.Base;
+    using BIA.Net.Core.Domain.Dto.Option;
+    using BIA.Net.Core.Domain.Service;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
+    using TheBIADevCompany.BIATemplate.Domain.Dto.Site;
     using TheBIADevCompany.BIATemplate.Domain.User;
     using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 #endif
@@ -32,6 +32,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     /// <summary>
     /// Auth App Service.
     /// </summary>
+#pragma warning disable SA1611 // Element parameters should be documented
     public class AuthAppService(
 #if BIA_FRONT_FEATURE
         IBaseUserAppService<UserDto, User, UserFromDirectoryDto, UserFromDirectory> userAppService,
@@ -48,10 +49,24 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         IUserDirectoryRepository<UserFromDirectoryDto, UserFromDirectory> userDirectoryHelper,
         ILdapRepositoryHelper ldapRepositoryHelper)
 #if BIA_FRONT_FEATURE
-        : BaseFrontAuthAppService<UserDto, User, RoleId, TeamTypeId, UserFromDirectoryDto, UserFromDirectory, AdditionalInfoDto, UserDataDto>(userAppService, teamAppService, roleAppService, identityProviderRepository, jwtFactory, principal, userPermissionDomainService, logger, configuration, biaNetconfiguration, userDirectoryHelper, ldapRepositoryHelper), IAuthAppService
+        : BaseFrontAuthAppService<UserDto, User, RoleId, TeamTypeId, UserFromDirectoryDto, UserFromDirectory, AdditionalInfoDto, UserDataDto>(
+            userAppService,
+            teamAppService,
+            roleAppService,
+            identityProviderRepository,
+            jwtFactory,
+            principal,
+            userPermissionDomainService,
+            logger,
+            configuration,
+            biaNetconfiguration,
+            userDirectoryHelper,
+            ldapRepositoryHelper),
+        IAuthAppService
 #else
         : BaseAuthAppService<UserFromDirectoryDto, UserFromDirectory, AdditionalInfoDto, UserDataDto>(jwtFactory, principal, userPermissionDomainService, logger, configuration, biaNetconfiguration, userDirectoryHelper, ldapRepositoryHelper), IAuthAppService
 #endif
+#pragma warning restore SA1611 // Element parameters should be documented
     {
 #if BIA_FRONT_FEATURE
         /// <summary>
@@ -61,9 +76,9 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         /// <returns>
         /// AuthInfo.
         /// </returns>
-        public Task<AuthInfoDto<AdditionalInfoDto>> LoginOnTeamsAsync(LoginParamDto loginParam)
+        public async Task<AuthInfoDto<AdditionalInfoDto>> LoginOnTeamsAsync(LoginParamDto loginParam)
         {
-            return this.LoginOnTeamsAsync(loginParam, TeamConfig.Config);
+            return await this.LoginOnTeamsAsync(loginParam, TeamConfig.Config);
         }
 
         /// <summary>

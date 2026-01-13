@@ -1,10 +1,11 @@
-import { BiaNavigation } from './bia-shared/model/bia-navigation';
+import { BiaPermission } from '@bia-team/bia-ng/core';
+import { BiaNavigation } from '@bia-team/bia-ng/models';
 import { Permission } from './permission';
 
 export const NAVIGATION: BiaNavigation[] = [
   {
     labelKey: 'app.users',
-    permissions: [Permission.User_List_Access],
+    permissions: [BiaPermission.User_List_Access],
     path: ['/users'],
     icon: 'pi pi-users',
   },
@@ -14,25 +15,33 @@ export const NAVIGATION: BiaNavigation[] = [
     path: ['/sites'],
     icon: 'pi pi-home',
   },
+  // BIAToolKit - Begin NavigationDomain
+  // BIAToolKit - End NavigationDomain
+
   // BIAToolKit - Begin Navigation
   // BIAToolKit - End Navigation
   {
     labelKey: 'bia.administration',
-    icon: 'pi pi-wrench',
+    icon: 'pi pi-cog',
     permissions: [
-      Permission.Background_Task_Admin,
-      Permission.Background_Task_Read_Only,
+      BiaPermission.Background_Task_Admin,
+      BiaPermission.Background_Task_Read_Only,
     ],
     children: [
       {
         labelKey: 'bia.backgroundTaskAdmin',
-        permissions: [Permission.Background_Task_Admin],
+        permissions: [BiaPermission.Background_Task_Admin],
         path: ['/backgroundtask/admin'],
       },
       {
         labelKey: 'bia.backgroundTaskReadOnly',
-        permissions: [Permission.Background_Task_Read_Only],
+        permissions: [BiaPermission.Background_Task_Read_Only],
         path: ['/backgroundtask/readonly'],
+      },
+      {
+        labelKey: 'bia.announcements',
+        permissions: [BiaPermission.Announcement_List_Access],
+        path: ['/announcements'],
       },
     ],
   },

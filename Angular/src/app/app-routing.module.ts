@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LayoutComponent, PageLayoutComponent } from '@bia-team/bia-ng/shared';
 import { HOME_ROUTES } from './features/home/home.module';
-import { LayoutComponent } from './shared/bia-shared/components/layout/layout.component';
-import { PageLayoutComponent } from './shared/bia-shared/components/layout/page-layout.component';
 
 const routes: Routes = [
   {
@@ -14,6 +13,9 @@ const routes: Routes = [
         path: '',
         component: PageLayoutComponent,
         children: [
+          // BIAToolKit - Begin RoutingDomain
+          // BIAToolKit - End RoutingDomain
+
           // BIAToolKit - Begin Routing
           // BIAToolKit - End Routing
           {
@@ -59,6 +61,17 @@ const routes: Routes = [
               import(
                 './features/bia-features/background-task/background-task.module'
               ).then(m => m.BackgroundTaskModule),
+          },
+          {
+            path: 'announcements',
+            data: {
+              breadcrumb: 'bia.announcements',
+              canNavigate: true,
+            },
+            loadChildren: () =>
+              import(
+                './features/bia-features/announcements/announcement.module'
+              ).then(m => m.AnnouncementModule),
           },
         ],
       },

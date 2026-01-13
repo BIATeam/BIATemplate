@@ -5,6 +5,7 @@
 namespace TheBIADevCompany.BIATemplate.Domain.Dto.Site
 {
     using BIA.Net.Core.Domain.Dto.Base;
+    using BIA.Net.Core.Domain.Dto.CustomAttribute;
 
     /// <summary>
     /// The DTO used to manage site.

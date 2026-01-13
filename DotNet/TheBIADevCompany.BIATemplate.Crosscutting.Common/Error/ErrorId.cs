@@ -5,14 +5,10 @@
 namespace TheBIADevCompany.BIATemplate.Crosscutting.Common.Error
 {
     /// <summary>
-    /// The enumeration of all roles.
+    /// The enumeration of all error ids.
     /// </summary>
     public enum ErrorId
     {
-        /// <summary>
-        /// The member already exist and connot be added.
-        /// </summary>
-        MemberAlreadyExists,
 
         // Begin project error Id
 

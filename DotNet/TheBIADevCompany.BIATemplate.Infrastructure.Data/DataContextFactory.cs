@@ -21,7 +21,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IConfiguration configuration;
-        private readonly Dictionary<string, IQueryableUnitOfWork> queryableUnitOfWorks = new ();
+        private readonly Dictionary<string, IQueryableUnitOfWork> queryableUnitOfWorks = new();
         private readonly List<DatabaseConfiguration> databaseConfigurations;
 
         /// <summary>

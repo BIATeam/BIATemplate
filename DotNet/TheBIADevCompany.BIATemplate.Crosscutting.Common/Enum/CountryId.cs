@@ -9,22 +9,22 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum
     public enum CountryId
     {
         /// <summary>
-        /// France
+        /// France.
         /// </summary>
         France = 1,
 
         /// <summary>
-        /// Mexico
+        /// Mexico.
         /// </summary>
         Mexico,
 
         /// <summary>
-        /// China
+        /// China.
         /// </summary>
         China,
 
         /// <summary>
-        /// Spain
+        /// Spain.
         /// </summary>
         Spain,
     }
