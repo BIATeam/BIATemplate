@@ -55,10 +55,12 @@ namespace TheBIADevCompany.BIATemplate.WorkerService
         {
             BiaNetSection biaNetSection = new BiaNetSection();
             configuration.GetSection("BiaNet").Bind(biaNetSection);
+#if BIA_USE_DATABASE
             if (biaNetSection.CommonFeatures?.AuditConfiguration?.IsActive == true)
             {
                 host.Services.GetRequiredService<IAuditFeatureService>().EnableAuditFeatures();
             }
+#endif
         }
 
         /// <summary>

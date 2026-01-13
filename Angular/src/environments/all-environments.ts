@@ -1,25 +1,16 @@
-import { RoleMode, TeamTypeId } from 'src/app/shared/constants';
+import { AllEnvironments } from '@bia-team/bia-ng/models';
 
-export const allEnvironments = {
+export const allEnvironments: AllEnvironments & { [key: string]: any } = {
   appTitle: 'BIATemplate',
   companyName: 'TheBIADevCompany',
   enableNotifications: true,
   enableWorkerService: false,
+  enableAnnouncements: true,
   urlAuth: '/api/Auth',
   urlLog: '/api/logs',
-  urlEnv: '/api/Environment',
+  urlEnv: '/api/AppSettings/Environment',
+  urlAppSettings: 'api/AppSettings',
   urlAppIcon: 'assets/bia/img/AppIcon.svg',
   urlErrorPage: './assets/bia/html/error.html',
   version: '0.0.0',
-
-  teams: [
-    {
-      teamTypeId: TeamTypeId.Site,
-      roleMode: RoleMode.AllRoles,
-      inHeader: true,
-      label: 'site.headerLabel',
-    },
-    // BIAToolKit - Begin AllEnvironment
-    // BIAToolKit - End AllEnvironment
-  ],
 };

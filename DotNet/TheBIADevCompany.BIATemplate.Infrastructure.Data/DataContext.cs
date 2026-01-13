@@ -8,6 +8,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using Audit.EntityFramework;
     using BIA.Net.Core.Domain.Audit;
 #if BIA_FRONT_FEATURE
+    using BIA.Net.Core.Domain.Announcement.Entities;
     using BIA.Net.Core.Domain.Notification.Entities;
     using BIA.Net.Core.Domain.Translation.Entities;
     using BIA.Net.Core.Domain.User.Entities;
@@ -22,7 +23,9 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 #endif
     using BIA.Net.Core.Infrastructure.Data.ModelBuilders;
+#if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Domain.Notification.Entities;
+#endif
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
 
     /// <summary>
@@ -50,7 +53,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         }
 
         /// <summary>
-        /// Gets or sets the Plane DBSet.
+        /// Gets or sets the Audit logs.
         /// </summary>
         public DbSet<AuditLog> AuditLogs { get; set; }
 
@@ -124,6 +127,9 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
         /// Gets or sets the user team defaults.
         /// </summary>
         public DbSet<UserDefaultTeam> UserDefaultTeams { get; set; }
+
+        // BIAToolKit - Begin DbSetAudit
+        // BIAToolKit - End DbSetAudit
 #endif
 
         /// <summary>

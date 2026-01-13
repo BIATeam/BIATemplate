@@ -4,9 +4,7 @@
     "sites": "Sites",
     "teams": "Teams",
     "users": "Users",
-    "notifications": "Notifications",
-    "maintenanceTeams": "Maintenance Teams",
-    "maintenanceContracts": "Maintenance contracts"
+    "notifications": "Notifications"
   },
   "member": {
     "add": "Add member",
@@ -29,7 +27,8 @@
     "edit": "Edit site",
     "listOf": "List of sites",
     "title": "Title",
-    "headerLabel": "Site"
+    "headerLabel": "Site",
+    "uniqueIdentifier": "Unique identifier"
   },
   "translation": {
     "defaultLanguage": "Default (English)"

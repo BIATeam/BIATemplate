@@ -4,23 +4,24 @@
 
 namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 {
-    using System.Diagnostics;
     using BIA.Net.Core.Infrastructure.Data.ModelBuilders;
     using Microsoft.EntityFrameworkCore;
+#if BIA_FRONT_FEATURE
+    using TheBIADevCompany.BIATemplate.Domain.User.Entities;
+#endif
 
     /// <summary>
-    /// Class used to update the model builder for user domain.
+    /// Class used to update the model builder for audits.
     /// </summary>
     public class AuditModelBuilder : BaseAuditModelBuilder
     {
-        /// <summary>
-        /// Create the user model.
-        /// </summary>
-        /// <param name="modelBuilder">The model builder.</param>
+        /// <inheritdoc/>
         public override void CreateModel(ModelBuilder modelBuilder)
         {
-            Debug.Assert(modelBuilder != null, "Line to avoid warning empty method");
             base.CreateModel(modelBuilder);
+#if BIA_FRONT_FEATURE
+            this.CreateUserAuditModel<UserAudit, User>(modelBuilder);
+#endif
 
             // Add here the project specific audit model creation.
         }
