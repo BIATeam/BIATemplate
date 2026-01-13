@@ -19,11 +19,14 @@ namespace TheBIADevCompany.BIATemplate.Domain.User
         /// </summary>
         public static readonly ImmutableList<BiaTeamConfig<BaseEntityTeam>> Config = new ImmutableListBuilder<BiaTeamConfig<BaseEntityTeam>>()
         {
-            new BiaTeamConfig<BaseEntityTeam>()
+            new()
             {
                 TeamTypeId = (int)TeamTypeId.Site,
                 RightPrefix = "Site",
-                AdminRoleIds = new int[] { (int)RoleId.SiteAdmin },
+                AdminRoleIds = [(int)RoleId.SiteAdmin],
+                RoleMode = BIA.Net.Core.Common.Enum.RoleMode.AllRoles,
+                DisplayInHeader = true,
+                Label = "site.headerLabel",
             },
 
             // BIAToolKit - Begin TeamConfig

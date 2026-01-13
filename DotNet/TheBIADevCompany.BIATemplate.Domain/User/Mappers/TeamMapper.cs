@@ -80,7 +80,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
             {
                 // BIAToolKit - Begin TeamMapperParentTeamId
                 // BIAToolKit - End TeamMapperParentTeamId
-                _ => 0
+                _ => 0,
             };
         }
 
@@ -95,7 +95,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Mappers
             {
                 // BIAToolKit - Begin TeamMapperParentTeamTitle
                 // BIAToolKit - End TeamMapperParentTeamTitle
-                _ => string.Empty
+                _ => string.Empty,
             };
         }
     }

@@ -67,7 +67,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)BiaRoleId.Admin, Code = "Admin", Label = "Administrator" });
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)BiaRoleId.BackAdmin, Code = "Back_Admin", Label = "Background task administrator" });
             modelBuilder.Entity<Role>().HasData(new Role { Id = (int)BiaRoleId.BackReadOnly, Code = "Back_Read_Only", Label = "Visualization of background tasks" });
-                modelBuilder.Entity<Role>().HasData(new Role { Id = (int)RoleId.SiteAdmin, Code = "Site_Admin", Label = "Site administrator" });
+            modelBuilder.Entity<Role>().HasData(new Role { Id = (int)RoleId.SiteAdmin, Code = "Site_Admin", Label = "Site administrator" });
 
             // BIAToolKit - Begin RoleModelBuilder
             // BIAToolKit - End RoleModelBuilder

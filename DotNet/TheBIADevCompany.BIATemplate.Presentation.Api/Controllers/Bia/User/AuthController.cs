@@ -4,6 +4,7 @@
 
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia.User
 {
+    using System.Collections.Immutable;
     using System.Threading.Tasks;
     using BIA.Net.Core.Common.Enum;
     using BIA.Net.Core.Common.Exceptions;
@@ -54,17 +55,8 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia.User
         public async Task<IActionResult> Login(bool lightToken = true)
         {
             // used only by swagger.
-            LoginParamDto loginParam = new LoginParamDto
+            var loginParam = new LoginParamDto
             {
-                TeamsConfig = new TeamConfigDto[]
-                {
-                    // this config is required to simulate default site with swagger.
-                    // it should correspond to the Front config (allEnvironments.Teams)
-                    new TeamConfigDto { TeamTypeId = (int)TeamTypeId.Site, RoleMode = RoleMode.AllRoles, InHeader = true },
-
-                    // BIAToolKit - Begin AuthController
-                    // BIAToolKit - End AuthController
-                },
                 CurrentTeamLogins = null,
                 LightToken = lightToken,
                 FineGrainedPermission = !lightToken,

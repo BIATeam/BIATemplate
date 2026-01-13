@@ -3,14 +3,35 @@ import localeEs from '@angular/common/locales/es';
 import localeFr from '@angular/common/locales/fr';
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { BiaCoreModule, BiaTranslationService } from '@bia-team/bia-ng/core';
+import { allEnvironments } from 'src/environments/all-environments';
+import { environment } from 'src/environments/environment';
 import biaLocaleEn from '../../assets/bia/i18n/en.json';
 import biaLocaleEs from '../../assets/bia/i18n/es.json';
 import biaLocaleFr from '../../assets/bia/i18n/fr.json';
-import { BiaCoreModule } from './bia-core/bia-core.module';
-import { BiaTranslationService } from './bia-core/services/bia-translation.service';
+import {
+  APP_SUPPORTED_TRANSLATIONS,
+  APP_TANSLATION_IDS_TO_NOT_ADD_MANUALY,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_POPUP_MINWIDTH,
+  TeamTypeRightPrefix,
+} from '../shared/constants';
+import { NAVIGATION } from '../shared/navigation';
 
 @NgModule({
-  imports: [RouterModule, BiaCoreModule],
+  imports: [
+    RouterModule,
+    BiaCoreModule.forRoot(
+      allEnvironments,
+      environment,
+      NAVIGATION,
+      APP_SUPPORTED_TRANSLATIONS,
+      DEFAULT_PAGE_SIZE,
+      TeamTypeRightPrefix,
+      APP_TANSLATION_IDS_TO_NOT_ADD_MANUALY,
+      DEFAULT_POPUP_MINWIDTH
+    ),
+  ],
 })
 
 // https://medium.com/@benmohamehdi/angular-best-practices-coremodule-vs-sharedmodule-25f6721aa2ef
