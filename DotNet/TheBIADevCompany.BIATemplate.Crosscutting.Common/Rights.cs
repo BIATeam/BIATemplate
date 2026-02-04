@@ -9,6 +9,12 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
     /// </summary>
     public static class Rights
     {
+        // BIAToolKit - Begin Rights
+        // BIAToolKit - End Rights
+
+        // BIAToolKit - Begin RightsForOption
+        // BIAToolKit - End RightsForOption
+#if BIA_FRONT_FEATURE
         /// <summary>
         /// The sites rights.
         /// </summary>
@@ -96,11 +102,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// </summary>
             public const string Options = "AnnouncementType_Options";
         }
-
-        // BIAToolKit - Begin Rights
-        // BIAToolKit - End Rights
-
-        // BIAToolKit - Begin RightsForOption
-        // BIAToolKit - End RightsForOption
+#endif
     }
 }

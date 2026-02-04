@@ -9,7 +9,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common.Error
     /// </summary>
     public enum ErrorId
     {
-
         // Begin project error Id
 
         // End project error Id

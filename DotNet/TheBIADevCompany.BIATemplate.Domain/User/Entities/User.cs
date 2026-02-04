@@ -18,6 +18,7 @@ namespace TheBIADevCompany.BIATemplate.Domain.User.Entities
         /// </summary>
         public string Email { get; set; }
 #if BIA_USER_CUSTOM_FIELDS_BACK
+
         /// <summary>
         /// Gets or sets the distinguished name.
         /// </summary>

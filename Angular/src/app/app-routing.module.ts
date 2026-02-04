@@ -45,9 +45,9 @@ const routes: Routes = [
               canNavigate: true,
             },
             loadChildren: () =>
-              import(
-                './features/bia-features/notifications/notification.module'
-              ).then(m => m.NotificationModule),
+              import('./features/bia-features/notifications/notification.module').then(
+                m => m.NotificationModule
+              ),
           },
           {
             path: 'backgroundtask',
@@ -58,9 +58,9 @@ const routes: Routes = [
               noPadding: true,
             },
             loadChildren: () =>
-              import(
-                './features/bia-features/background-task/background-task.module'
-              ).then(m => m.BackgroundTaskModule),
+              import('./features/bia-features/background-task/background-task.module').then(
+                m => m.BackgroundTaskModule
+              ),
           },
           {
             path: 'announcements',
@@ -69,9 +69,9 @@ const routes: Routes = [
               canNavigate: true,
             },
             loadChildren: () =>
-              import(
-                './features/bia-features/announcements/announcement.module'
-              ).then(m => m.AnnouncementModule),
+              import('./features/bia-features/announcements/announcement.module').then(
+                m => m.AnnouncementModule
+              ),
           },
         ],
       },
