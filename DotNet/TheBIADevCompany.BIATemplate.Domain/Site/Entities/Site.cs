@@ -7,6 +7,8 @@ namespace TheBIADevCompany.BIATemplate.Domain.Site.Entities
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using Audit.EntityFramework;
+    using BIA.Net.Core.Common.Attributes;
+    using BIA.Net.Core.Common.Enum;
     using BIA.Net.Core.Domain.Entity.Interface;
     using BIA.Net.Core.Domain.User.Entities;
 
@@ -18,14 +20,14 @@ namespace TheBIADevCompany.BIATemplate.Domain.Site.Entities
         /// <summary>
         /// Add row version timestamp in table Site.
         /// </summary>
-        [Column(nameof(IEntityVersioned.RowVersion))]
+        [BiaRowVersionProperty(DbProvider.SqlServer)]
         [AuditIgnore]
         public byte[] RowVersionSite { get; set; }
 
         /// <summary>
         /// Add row version for Postgre in table Site.
         /// </summary>
-        [Column(nameof(IEntityVersioned.RowVersionXmin))]
+        [BiaRowVersionProperty(DbProvider.PostGreSql)]
         [AuditIgnore]
         public uint RowVersionXminSite { get; set; }
     }

@@ -40,7 +40,6 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia.User
             this.authService = authService;
         }
 #endif
-
 #if BIA_FRONT_FEATURE
 
         /// <summary>
