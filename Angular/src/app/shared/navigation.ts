@@ -26,6 +26,7 @@ export const NAVIGATION: BiaNavigation[] = [
     permissions: [
       BiaPermission.Background_Task_Admin,
       BiaPermission.Background_Task_Read_Only,
+      BiaPermission.Announcement_List_Access,
     ],
     children: [
       {
