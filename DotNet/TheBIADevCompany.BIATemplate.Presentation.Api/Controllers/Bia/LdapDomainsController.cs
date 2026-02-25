@@ -5,8 +5,8 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
 {
     using System.Collections.Generic;
     using System.Linq;
-    using BIA.Net.Core.Common;
     using BIA.Net.Core.Common.Configuration;
+    using BIA.Net.Core.Common.Enum;
     using BIA.Net.Core.Presentation.Api.Controller.Base;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -38,7 +38,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
         /// <returns>The list of LDAP domains.</returns>
         [HttpGet]
         [ProducesResponseType<IEnumerable<LdapDomain>>(StatusCodes.Status200OK)]
-        [Authorize(Roles = BiaRights.LdapDomains.List)]
+        [Authorize(Roles = nameof(BiaPermissionId.LdapDomains_List))]
         public IActionResult GetAll()
         {
             IEnumerable<LdapDomain> ldapDomains = this.configuration?.Authentication?.LdapDomains?.Where(o => o.ContainsUser);

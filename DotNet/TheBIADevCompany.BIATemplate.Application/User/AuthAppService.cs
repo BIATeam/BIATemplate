@@ -9,7 +9,9 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System.Threading.Tasks;
 #endif
     using BIA.Net.Core.Application.Authentication;
+    using BIA.Net.Core.Application.Permission;
     using BIA.Net.Core.Application.User;
+    using BIA.Net.Core.Common;
     using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.Domain.Dto.User;
     using BIA.Net.Core.Domain.RepoContract;
@@ -47,7 +49,8 @@ namespace TheBIADevCompany.BIATemplate.Application.User
         IConfiguration configuration,
         IOptions<BiaNetSection> biaNetconfiguration,
         IUserDirectoryRepository<UserFromDirectoryDto, UserFromDirectory> userDirectoryHelper,
-        ILdapRepositoryHelper ldapRepositoryHelper)
+        ILdapRepositoryHelper ldapRepositoryHelper,
+        IPermissionService permissionService)
 #if BIA_FRONT_FEATURE
         : BaseFrontAuthAppService<UserDto, User, RoleId, TeamTypeId, UserFromDirectoryDto, UserFromDirectory, AdditionalInfoDto, UserDataDto>(
             userAppService,
@@ -61,10 +64,11 @@ namespace TheBIADevCompany.BIATemplate.Application.User
             configuration,
             biaNetconfiguration,
             userDirectoryHelper,
-            ldapRepositoryHelper),
+            ldapRepositoryHelper,
+            permissionService),
         IAuthAppService
 #else
-        : BaseAuthAppService<UserFromDirectoryDto, UserFromDirectory, AdditionalInfoDto, UserDataDto>(jwtFactory, principal, userPermissionDomainService, logger, configuration, biaNetconfiguration, userDirectoryHelper, ldapRepositoryHelper), IAuthAppService
+        : BaseAuthAppService<UserFromDirectoryDto, UserFromDirectory, AdditionalInfoDto, UserDataDto>(jwtFactory, principal, userPermissionDomainService, logger, configuration, biaNetconfiguration, userDirectoryHelper, ldapRepositoryHelper, permissionService), IAuthAppService
 #endif
 #pragma warning restore SA1611 // Element parameters should be documented
     {
