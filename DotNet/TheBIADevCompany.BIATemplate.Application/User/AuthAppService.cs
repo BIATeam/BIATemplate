@@ -9,6 +9,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using System.Threading.Tasks;
 #endif
     using BIA.Net.Core.Application.Authentication;
+    using BIA.Net.Core.Application.Permission;
     using BIA.Net.Core.Application.User;
     using BIA.Net.Core.Common;
     using BIA.Net.Core.Common.Configuration;
@@ -21,7 +22,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
     using TheBIADevCompany.BIATemplate.Domain.User.Models;
 #if BIA_FRONT_FEATURE
-    using BIA.Net.Core.Application.Permission;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.Option;
     using BIA.Net.Core.Domain.Service;
@@ -30,11 +30,6 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using TheBIADevCompany.BIATemplate.Domain.User;
     using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 #endif
-
-    // Begin BIATemplate
-    using TheBIADevCompany.BIATemplate.Application.Site;
-    using TheBIADevCompany.BIATemplate.Domain.Api.RolesForApp;
-    using TheBIADevCompany.BIATemplate.Domain.RepoContract;
 
     /// <summary>
     /// Auth App Service.

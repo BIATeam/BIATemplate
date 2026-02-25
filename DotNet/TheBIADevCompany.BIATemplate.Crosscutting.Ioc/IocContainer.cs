@@ -38,8 +38,8 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
     using Microsoft.Extensions.Logging;
     using TheBIADevCompany.BIATemplate.Application.User;
     using TheBIADevCompany.BIATemplate.Crosscutting.Common;
-#if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Enum;
+#if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Crosscutting.Common.Error;
 #endif
     using TheBIADevCompany.BIATemplate.Domain.Dto.User;
@@ -111,7 +111,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             collection.AddSingleton<IPermissionProvider, PermissionProvider<BiaPermissionId>>();
             collection.AddSingleton<IPermissionProvider, PermissionProvider<PermissionId>>();
             collection.AddSingleton<IPermissionService, PermissionService>();
-
 #if BIA_FRONT_FEATURE
             collection.AddTransient(typeof(IBaseUserSynchronizeDomainService<User, UserFromDirectory>), typeof(UserSynchronizeDomainService));
             collection.AddTransient(typeof(IBaseUserAppService<UserDto, User, UserFromDirectoryDto, UserFromDirectory>), typeof(UserAppService));
