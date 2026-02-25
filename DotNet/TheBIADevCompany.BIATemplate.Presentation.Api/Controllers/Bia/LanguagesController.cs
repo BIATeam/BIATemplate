@@ -6,7 +6,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
 {
     using System.Threading.Tasks;
     using BIA.Net.Core.Application.Translation;
-    using BIA.Net.Core.Common;
+    using BIA.Net.Core.Common.Enum;
     using BIA.Net.Core.Presentation.Api.Controller.Base;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -40,7 +40,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Bia
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Authorize(Roles = BiaRights.Languages.Options)]
+        [Authorize(Roles = nameof(BiaPermissionId.Languages_Options))]
         public async Task<IActionResult> GetAllOptions()
         {
             var results = await this.languageService.GetAllOptionsAsync();
