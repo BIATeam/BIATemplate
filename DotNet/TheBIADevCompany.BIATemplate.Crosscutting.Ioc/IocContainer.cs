@@ -49,6 +49,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
 #endif
     using TheBIADevCompany.BIATemplate.Domain.User.Models;
 #if BIA_USE_DATABASE
+    using BIA.Net.Core.Infrastructure.Data.Helpers;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.Features;
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.Repositories;
@@ -248,6 +249,7 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Ioc
             }
 
             collection.AddSingleton<IAuditFeature, AuditFeature>();
+            collection.AddScoped<IBiaHybridCache, BiaHybridCache>();
 
             // IT'S NOT NECESSARY TO DECLARE QueryCustomizer/Repository (They are automatically managed by the method BiaIocContainer.RegisterServicesFromAssembly)
             BiaIocContainer.RegisterServicesFromAssembly(
