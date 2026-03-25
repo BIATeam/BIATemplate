@@ -5,6 +5,7 @@
 namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Notification
 {
     using BIA.Net.Core.Application.Services;
+    using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Presentation.Api.Controller.Notification;
     using TheBIADevCompany.BIATemplate.Application.Notification;
     using TheBIADevCompany.BIATemplate.Domain.Dto.Notification;
@@ -13,7 +14,7 @@ namespace TheBIADevCompany.BIATemplate.Presentation.Api.Controllers.Notification
 #pragma warning restore BIA001 // Forbidden reference to Domain layer in Presentation layer
 
     /// <inheritdoc />
-    public class NotificationsController : BaseNotificationsController<NotificationDto, NotificationListItemDto, Notification>
+    public class NotificationsController : BaseNotificationsController<NotificationDto, NotificationListItemDto, Notification, PagingFilterFormatDto>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationsController"/> class.

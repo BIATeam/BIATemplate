@@ -1,0 +1,17 @@
+{
+    "solution":  {
+                     "path":  "BIATemplate.sln",
+                     "projects":  [
+                                      "TheBIADevCompany.BIATemplate.Application\\TheBIADevCompany.BIATemplate.Application.csproj",
+                                      "TheBIADevCompany.BIATemplate.Crosscutting.Common\\TheBIADevCompany.BIATemplate.Crosscutting.Common.csproj",
+                                      "TheBIADevCompany.BIATemplate.Crosscutting.Ioc\\TheBIADevCompany.BIATemplate.Crosscutting.Ioc.csproj",
+                                      "TheBIADevCompany.BIATemplate.Domain.Dto\\TheBIADevCompany.BIATemplate.Domain.Dto.csproj",
+                                      "TheBIADevCompany.BIATemplate.Domain\\TheBIADevCompany.BIATemplate.Domain.csproj",
+                                      "TheBIADevCompany.BIATemplate.Infrastructure.Data\\TheBIADevCompany.BIATemplate.Infrastructure.Data.csproj",
+                                      "TheBIADevCompany.BIATemplate.Infrastructure.Service\\TheBIADevCompany.BIATemplate.Infrastructure.Service.csproj",
+                                      "TheBIADevCompany.BIATemplate.Presentation.Api\\TheBIADevCompany.BIATemplate.Presentation.Api.csproj",
+                                      "TheBIADevCompany.BIATemplate.Test\\TheBIADevCompany.BIATemplate.Test.csproj",
+                                      "TheBIADevCompany.BIATemplate.WorkerService\\TheBIADevCompany.BIATemplate.WorkerService.csproj"
+                                  ]
+                 }
+}

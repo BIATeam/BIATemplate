@@ -31,9 +31,9 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Features
         {
             return type.Name switch
             {
+#if BIA_FRONT_FEATURE
                 // BIAToolKit - Begin AuditTypeMapper
                 // BIAToolKit - End AuditTypeMapper
-#if BIA_FRONT_FEATURE
                 nameof(User) => typeof(UserAudit),
 #endif
                 _ => base.AuditTypeMapper(type),

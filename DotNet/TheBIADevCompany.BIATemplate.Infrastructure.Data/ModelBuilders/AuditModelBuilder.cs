@@ -22,8 +22,21 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
 #if BIA_FRONT_FEATURE
             this.CreateUserAuditModel<UserAudit, User>(modelBuilder);
 #endif
-
-            // Add here the project specific audit model creation.
         }
+
+        /// <inheritdoc/>
+        protected override void CreateAuditLogModel(ModelBuilder modelBuilder)
+        {
+            base.CreateAuditLogModel(modelBuilder);
+        }
+
+        /// <inheritdoc/>
+        protected override void CreateUserAuditModel<TAuditUser, TUser>(ModelBuilder modelBuilder)
+        {
+            base.CreateUserAuditModel<TAuditUser, TUser>(modelBuilder);
+        }
+
+#if BIA_FRONT_FEATURE
+#endif
     }
 }

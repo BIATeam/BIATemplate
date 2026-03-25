@@ -7,12 +7,12 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
     /// <summary>
     /// The class containing all constants.
     /// </summary>
-    public static class Constants
+    public static partial class Constants
     {
         /// <summary>
         /// The application constants.
         /// </summary>
-        public static class Application
+        public static partial class Application
         {
             /// <summary>
             /// The back end version.
@@ -23,48 +23,6 @@ namespace TheBIADevCompany.BIATemplate.Crosscutting.Common
             /// The front end version.
             /// </summary>
             public const string FrontEndVersion = "0.0.0";
-
-            /// <summary>
-            /// The framework version.
-            /// </summary>
-            public const string FrameworkVersion = "6.1.3";
-
-            /// <summary>
-            /// The environment.
-            /// </summary>
-            public const string Environment = "ASPNETCORE_ENVIRONMENT";
-        }
-
-        /// <summary>
-        /// The default values.
-        /// </summary>
-        public static class DefaultValues
-        {
-            /// <summary>
-            /// The default theme.
-            /// </summary>
-            public const string Theme = "Light";
-        }
-
-        /// <summary>
-        /// Language Id.
-        /// </summary>
-        public static class LanguageId
-        {
-            /// <summary>
-            /// The english language Id.
-            /// </summary>
-            public const int English = 1;
-
-            /// <summary>
-            /// The french language Id.
-            /// </summary>
-            public const int French = 2;
-
-            /// <summary>
-            /// The spanish language Id.
-            /// </summary>
-            public const int Spanish = 3;
         }
     }
 }
