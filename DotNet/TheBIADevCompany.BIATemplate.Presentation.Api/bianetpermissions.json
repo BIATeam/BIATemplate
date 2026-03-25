@@ -1,0 +1,274 @@
+{
+  "BiaNet": {
+    // if BIA_FRONT_FEATURE
+    "Permissions": [
+      // BIAToolKit - Begin Config
+      // BIAToolKit - End Config
+      // BIAToolKit - Begin ConfigForOption
+      // BIAToolKit - End ConfigForOption
+      // Home
+      {
+        "Name": "Home_Access",
+        "Roles": [
+          "Admin",
+          "Site_Admin",
+          "Site_Member",
+          "User"
+        ]
+      },
+      // Log
+      {
+        "Name": "Logs_Create",
+        "Roles": [
+          "Admin",
+          "Site_Admin",
+          "Site_Member"
+        ]
+      },
+      // Role
+      {
+        "Names": [
+          "Roles_Options"
+        ],
+        "Roles": [
+          "Admin",
+          "UserManager",
+          "User"
+        ]
+      },
+      {
+        "Names": [
+          "Roles_List"
+        ],
+        "Roles": [
+          "Admin",
+          "Site_Admin"
+        ]
+      },
+      {
+        "Name": "Roles_List_For_Current_User",
+        "Roles": [
+          "User",
+          "Admin",
+          "Site_Admin"
+        ]
+      },
+      // Language
+      {
+        "Name": "Languages_Options",
+        "Roles": [
+          "User",
+          "Admin"
+        ]
+      },
+      // Ldap Domain
+      {
+        "Name": "LdapDomains_List",
+        "Roles": [
+          "Admin",
+          "UserManager",
+          "Site_Admin"
+        ]
+      },
+      // ProfileImage
+      {
+        "Name": "ProfileImage_Get",
+        "Roles": [
+          "User"
+        ]
+      },
+      // Site
+      {
+        "Names": [
+          "Site_Access_All",
+          "Site_Create",
+          "Site_Update",
+          "Site_Delete",
+          "Site_Save"
+        ],
+        "Roles": [
+          "Admin"
+        ]
+      },
+      {
+        "Names": [
+          "Site_List_Access",
+          "Site_Read",
+          "Site_Member_List_Access"
+        ],
+        "Roles": [
+          "Admin",
+          "Site_Member"
+        ]
+      },
+      {
+        "Names": [
+          "Site_Member_Create",
+          "Site_Member_Read",
+          "Site_Member_Update",
+          "Site_Member_Delete",
+          "Site_Member_Save"
+        ],
+        "Roles": [
+          "Admin",
+          "Site_Admin"
+        ]
+      },
+      {
+        "Names": [
+          "Site_View_Add_TeamView",
+          "Site_View_Update_TeamView",
+          "Site_View_Set_Default_TeamView"
+        ],
+        "Roles": [
+          "Admin",
+          "Site_Admin"
+        ]
+      },
+      {
+        "Names": [
+          "Site_View_Assign_To_Team"
+        ],
+        "Roles": [
+          "Admin",
+          "Site_Admin"
+        ],
+        "IsTransversal": true
+      },
+      // Team
+      {
+        "Names": [
+          "Team_Access_All"
+        ],
+        "Roles": [
+          "Admin"
+        ]
+      },
+      {
+        "Names": [
+          "Team_List_Access",
+          "Team_Options"
+        ],
+        "Roles": [
+          "User"
+        ]
+      },
+      {
+        "Name": "Team_Set_Default_Team",
+        "Roles": [
+          "Admin",
+          "Site_Admin",
+          "Site_Member"
+        ]
+      },
+      {
+        "Name": "Team_Set_Default_Roles",
+        "Roles": [
+          "User",
+          "Admin",
+          "Site_Admin",
+          "Site_Member"
+        ]
+      },
+      // User
+      {
+        "Names": [
+          "User_Options"
+        ],
+        "Roles": [
+          "Admin",
+          "User"
+        ]
+      },
+      // View
+      {
+        "Names": [
+          "View_List",
+          "View_Read"
+        ],
+        "Roles": [
+          "Admin",
+          "User"
+        ]
+      },
+      {
+        "Names": [
+          "View_Add_UserView",
+          "View_Update_UserView",
+          "View_Delete_UserView",
+          "View_Set_Default_UserView"
+        ],
+        "Roles": [
+          "User"
+        ]
+      },
+      // Notifications
+      {
+        "Names": [
+          "Notification_List_Access",
+          "Notification_Delete",
+          "Notification_Read",
+          "NotificationType_Options"
+        ],
+        "Roles": [
+          "Admin",
+          "User"
+        ]
+      },
+      {
+        "Names": [
+          "Notification_Update",
+          "Notification_Create"
+        ],
+        "Roles": [
+          "Admin"
+        ]
+      },
+      // SupportAdmin
+      {
+        "Names": [
+          "Impersonation_Connection_Rights"
+        ],
+        "Roles": [
+          "SupportAdmin"
+        ]
+      },
+      {
+        "Name": "Background_Task_Admin",
+        "LightToken": true,
+        "Roles": [
+          "Admin",
+          "Back_Admin"
+        ]
+      },
+      {
+        "Name": "Background_Task_Read_Only",
+        "LightToken": true,
+        "Roles": [
+          "Back_Read_Only"
+        ]
+      },
+      // Announcement
+      {
+        "Names": [
+          "Announcement_List_Access",
+          "Announcement_Read",
+          "Announcement_Update",
+          "Announcement_Create",
+          "Announcement_Delete"
+        ],
+        "Roles": [
+          "Admin"
+        ]
+      },
+      // AnnouncementType
+      {
+        "Name": "AnnouncementType_Options",
+        "Roles": [
+          "Admin"
+        ]
+      }
+    ]
+    // endif
+  }
+}

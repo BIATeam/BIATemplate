@@ -25,8 +25,8 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
     using BIA.Net.Core.Infrastructure.Data.ModelBuilders;
 #if BIA_FRONT_FEATURE
     using TheBIADevCompany.BIATemplate.Domain.Notification.Entities;
-#endif
     using TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders;
+#endif
 
     /// <summary>
     /// The database context.
@@ -154,8 +154,8 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data
             new UserModelBuilder().CreateModel(modelBuilder);
             ViewModelBuilder.CreateModel(modelBuilder);
             new NotificationModelBuilder().CreateModel(modelBuilder);
-#endif
             new AuditModelBuilder().CreateModel(modelBuilder);
+#endif
             this.OnEndModelCreating(modelBuilder);
         }
     }

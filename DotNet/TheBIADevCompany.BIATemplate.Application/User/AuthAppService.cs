@@ -30,6 +30,8 @@ namespace TheBIADevCompany.BIATemplate.Application.User
     using TheBIADevCompany.BIATemplate.Domain.User;
     using TheBIADevCompany.BIATemplate.Domain.User.Entities;
 #endif
+#if BIA_FRONT_FEATURE
+#endif
 
     /// <summary>
     /// Auth App Service.
@@ -37,7 +39,7 @@ namespace TheBIADevCompany.BIATemplate.Application.User
 #pragma warning disable SA1611 // Element parameters should be documented
     public class AuthAppService(
 #if BIA_FRONT_FEATURE
-        IBaseUserAppService<UserDto, User, UserFromDirectoryDto, UserFromDirectory> userAppService,
+        IBaseUserAppService<UserDto, User, UserFromDirectoryDto, UserFromDirectory, PagingFilterFormatDto> userAppService,
         IBaseTeamAppService<TeamTypeId> teamAppService,
         IRoleAppService roleAppService,
         IIdentityProviderRepository<UserFromDirectory> identityProviderRepository,
