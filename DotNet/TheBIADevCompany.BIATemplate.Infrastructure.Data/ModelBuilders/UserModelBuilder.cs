@@ -43,7 +43,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
         protected override void CreateRoleModelData(ModelBuilder modelBuilder)
         {
             base.CreateRoleModelData(modelBuilder);
-                BiaCreateRoleModelData(modelBuilder);
+                modelBuilder.Entity<Role>().HasData(new Role { Id = (int)RoleId.SiteAdmin, Code = "Site_Admin", Label = "Site administrator" });
 
             // BIAToolKit - Begin RoleModelBuilder
             // BIAToolKit - End RoleModelBuilder
@@ -87,13 +87,13 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
         protected override void CreateTeamTypeRoleModelData(ModelBuilder modelBuilder)
         {
             base.CreateTeamTypeRoleModelData(modelBuilder);
-            BiaCreateTeamTypeRoleModelData(modelBuilder);
 
             modelBuilder.Entity<Role>()
                 .HasMany(p => p.TeamTypes)
                 .WithMany(r => r.Roles)
                 .UsingEntity(rt =>
                 {
+                    rt.HasData(new { TeamTypesId = (int)TeamTypeId.Site, RolesId = (int)RoleId.SiteAdmin });
 
                     // BIAToolKit - Begin TeamTypeRoleModelBuilder
                     // BIAToolKit - End TeamTypeRoleModelBuilder
