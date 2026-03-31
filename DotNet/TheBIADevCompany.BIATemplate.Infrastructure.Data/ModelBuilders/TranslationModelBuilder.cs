@@ -46,7 +46,8 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.ModelBuilders
         {
             base.CreateRoleTranslationModelData(modelBuilder);
             BiaCreateRoleTranslationModelData(modelBuilder);
-                BiaCreateRoleTranslationModelDataSiteAdmin(modelBuilder);
+                modelBuilder.Entity<RoleTranslation>().HasData(new RoleTranslation { RoleId = (int)RoleId.SiteAdmin, LanguageId = LanguageId.French, Id = 101, Label = "Administrateur du site" });
+                modelBuilder.Entity<RoleTranslation>().HasData(new RoleTranslation { RoleId = (int)RoleId.SiteAdmin, LanguageId = LanguageId.Spanish, Id = 102, Label = "Administrador del sitio" });
         }
 
         /// <summary>
